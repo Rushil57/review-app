@@ -1,0 +1,169 @@
+﻿
+<!--@{
+    ViewBag.Title = "Review";
+}
+
+<div class="container-fluid">
+    <div class="header">
+        <h5 style="color:#fff;margin-right: 40px;">ItsReview App</h5>
+    </div>
+
+    <div class="container" style="padding-top:30px;">
+        <form onsubmit="return false">-->
+            @*<div class="form-group">
+                    <label for="platform">Select Platform</label>
+                    <select class="form-control dropdownPaltform" name="dropdownPaltform"></select>
+                </div>*@
+            <!--<div class="form-group">-->
+                @*<label for="emailid">Suggested Email Id</label>*@
+                <!--<label for="suggestedemail">Suggested Email Id</label>-->
+                @*<input type="text" class="form-control" id="emailid" placeholder="Enter Email Id">*@
+            <!--</div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary" id="reviewbutton" onclick="disablereviewbutton()" disabled>Review</button>
+                <button type="submit" class="btn btn-primary" id="listingurlbutton" onclick="disableurllistingbutton()" disabled>Listing Url</button>-->
+                @*<a class="btn btn-primary" id="listingurlbutton" onclick="disableurllistingbutton()" target="_blank" href="' + listing +'" disabled>Listing Url</a>*@
+                @*<a class="btn btn-primary btn-sm listingbutton" target="_blank" href="">Listing Url</a>*@
+            <!--</div>
+            <div class="form-group" id="buttons">
+                <button type="submit" class="btn btn-primary" id="showing" disabled onclick="storedata(this.id)">Showing</button>
+                <button type="submit" class="btn btn-primary" id="notshowing" disabled onclick="storedata(this.id)">Not Showing</button>
+                <button type="submit" class="btn btn-primary" id="skip" disabled onclick="storedata(this.id)">Skip</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var companyid = 0;
+    var userid = 0;
+    var writerid = 0;
+
+    $(document).ready(function () {
+        BindPaltform(0);
+        incTimer();
+        BindEmailId();
+        /*BindCompany();*/
+
+    })
+
+    function incTimer() {
+        setTimeout(function () {
+            document.getElementById('reviewbutton').disabled = null;
+        }, 10000);
+    }
+     function BindPaltform(id) {
+        $.ajax({
+            url: "@Url.Action("GetPaltform", "Register")",
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                $.each(data, function (index, item) {
+                    var opt = new Option(item.Text, item.Value);
+                    if (id == 0) {
+                        $('.dropdownPaltform').append(opt);
+                    }
+                    else {
+                        $(".dropdownPaltform").val(id);
+
+                    }
+                });
+            }
+        })
+    }
+
+    function disablereviewbutton() {
+        setTimeout(function () {
+            document.getElementById('reviewbutton').disabled = true;
+            document.getElementById('listingurlbutton').disabled = null;
+        });
+
+        $.ajax({
+            url: "GetList/Register",
+            type: "GET",
+            dataType: "json",
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                var review = data.reviews.ReviewName;
+               // console.log(review);
+                writerid = data.reviews.Id;
+
+                var input = document.createElement('input');
+                input.setAttribute('value', review);
+                document.body.appendChild(input);
+                input.select();
+                var result = document.execCommand('copy');
+                document.body.removeChild(input);
+                return result;
+            }
+        })
+    }
+
+    function disableurllistingbutton() {
+        setTimeout(function () {
+            document.getElementById('listingurlbutton').disabled = true;
+        });
+
+        setTimeout(function () {
+            document.getElementById('listingurlbutton').disabled = null;
+            document.getElementById('showing').disabled = null;
+            document.getElementById('notshowing').disabled = null;
+            document.getElementById('skip').disabled = null;
+        }, 10000);
+
+        $.ajax({
+            url: "GetList/Register",
+            type: "GET",
+            dataType: "json",
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                var listingurl = data.company.ListingUrl;
+                companyid = data.company.Id;
+                window.open(listingurl, '_blank');
+
+            }
+        })
+
+    }
+
+
+    function BindEmailId() {
+        $.ajax({
+            url: "GetList/Register",
+            type: "GET",
+            dataType: "json",
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                    $("label[for='suggestedemail']").text(data.user.EmailId);
+                    userid = data.user.Id;
+
+            }
+        })
+    }
+
+    function storedata(id) {
+
+        var buttonclick = id;
+        var writeobject = new Object();
+        writeobject.CompanyId = companyid,
+            writeobject.WriterId = writerid,
+            writeobject.UserId = userid;
+        writeobject.Status = buttonclick;
+
+         $.ajax({
+            url: "@Url.Action("SaveTrackingData", "Register")",
+            contentType: 'application/json',
+            data: JSON.stringify(writeobject),
+          /*  dataType: "json",*/
+            type: "POST",
+            success: function (result) {
+                alert('success');
+            },
+             error: function (result) {
+                 alert('failure');
+            }
+        });
+
+    }
+</script>-->

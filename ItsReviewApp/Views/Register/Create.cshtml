@@ -1,0 +1,84 @@
+﻿
+@{
+    ViewBag.Title = "Create";
+}
+
+<div class="container-fluid">
+    <div class="header">
+        <h5 style="color:#fff;margin-right: 40px;">ItsReview App</h5>
+    </div>
+
+    <div class="container" style="padding-top:30px;">
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" class="form-control" placeholder="Please Enter Name" id="name">
+        </div>
+        <div class="form-group">
+            <label for="address">Address</label>
+            <input type="text" class="form-control" placeholder="Please Enter Address" id="address">
+        </div>
+        <div class="form-group">
+            <label for="phoneNumber">Phone Number</label>
+            <input type="text" class="form-control" placeholder="Please Enter Phone Number" id="phonenumber">
+        </div>
+        <div class="form-group">
+            <label for="referencePhoneNumber">Reference Number</label>
+            <input type="text" class="form-control" placeholder="Please Enter Reference Number" id="referencephonenumber">
+        </div>
+        <div class="form-group">
+            <label for="emailaddress">Email Address</label>
+            <input type="text" class="form-control" placeholder="Please Enter Email Address" id="emailaddress">
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="text" class="form-control" placeholder="Please Enter Password" id="password">
+        </div>
+        <div class="form-group" id="role">
+            <label for="role">Select Role</label>
+            @*<input type="text" class="form-control" placeholder="Enter Role" id="role">*@
+            @Html.DropDownList("Role", (IEnumerable<SelectListItem>)ViewBag.Role, new { @class = "form-control" })
+        </div>
+        <button type="submit" class="btn btn-primary" id="btnsave">Save</button>
+
+    </div>
+    
+</div>
+
+
+<script type="text/javascript">
+    $('#btnsave').click(function () {
+     
+        var name = $("#name").val();
+        var address = $("#address").val();
+        var phoneNumber = $("#phonenumber").val();
+        var referencePhoneNumber = $("#referencephonenumber").val();
+        var emailaddress = $("#emailaddress").val();
+        var password = $('#password').val();
+        /*   var role = $('#role').val();*/
+        var role = $("#role option:selected").val();
+
+        var writeobject = new Object();
+        writeobject.Name = name,
+            writeobject.Address = address,
+            writeobject.PhoneNumber = phoneNumber,
+            writeobject.ReferencePhoneNumber = referencePhoneNumber,
+            writeobject.EmailId = emailaddress;
+        writeobject.Password = password;
+        writeobject.Role = role;
+
+       
+        $.ajax({
+            url: "@Url.Action("Create", "Register")",
+            contentType: 'application/json',
+            data: JSON.stringify(writeobject),
+          /*  dataType: "json",*/
+            type: "POST",
+            success: function (result) {
+                alert('success');
+            },
+            error: function (result) {
+                alert('failure');
+            }
+        });
+    });
+</script>

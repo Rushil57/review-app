@@ -1,0 +1,48 @@
+﻿
+@{
+    ViewBag.Title = "Create";
+}
+
+
+
+<div class="container-fluid">
+    <div class="header">
+        <h5 style="color:#fff;margin-right: 40px;">ItsReview App</h5>
+    </div>
+    <div class="container" style="padding-top:30px;">
+        <div class="form-group" id="user">
+            <label for="category">Enter Category</label>
+            <input type="text" class="form-control" placeholder="Enter Catgeory" id="category">
+        </div>
+        <button type="button" id="btnSubmit" class="btn btn-primary btn-md btn-sm">Save</button>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $('#btnSubmit').click(function () {
+       
+        var CategoryName = $("#category").val();
+
+        var writeobject = new Object();
+        writeobject.CategoryName = CategoryName;
+
+        $.ajax({
+            url: 'Create/Category',
+            contentType: 'application/json',
+            data: JSON.stringify(writeobject),
+            type: "POST",
+            success: function (CategoryList) {
+                if (CategoryList.length != 0) {
+                    alert('Category Already exists');
+                }
+                else {
+                    alert('Success');
+                }
+                    
+            },
+            error: function () {
+                alert('failure');
+            }
+        });
+    });
+</script>

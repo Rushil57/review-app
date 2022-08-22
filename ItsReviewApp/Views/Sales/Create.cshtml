@@ -1,0 +1,417 @@
+﻿
+@{
+    ViewBag.Title = "Create";
+}
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link href="~/Content/Site.css" rel="stylesheet" />
+    <style>
+    </style>
+</head>
+<body>
+
+    <div class="container-fluid">
+        <div class="header">
+            <h5 style="color:#fff;margin-right: 40px;">ItsReview App</h5>
+        </div>
+
+        <div class="container" style="padding-top:30px;">
+            <div class="form-group">
+                <label for="clientName">Client Name</label>
+                <input type="text" class="form-control" placeholder="Enter Name" id="clientname">
+            </div>
+            <div class="form-group">
+                <label for="phoneNumber">Phone Number</label>
+                <input type="text" class="form-control" placeholder="Enter Number" id="phonenumber">
+            </div>
+            <div class="form-group">
+                <label for="country">Select Country</label>
+                <select name="dropdowncountry" id="country" class="form-control dropdowncountry"></select>
+            </div>
+            <div class="form-group">
+                <button type="button" class="btn btn-dark" id="newrows"><b>Add More Url Listing</b></button>
+                <div style="padding-top:10px;" class="table-responsive-sm">
+                    <table class="table table-bordered" id="tblSales">
+                        <thead>
+                            @*<tr>
+                                    <th scope="col">Niche Name</th>
+                                    <th scope="col">Company Name</th>
+                                    <th scope="col">City Name</th>
+                                    <th scope="col">Rev/day	</th>
+                                    <th scope="col">Enter Listing URL</th>
+                                    <th scope="col">Review Date</th>
+                                    <th scope="col">Curr Rev</th>
+                                    <th scope="col">Rate/Rev</th>
+                                    <th scope="col">Balance Amount</th>
+                                    <th scope="col">Select Categary</th>
+                                </tr>*@
+                        </thead>
+                        <tbody class="ReviewTableClass">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="form-group">
+                    <label for="remarks">Remarks</label>
+                    <textarea rows="5" cols="3" id="remarkid" class="form-control"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="date">FollowUp Date</label>
+                    <div class='input-group date example1'>
+                        <input type='text' class="form-control" id="followupdate" />
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input type="checkbox" class="form-check-input" id="followupcheck" checked>
+                    <label class="form-check-label" for="followupcheck">Save to FollowUp List</label>
+                </div>
+                <button type="submit" class="btn btn-primary" id="btnsave">Save</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+<script type="text/javascript">
+
+    var getid = 0;
+    $(document).ready(function () {
+        var url=window.location.search.split("=")[1]
+        if (url != undefined && url != "") {
+            GetDataById(url);
+        }
+        else {
+            BindCountry(0);
+            for (i = 0; i < 2; i++) {
+                tblBind("0", "", "0", "", "", "", "", "", "0", null, "", "", "0", "");
+            }
+        }
+    })
+
+    var count = 0;
+    $("#newrows").click(function () {
+        /* tblBind("0", "", "0", "", "","","","", "",null,"","","0");*/
+        tblBind("0", "", "0", "", "", "", "", "", "0", null, "", "", "0", "");
+       /*  tblBind();*/
+    });
+    function tblBind(NicheName, CompanyName, CityName, ListingURL, CurrentReview, EmailType, ReviewPerDay, RatePerReview, Platform, ReviewDate, OldBalance, CurrentBalance, Status, CategoryId,CategoryList) {
+        var addcontrols = "<tr id=\"RowId_" + count + "\">" + count + ">"
+        addcontrols += '<td>' +
+            '<div class="top_row">' +
+            '<div><select class="dropdownclass form-control dropdownNiche" name="dropdownNiche"></select></div>' +
+            '<div><input type="text" placeholder="Company Name" class="form-control companyname" value="' + CompanyName +'" /></div>' +
+            '<div><select class="dropdownclass form-control dropdownCity" name="dropdownCity" id="citydropdown"></select></div>' +
+            '<div style="display:flex;">' +
+            '<input type="text" class="form-control listingurls" placeholder="Url Listing" value="' + ListingURL +'" />' +
+            '<a class="btn btn-primary btn-sm listingbutton" target="_blank" href="' + ListingURL +'" style="margin-left:7px;">GO</a>' +
+            '</div>' +
+            '<div><input type="text" placeholder="Current Review" class="form-control currentreview" value="' + CurrentReview +'" /></div>' +
+            '<div><input type="text" placeholder="Email Type" class="form-control emailtype" value="' + EmailType +'" /></div>' +
+            '<div><input type="text" placeholder="Rev/day" class="form-control reviewperrday" value="' + ReviewPerDay +'" /></div>' +
+            '<div><input type="text" placeholder="Rate/Rev" class="form-control rateperreview" value="' + RatePerReview +'" /></div>' +
+            '</div>' +
+            '<div class="top_row">' +
+            '<div><select class="form-control dropdownPaltform chzn-select" name="dropdownPaltform"></select></div>' +
+            '<div>' +
+            '<div class="input-group date example1">' +
+            '<input type="text" class="input-group date form-control reviewdate" value="' + ReviewDate +'" />' +
+            '<span class="input-group-addon">' +
+            '<span class="glyphicon glyphicon-calendar"></span>' +
+            '</span>' +
+            '</div>' +
+            '</div>' +
+            '<div><input type="text" placeholder="Old Balance" class="form-control oldbalance" value="' + OldBalance +'" /></div>' +
+            '<div><input type="text" placeholder="Current Balance" class="form-control currentbalance" value="' + CurrentBalance +'" /></div>' +
+            '<div><select class="form-control dropdownStatus" name="dropdownStatus"></select></div>' +
+            '<div><select data-placeholder="Select Category" class="form-control dropdownCategory" name="dropdownCategory" multiple="multiple"></select></div>' +
+            '</div>' +
+            '</td>';
+        addcontrols += "</tr>";
+        $("table tbody").append(addcontrols);
+        BindNiche("RowId_" + count,NicheName);
+        BindCity("RowId_" + count, CityName);
+        BindPaltform("RowId_" + count, Platform);
+        BindStatus("RowId_" + count, Status);
+        Bindcategory("RowId_" + count, CategoryId, CategoryList);
+       /* GetSelectedValues("RowId_" + count, SalesdetailList);*/
+        datetime();
+        MultiSelectChckBox();
+        count++;
+    }
+
+    function GetDataById(id) {
+
+          $.ajax({
+            url: '@Url.Action("GetDataById", "Sales")?Id=' + id,
+            type: "GET",
+            dataType: "json",
+              success: function (data) {
+
+                  if (data != null) {
+                     
+                      getid = id;
+                      var sales = data.saleslist[0];
+                      $('#clientname').val(sales.ClientName);
+                      $('#phonenumber').val(sales.PhoneNumber);
+                      $('#remarkid').val(sales.Remarks);
+                      $('#citydropdown').val(sales.CityName);
+                      BindCountry(sales.CountryName);
+                      /*var followUpDate = new Date(parseInt(data.saleslist[0].FollowUpDate.substr(6)));*/
+                      var followUpDate = new Date(parseInt(sales.FollowUpDate.substr(6)));
+                      var followDate = formatDate(followUpDate)
+                      $('#followupdate').val(followDate);
+
+                      $("#tblSales tbody").html('');
+                      $.each(data.detailslist, function (index, item) {
+                          /* var reviewDate = new Date(parseInt(item.ReviewDate.substr(6)));*/
+                          var reviewDate = new Date(parseInt(item.ReviewDate.substr(6)));
+                          item.ReviewDate = formatDate(reviewDate);
+                          var categoryList = data.categorylist.filter(function (e)
+                          { return e.SalesdetailId == item.Id })
+
+                              tblBind(item.NicheName, item.CompanyName, item.CityName, item.ListingUrl, item.CurrentReview, item.EmailType, item.ReviewsPerDay, item.RatePerReview, item.Platform, item.ReviewDate, item.OldBalance, item.CurrentBalance, item.Status, item.CategoryId, categoryList);
+                      });
+                  }
+
+            }
+        })
+    }
+    function BindCountry(id) {
+        $.ajax({
+            url: "@Url.Action("GetCountry", "Sales")",
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+
+                $.each(data, function (index, item) {
+                    var opt = new Option(item.Text, item.Value);
+                    $('.dropdowncountry').append(opt);
+
+                });
+                $(".dropdowncountry").val(id);
+                $(".dropdowncountry").chosen();
+            }
+        })
+    }
+    function BindCity(id, selectedId) {
+
+        $.ajax({
+            url: "@Url.Action("GetCity", "Sales")",
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+
+                $.each(data, function (index, item) {
+                    var opt = new Option(item.Text, item.Value);
+                    if (id == 0) {
+                        $('.dropdownCity').append(opt);
+                    }
+                    else {
+                        $("#tblSales").find("tr#" + id).find(".dropdownCity").append(opt);
+
+                    }
+
+                });
+                $("#tblSales").find("tr#" + id).find(".dropdownCity").val(selectedId);
+                $("#tblSales").find("tr#" + id).find(".dropdownCity").chosen();
+            }
+        })
+    }
+    function BindNiche(id, selectedId) {
+        $.ajax({
+            url: "@Url.Action("GetNiche", "Sales")",
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                $.each(data, function (index, item) {
+                    var opt = new Option(item.Text, item.Value);
+                    if (id == 0) {
+                        $('.dropdownNiche').append(opt);
+                    }
+                    else {
+                        $("#tblSales").find("tr#" + id).find(".dropdownNiche").append(opt);
+                    }
+
+                });
+                $("#tblSales").find("tr#" + id).find(".dropdownNiche").val(selectedId);
+                $("#tblSales").find("tr#" + id).find(".dropdownNiche").chosen();
+            }
+        })
+    }
+    function BindStatus(id, selectedId) {
+        $.ajax({
+            url: "@Url.Action("Status", "Sales")",
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                $.each(data, function (index, item) {
+                    var opt = new Option(item.Text, item.Value);
+                    if (id == 0) {
+                        $('.dropdownStatus').append(opt);
+                    }
+                    else {
+                        $("#tblSales").find("tr#" + id).find(".dropdownStatus").append(opt);
+                    }
+
+                });
+                $("#tblSales").find("tr#" + id).find(".dropdownStatus").val(selectedId);
+                $("#tblSales").find("tr#" + id).find(".dropdownStatus").chosen();
+            }
+        })
+    }
+     function BindPaltform(id, selectedId) {
+
+        $.ajax({
+            url: "@Url.Action("GetPaltform", "Sales")",
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+
+                $.each(data, function (index, item) {
+                    var opt = new Option(item.Text, item.Value);
+                    if (id == 0) {
+                        $('.dropdownPaltform').append(opt);
+                    }
+                    else {
+                        $("#tblSales").find("tr#" + id).find(".dropdownPaltform").append(opt);
+                    }
+
+                });
+                $("#tblSales").find("tr#" + id).find(".dropdownPaltform").val(selectedId);
+                $("#tblSales").find("tr#" + id).find(".dropdownPaltform").chosen();
+
+
+            }
+        })
+    }
+    $('#btnsave').click(function () {
+        var getvalue = getid;
+        var clientname = $("#clientname").val();
+        var phoneNumber = $("#phonenumber").val();
+        var Remarks = $("#remarkid").val();
+        var followup = $("#followupdate").val();
+        var country = $("#country").val();
+        var followupcheck = $('#followupcheck').is(':checked');
+
+        var Reviews = new Array();
+        $("#tblSales tbody tr").each(function () {
+            var row = $(this);
+            var Review = {};
+
+            Review.NicheName = row.find(".dropdownNiche").val();
+            Review.CompanyName = row.find(".companyname").val();
+            Review.CityName = row.find(".dropdownCity").val();
+            Review.ListingUrl = row.find(".listingurls").val();
+            Review.CurrentReview = row.find(".currentreview").val();
+            Review.EmailType = row.find(".emailtype").val();
+            Review.ReviewsPerDay = row.find(".reviewperrday").val();
+            Review.RatePerReview = row.find(".rateperreview").val();
+            Review.Platform = row.find(".dropdownPaltform").val();
+            Review.ReviewDate = row.find(".reviewdate").val();
+            Review.OldBalance = row.find(".oldbalance").val();
+            Review.CurrentBalance = row.find(".currentbalance").val();
+            Review.Status = row.find(".dropdownStatus").val();
+            Review.CategoryViewModel = row.find(".dropdownCategory").val();
+            Reviews.push(Review);
+        });
+
+
+        var writeobject = new Object();
+        writeobject.Id = getvalue,
+        writeobject.ClientName = clientname,
+        writeobject.PhoneNumber = phoneNumber,
+        writeobject.FollowUpDate = followup,
+        writeobject.CountryName = country,
+            writeobject.SalesDetailsViewModel = Reviews;
+        writeobject.Remarks = Remarks;
+        writeobject.FollowUpCheck = followupcheck;
+
+        $.ajax({
+            url: "@Url.Action("Create", "Sales")",
+            contentType: 'application/json',
+            data: JSON.stringify(writeobject),
+          /*  dataType: "json",*/
+            type: "POST",
+            success: function (result) {
+                alert('success');
+            },
+            error: function (result) {
+                alert('failure');
+            }
+        });
+    });
+    function datetime() {
+
+        $('.example1').datepicker({
+            autoclose: true,
+            format: "dd/mm/yyyy",
+            orientation: 'bottom',
+            icons: {
+                time: "fa fa-clock-o",
+                date: "fa fa-calendar",
+                up: "fa fa-arrow-up",
+                down: "fa fa-arrow-down"
+            }
+        });
+    }
+    function formatDate(date) {
+        var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+
+        if (month.length < 2)
+            month = '0' + month;
+        if (day.length < 2)
+            day = '0' + day;
+
+        return [day, month, year].join('-');
+    }
+
+    $(document).on("focusout", ".listingurls", function () {
+        var linkURL = $(this).closest('td').find('.listingurls').val();
+        $(this).closest('td').find('.listingbutton').attr('href', linkURL);
+    })
+
+
+    function Bindcategory(id, selectedId,categoryList) {
+        $.ajax({
+            url: "@Url.Action("GetCategory", "Sales")",
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+
+                $.each(data, function (index, item) {
+                    var opt = new Option(item.Text, item.Value);
+                    if (id == 0) {
+                        $('.dropdownCategory').append(opt);
+                    }
+                    else {
+                        $("#tblSales").find("tr#" + id).find(".dropdownCategory").append(opt);
+                    }
+                });
+                $("#tblSales").find("tr#" + id).find(".dropdownCategory").val(selectedId);
+                if (categoryList.length != undefined && categoryList.length > 0) {
+                    $.each(categoryList, function (index, item) {
+                        $("#tblSales").find("tr#" + id).find(".dropdownCategory option[value='" + item.CategoryId + "']").prop("selected", true);
+                    });
+                    $("#tblSales").find("tr#" + id).find(".dropdownCategory").select2().trigger('change');
+                }
+            }
+        })
+    }
+
+    function MultiSelectChckBox() {
+        $(".dropdownCategory").select2({
+            closeOnSelect: false,
+           /* allowClear: true,*/
+            tags: true
+        });
+    }
+</script>

@@ -1,0 +1,289 @@
+﻿
+@{
+    ViewBag.Title = "User";
+}
+
+<div class="container-fluid">
+    <div class="header">
+        <h5 style="color:#fff;margin-right: 40px;">ItsReview App</h5>
+    </div>
+    <div class="container" style="padding-top:30px;">
+        <div class="form-group" id="user">
+            <label for="user">Select User</label>
+            @*<input type="text" class="form-control" placeholder="Enter User" id="user">*@
+            @Html.DropDownList("Name", (IEnumerable<SelectListItem>)ViewBag.Name, "Select User", new { @class = "form-control" })
+        </div>
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" class="form-control" placeholder="Enter Name" id="name">
+        </div>
+        <div class="form-group">
+            <label for="category">Select Category</label>
+            @*<input type="text" class="form-control" placeholder="Enter Name" id="name">*@
+            <select data-placeholder="Select Category" class='form-control dropdownCategory' name='dropdowCategory' multiple="multiple" id="dropdownCategory"></select>
+        </div>
+        <div class="form-group">
+            <button type="button" class="btn btn-dark" id="newrows"><b>Add More</b></button>
+            <div style="padding-top:10px;" class="table-responsive-sm" id="tableUser">
+                <table class="table table-bordered" id="tblUsers">
+                    <thead>
+                        <tr>
+                            <th scope="col">First Name</th>
+                            <th scope="col">Last Name</th>
+                            <th scope="col">EmailId</th>
+                            <th scope="col">Category</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody class="UserTableClass">
+                        <tr>
+                            <td>
+                                <input type="text" placeholder="Enter First Name" class="name form-control" value="" id="fname" />
+                            </td>
+                            <td>
+                                <input type="text" placeholder="Enter Last Name" class="name form-control" value="" id="lastname" />
+                            </td>
+                            <td>
+                                <input type="text" placeholder="Enter EmailId" class="name form-control" value="" id="emailid" />
+                            </td>
+                            <td>
+                                @*<select data-placeholder="Select Platform" class="form-control dropdownPlatform" name="dropdownPlatform" multiple="multiple" id="platform">
+                                        <option>Taurus</option>
+                                        <option>Gemini</option>
+                                        <option>Cancer</option>
+                                        <option>Leo	Leo</option>
+                                        <option>Virgo</option>
+                                    </select>*@
+
+                                <select data-placeholder="Select Category" class='form-control dropdownCategory' name='dropdowCategory' multiple="multiple" id="Category"></select>
+
+                            </td>
+                            <td>
+                                <input type='button' id='btnDelete' class='btn btn-danger btn-sm deletebutton' Value='Delete' style='width:60px;'>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <button type="button" id="btnSubmit" class="btn btn-primary btn-md btn-sm">Save</button>
+    </div>
+</div>
+
+<div class="container" style="margin-top: 30px;">
+    <div class="form-group">
+        <table id="datatableid" class="table table-bordered table-responsive" style="width: 100%">
+            <thead>
+                <tr>
+                    <th>RegisterId</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email Id</th>
+                    <th>Category</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+       /* $('#platform').multiselect();*/
+        BindUsers();
+        BindPlatform(0);
+        BindCategory(0);
+        MultiSelectChckBox();
+    });
+
+
+    var count = 1;
+    $("#newrows").click(function () {
+        tblBind();
+    });
+
+    function tblBind() {
+        var addcontrols = "<tr id=\"RowId_" + count + "\">" + count + ">"
+        addcontrols += "<td><input type='text' name='firstname' placeholder='Enter First Name' class='name form-control'></td>"
+        addcontrols += "<td><input type='text' name='lastname' placeholder='Enter Last Name' class='name form-control'></td>"
+        addcontrols += "<td><input type='text' name='emailid' placeholder='Enter Email Id' class='emailid form-control'></td>"
+        addcontrols += "<td><select data-placeholder='Select Category' class='form-control dropdownCategory' name='dropdowCategory' multiple='multiple' id='dropdownCategory'></select></td>"
+        addcontrols += "<td><input type='button' id='btnDelete' class='btn btn-danger btn-sm deletebutton' Value='Delete' style='width:60px;'></td>"
+        addcontrols += "</tr>";
+        /* $("table tbody").append(addcontrols);*/
+        $("table .UserTableClass").append(addcontrols);
+        BindPlatform("RowId_" + count);
+        BindCategory("RowId_" + count)
+        addScroll();
+        MultiSelectChckBox();
+        count++;
+    }
+
+    $('#btnSubmit').click(function () {
+      
+        var RegisterId = $("#user option:selected").val();
+        var Name = $("#name").val();
+        var UserCategory = $("#dropdownCategory").val();
+        var Users = new Array();
+        $("#tblUsers tbody tr").each(function () {
+            var row = $(this);
+            var User = {};
+            User.FirstName = row.find("td:eq(0) input[type='text']").val();
+            User.LastName = row.find("td:eq(1) input[type='text']").val();
+            User.EmailId = row.find("td:eq(2) input[type='text']").val();
+            User.UserCategoryViewModel = row.find("td:eq(3) select").val();
+            if (User.UserCategoryViewModel.length == 0) {
+                User.UserCategoryViewModel = UserCategory;
+            }
+            Users.push(User);
+        });
+      
+        var writeobject = new Object();
+        writeobject.RegisterId = RegisterId,
+            writeobject.Name = Name,
+            writeobject.Users = Users;
+
+        const duplicateIds = Users
+            .map(v => v.EmailId)
+            .filter((v, i, vIds) => vIds.indexOf(v) !== i)
+        const duplicates = Users
+            .filter(obj => duplicateIds.includes(obj.EmailId));
+        console.log(duplicates);
+        var duplicatelist = new Array();
+        for (var i = 0; i < duplicates.length; i++) {
+            var duplicate = duplicates[i].EmailId;
+            duplicatelist.push(duplicate + "\n");
+        }
+        if (duplicatelist.length > 0) {
+            alert(duplicatelist);
+            return;
+        }
+
+
+
+         $.ajax({
+            url: 'Create/User',
+            contentType: 'application/json',
+            data: JSON.stringify(writeobject),
+            type: "POST",
+             success: function (EmailList) {
+                 if (EmailList.length != 0) {
+                     alert("Cannot Store Email : \n" + EmailList.toString().replaceAll(",","\n"));
+                 }
+                 else {
+                     alert('Success');
+                 }
+
+            },
+            error: function () {
+                alert('failure');
+            }
+        });
+    });
+
+    function BindCategory(id, selectedId) {
+        $.ajax({
+            url: "@Url.Action("category", "User")",
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+               
+                $.each(data, function (index, item) {
+                    var opt = new Option(item.Text, item.Value);
+                    if (id == 0) {
+                        $('.dropdownCategory').append(opt);
+                    }
+                    else {
+                        $("#tblUsers").find("tr#" + id).find(".dropdownCategory").append(opt);
+                    }
+
+                });
+                $("#tblUsers").find("tr#" + id).find(".dropdownCategory").val(selectedId);
+               
+               /* $('.dropdownCategory').chosen();*/
+              /*  $("#tblSales").find("tr#" + id).find(".dropdownCategory").select2();*/
+            }
+        })
+    }
+
+    function BindPlatform(id, selectedId) {
+        $.ajax({
+            url: "@Url.Action("GetPaltform", "User")",
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                $.each(data, function (index, item) {
+                    var opt = new Option(item.Text, item.Value);
+                    if (id == 0) {
+                        $('.dropdownPlatform').append(opt);
+                    }
+                    else {
+                        $("#tblUsers").find("tr#" + id).find(".dropdownPlatform").append(opt);
+                    }
+
+                });
+                $("#tblUsers").find("tr#" + id).find(".dropdownPlatform").val(selectedId);
+               /* $('.dropdownPlatform').chosen();*/
+              /*  $("#tblSales").find("tr#" + id).find(".dropdownCategory").select2();*/
+            }
+        })
+    }
+
+    $("#tblUsers").on('click', '.deletebutton', function () {
+        $(this).closest('tr').remove();
+    });
+
+    function addScroll() {
+        if ($('#tblUsers tr').length >= 10) {
+            $('#tableUser').addClass('add-scroll');
+        }
+
+    }
+
+    function BindUsers() {
+        
+        $.ajax({
+            url: "GetList/User",
+            type: "GET",
+            dataType: "json",
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                $('#datatableid').dataTable({
+                   /* destroy: true,*/
+                    data: data,
+                    "columns": [
+                        { "data": "RegisterId" },
+                        { "data": "FirstName" },
+                        { "data": "LastName" },
+                        { "data": "EmailId" },
+                        { "data": "CategoryName" }
+                       
+                    ]
+                });
+
+            }
+        })
+    }
+
+    function MultiSelectChckBox() {
+        //$(".js-select2").select2({
+        //    closeOnSelect: false,
+        //    allowClear: true,
+        //});
+
+        $(".dropdownCategory").select2({
+            closeOnSelect: false,
+            // allowHtml: true,
+            allowClear: true,
+            tags: true
+        });
+    }
+
+    //function GetSelectedValues() {
+    //    $("#tblSales").find(".dropdownCategory").select2("val", [1, 2])
+    //    $("#tblSales").find(".dropdownCategory").select2().trigger('change');
+    //}
+
+
+</script>
+
