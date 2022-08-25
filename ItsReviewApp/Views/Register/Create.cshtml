@@ -36,7 +36,7 @@
         <div class="form-group" id="role">
             <label for="role">Select Role</label>
             @*<input type="text" class="form-control" placeholder="Enter Role" id="role">*@
-            @Html.DropDownList("Role", (IEnumerable<SelectListItem>)ViewBag.Role, new { @class = "form-control" })
+            @Html.DropDownList("Role", (IEnumerable<SelectListItem>)ViewBag.Role, new { @class = "form-control chosen" })
         </div>
         <button type="submit" class="btn btn-primary" id="btnsave">Save</button>
 
@@ -81,4 +81,9 @@
             }
         });
     });
+
+      $(function () {
+        $(".chosen").chosen();
+    });
+
 </script>

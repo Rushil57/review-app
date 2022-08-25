@@ -34,6 +34,7 @@ namespace ItsReviewApp.Controllers
         [HttpPost]
         public ActionResult Login(LoginViewModel loginViewModel)
         {
+            Session["EmailId"] = loginViewModel.EmailId;
             var logindata = (dynamic)null;
             var parameters = new DynamicParameters();
             parameters.Add("@EmailId", loginViewModel.EmailId, DbType.String, ParameterDirection.Input);
@@ -44,6 +45,7 @@ namespace ItsReviewApp.Controllers
                 logindata = connection.ExecuteScalar("sp_Register", parameters, commandType: CommandType.StoredProcedure);
                 connection.Close();
             }
+
             //return View();
             return Json(logindata, JsonRequestBehavior.AllowGet);
 

@@ -47,7 +47,6 @@
             url: "@Url.Action("Login", "Login")",
             contentType: 'application/json',
             data: JSON.stringify(writeobject),
-          /*  dataType: "json",*/
             type: "POST",
             success: function (result) {
                 if (result == "Writer") {
@@ -59,14 +58,16 @@
                     window.location.href = url;
                 }
                 else if (result == "User") {
-                     var url = '@Url.Action("Index", "Register")';
+                     var url = '@Url.Action("Review", "User")';
                     window.location.href = url;
                 }
                  else if (result == "Sales") {
                      var url = '@Url.Action("Index", "Sales")';
                     window.location.href = url;
                 }
-                //alert('success');
+                else if (result == "FALSE") {
+                   alert('Wrong EmailId or Password');
+                }
             },
             error: function (result) {
                 alert('failure');

@@ -1,4 +1,5 @@
-﻿
+﻿@model ItsReviewApp.ViewModels.LeadViewModel
+
 @{
     ViewBag.Title = "Create";
 }
@@ -37,18 +38,6 @@
                 <div style="padding-top:10px;" class="table-responsive-sm">
                     <table class="table table-bordered" id="tblSales">
                         <thead>
-                            @*<tr>
-                                    <th scope="col">Niche Name</th>
-                                    <th scope="col">Company Name</th>
-                                    <th scope="col">City Name</th>
-                                    <th scope="col">Rev/day	</th>
-                                    <th scope="col">Enter Listing URL</th>
-                                    <th scope="col">Review Date</th>
-                                    <th scope="col">Curr Rev</th>
-                                    <th scope="col">Rate/Rev</th>
-                                    <th scope="col">Balance Amount</th>
-                                    <th scope="col">Select Categary</th>
-                                </tr>*@
                         </thead>
                         <tbody class="ReviewTableClass">
                         </tbody>
@@ -72,6 +61,83 @@
                     <label class="form-check-label" for="followupcheck">Save to FollowUp List</label>
                 </div>
                 <button type="submit" class="btn btn-primary" id="btnsave">Save</button>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#LeadModal">Create Lead</button>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#LeadModalId">Lead Data</button>
+            </div>
+
+            <!-- Create Lead -->
+            <div class="modal fade" id="LeadModal" tabindex="-1" role="dialog" aria-labelledby="LeadModalLabel" aria-hidden="true" style="padding-top:50px;">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="clientname">Sales Name</label>
+                                @Html.DropDownList("ClientName", (IEnumerable<SelectListItem>)ViewBag.Client, "-- Select Client --", new { @class = "form-control clientname" })
+                            </div>
+                            <div class="form-group">
+                                <label for="companyname">Company Name</label>
+                                @*<input type="text" class="form-control" placeholder="Enter Compnay Name" id="companyname">*@
+                                @Html.TextBoxFor(m => m.CompanyName, new { @class = "form-control", @id = "companyname" })
+                            </div>
+                            <div class="form-group">
+                                <label for="noofreview">No. Of Review</label>
+                                @Html.TextBoxFor(m => m.NumberOfReview, new { @class = "form-control", @id = "noofreview" })
+                            </div>
+                            <div class="form-group">
+                                <label for="rating">Rating</label>
+                                @Html.TextBoxFor(m => m.Rating, new { @class = "form-control", @id = "rating" })
+                            </div>
+                            <div class="form-group">
+                                <label for="niche">Niche</label>
+                                @Html.TextBoxFor(m => m.NicheName, new { @class = "form-control", @id = "niche" })
+                            </div>
+                            <div class="form-group">
+                                <label for="url">URL</label>
+                                @Html.TextBoxFor(m => m.Url, new { @class = "form-control", @id = "url" })
+                            </div>
+                            <div class="form-group">
+                                <label for="City">City</label>
+                                @Html.TextBoxFor(m => m.City, new { @class = "form-control", @id = "City" })
+                            </div>
+                            <div class="form-group">
+                                <label for="listing">Select Listing</label>
+                                @*<select name="dropdownlisting" id="listing" class="form-control dropdownlisting"></select>*@
+                                @Html.DropDownList("Listing", (IEnumerable<SelectListItem>)ViewBag.Listing, "-- Select List --", new { @class = "form-control", @id = "listing" })
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" id="btnsavemodel" data-dismiss="modal">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Create Lead -->
+            <div class="modal fade" id="LeadModalId" tabindex="-1" role="dialog" aria-labelledby="LeadModalLabel" aria-hidden="true" style="padding-top:50px;">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <div class="container" style="margin-top: 30px; max-width:585px;">
+                                <div class="form-group">
+                                    <table id="LeadModalDataId" class="table table-bordered table-responsive">
+                                        <thead>
+                                            <tr>
+                                                <th>CompanyName</th>
+                                                <th>NumberOfReview</th>
+                                                <th>NicheName</th>
+                                                <th>City</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -82,6 +148,7 @@
 
     var getid = 0;
     $(document).ready(function () {
+        BindLead();
         var url=window.location.search.split("=")[1]
         if (url != undefined && url != "") {
             GetDataById(url);
@@ -93,12 +160,9 @@
             }
         }
     })
-
     var count = 0;
     $("#newrows").click(function () {
-        /* tblBind("0", "", "0", "", "","","","", "",null,"","","0");*/
         tblBind("0", "", "0", "", "", "", "", "", "0", null, "", "", "0", "");
-       /*  tblBind();*/
     });
     function tblBind(NicheName, CompanyName, CityName, ListingURL, CurrentReview, EmailType, ReviewPerDay, RatePerReview, Platform, ReviewDate, OldBalance, CurrentBalance, Status, CategoryId,CategoryList) {
         var addcontrols = "<tr id=\"RowId_" + count + "\">" + count + ">"
@@ -144,7 +208,6 @@
         MultiSelectChckBox();
         count++;
     }
-
     function GetDataById(id) {
 
           $.ajax({
@@ -154,7 +217,7 @@
               success: function (data) {
 
                   if (data != null) {
-                     
+
                       getid = id;
                       var sales = data.saleslist[0];
                       $('#clientname').val(sales.ClientName);
@@ -378,8 +441,6 @@
         var linkURL = $(this).closest('td').find('.listingurls').val();
         $(this).closest('td').find('.listingbutton').attr('href', linkURL);
     })
-
-
     function Bindcategory(id, selectedId,categoryList) {
         $.ajax({
             url: "@Url.Action("GetCategory", "Sales")",
@@ -406,12 +467,72 @@
             }
         })
     }
-
     function MultiSelectChckBox() {
         $(".dropdownCategory").select2({
             closeOnSelect: false,
            /* allowClear: true,*/
             tags: true
         });
+    }
+
+    $('#btnsavemodel').click(function () {
+        
+        var clientname = $(".clientname option:selected").val();
+        var companyname = $("#companyname").val();
+        var noofreview = $("#noofreview").val();
+        var rating = $("#rating").val();
+        var niche = $("#niche").val();
+        var url = $("#url").val();
+        var City = $("#City").val();
+        var dropdownlisting = $("#listing option:selected").val();
+
+        var writeobject = new Object();
+        writeobject.SalesId = clientname,
+        writeobject.CompanyName = companyname,
+            writeobject.NumberOfReview = noofreview,
+            writeobject.Rating = rating,
+            writeobject.NicheName = niche,
+            writeobject.Url = url;
+        writeobject.City = City;
+        writeobject.Listing = dropdownlisting;
+        $.ajax({
+            url: "@Url.Action("LeadCreate", "Sales")",
+            contentType: 'application/json',
+            data: JSON.stringify(writeobject),
+          /*  dataType: "json",*/
+            type: "POST",
+            success: function (result) {
+                alert('success');
+            },
+            error: function (result) {
+                alert('failure');
+            }
+        });
+
+    })
+
+    function BindLead() {
+
+        $.ajax({
+            url: "BindLeadData/Sales",
+            type: "GET",
+            dataType: "json",
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                
+                $('#LeadModalDataId').dataTable({
+                    /* destroy: true,*/
+                    data: data,
+                    "columns": [
+                        { "data": "CompanyName" },
+                        { "data": "NumberOfReview" },
+                        { "data": "NicheName" },
+                        { "data": "City" }
+
+                    ],
+                });
+
+            }
+        })
     }
 </script>

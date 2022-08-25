@@ -29,7 +29,41 @@ namespace ItsReviewApp.Controllers
 
         public ActionResult Create()
         {
+            List<SalesViewModel> salesViewModels = new List<SalesViewModel>();
+
+          
+            con.Open();
+            List<SelectListItem> Listing = new List<SelectListItem>() {
+            new SelectListItem {Text = "Type 1", Value = "1"},
+            new SelectListItem {Text = "Type 2", Value = "2"},
+            new SelectListItem {Text = "Type 3", Value = "3"},
+            new SelectListItem {Text = "Type 4", Value = "4"},
+            new SelectListItem {Text = "General", Value = "5"},};
+            ViewBag.Listing = Listing;
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@Mode", 2, DbType.Int32, ParameterDirection.Input);
+            salesViewModels = con.Query<SalesViewModel>("sp_Lead", parameters, commandType: CommandType.StoredProcedure).ToList();
+            List<SelectListItem> selectListItems = new List<SelectListItem>();
+            foreach (var emp in salesViewModels)
+            {
+                var item = new SelectListItem { Text = emp.ClientName, Value = emp.Id.ToString() };
+                selectListItems.Add(item);
+            }
+            ViewBag.Client = selectListItems;
+
+
+            //var mail = Session["EmailId"];
+            //parameters = new DynamicParameters();
+            //parameters.Add("@EmailId", mail, DbType.String, ParameterDirection.Input);
+            //parameters.Add("@Mode", 3, DbType.Int32, ParameterDirection.Input);
+            //using (IDbConnection connection = new SqlConnection(connectionString))
+            //{
+            //    var getdata = connection.ExecuteScalar("sp_Lead", parameters, commandType: CommandType.StoredProcedure);
+            //}
+            con.Close();
             return View();
+
         }
 
         [HttpPost]
@@ -97,7 +131,7 @@ namespace ItsReviewApp.Controllers
                         connection.Close();
                     }
 
-                 }
+                }
 
 
             }
@@ -180,7 +214,8 @@ namespace ItsReviewApp.Controllers
                 }
 
             }
-            return View(salesViewModel);
+            //return View(salesViewModel);
+            return RedirectToAction("Create","Sales");
 
         }
 
@@ -321,6 +356,33 @@ namespace ItsReviewApp.Controllers
             return Json(palform, JsonRequestBehavior.AllowGet);
         }
 
+        public JsonResult GetListing()
+        {
+            List<SelectListItem> Listing = new List<SelectListItem>() {
+            new SelectListItem {Text = "Type 1", Value = "1"},
+            new SelectListItem {Text = "Type 2", Value = "2"},
+            new SelectListItem {Text = "Type 3", Value = "3"},
+            new SelectListItem {Text = "Type 4", Value = "4"},
+            new SelectListItem {Text = "General", Value = "5"},};
+            ViewBag.Listing = Listing;
+            return Json(Listing, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult BindLeadData()
+        {
+            var mail = Session["EmailId"];
+            var getdata = (dynamic)null;
+            var parameters = new DynamicParameters();
+            parameters = new DynamicParameters();
+            parameters.Add("@EmailId", mail, DbType.String, ParameterDirection.Input);
+            parameters.Add("@Mode", 3, DbType.Int32, ParameterDirection.Input);
+            using (IDbConnection connection = new SqlConnection(connectionString))
+            {
+                getdata = con.Query<LeadViewModel>("sp_Lead", parameters, commandType: CommandType.StoredProcedure).ToList();
+
+            }
+            return Json(getdata, JsonRequestBehavior.AllowGet);
+        }
         public ActionResult GetDataById(string Id)
         {
             var id = Convert.ToInt32(Id);
@@ -340,8 +402,29 @@ namespace ItsReviewApp.Controllers
                 detailslist = salesdetailslist,
                 categorylist = categorydetails
             };
-        
+
             return Json(dynamiclist, JsonRequestBehavior.AllowGet);
+        }
+        
+        [HttpPost]
+        public ActionResult LeadCreate(LeadViewModel leadViewModel)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@SalesId", leadViewModel.SalesId, DbType.String, ParameterDirection.Input);
+            parameters.Add("@CompanyName", leadViewModel.CompanyName, DbType.String, ParameterDirection.Input);
+            parameters.Add("@NumberOfReview", leadViewModel.NumberOfReview, DbType.String, ParameterDirection.Input);
+            parameters.Add("@Rating", leadViewModel.Rating, DbType.String, ParameterDirection.Input);
+            parameters.Add("@NicheName", leadViewModel.NicheName, DbType.String, ParameterDirection.Input);
+            parameters.Add("@Url", leadViewModel.Url, DbType.String, ParameterDirection.Input);
+            parameters.Add("@City", leadViewModel.City, DbType.String, ParameterDirection.Input);
+            parameters.Add("@Listing", leadViewModel.Listing, DbType.String, ParameterDirection.Input);
+            parameters.Add("@Mode", 1, DbType.Int32, ParameterDirection.Input);
+            using (IDbConnection connection = new SqlConnection(connectionString))
+            {
+                var leadsave = connection.ExecuteScalar("sp_Lead", parameters, commandType: CommandType.StoredProcedure);
+                connection.Close();
+            }
+            return RedirectToAction("Create","Sales");
         }
 
 

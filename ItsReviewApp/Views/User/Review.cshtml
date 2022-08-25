@@ -1,5 +1,5 @@
 ﻿
-<!--@{
+@{
     ViewBag.Title = "Review";
 }
 
@@ -9,22 +9,20 @@
     </div>
 
     <div class="container" style="padding-top:30px;">
-        <form onsubmit="return false">-->
+        <form onsubmit="return false">
             @*<div class="form-group">
                     <label for="platform">Select Platform</label>
                     <select class="form-control dropdownPaltform" name="dropdownPaltform"></select>
-                </div>*@
-            <!--<div class="form-group">-->
-                @*<label for="emailid">Suggested Email Id</label>*@
-                <!--<label for="suggestedemail">Suggested Email Id</label>-->
-                @*<input type="text" class="form-control" id="emailid" placeholder="Enter Email Id">*@
-            <!--</div>
+            </div>*@
+            <div class="form-group">
+                <label for="emailid">Email Id :</label>
+                <label for="suggestedemail"></label>
+               
+            </div>
             <div class="form-group">
                 <button type="submit" class="btn btn-primary" id="reviewbutton" onclick="disablereviewbutton()" disabled>Review</button>
-                <button type="submit" class="btn btn-primary" id="listingurlbutton" onclick="disableurllistingbutton()" disabled>Listing Url</button>-->
-                @*<a class="btn btn-primary" id="listingurlbutton" onclick="disableurllistingbutton()" target="_blank" href="' + listing +'" disabled>Listing Url</a>*@
-                @*<a class="btn btn-primary btn-sm listingbutton" target="_blank" href="">Listing Url</a>*@
-            <!--</div>
+                <button type="submit" class="btn btn-primary" id="listingurlbutton" onclick="disableurllistingbutton()" disabled>Listing Url</button>
+            </div>
             <div class="form-group" id="buttons">
                 <button type="submit" class="btn btn-primary" id="showing" disabled onclick="storedata(this.id)">Showing</button>
                 <button type="submit" class="btn btn-primary" id="notshowing" disabled onclick="storedata(this.id)">Not Showing</button>
@@ -80,7 +78,7 @@
         });
 
         $.ajax({
-            url: "GetList/Register",
+            url: "@Url.Action("GetList", "Register")",
             type: "GET",
             dataType: "json",
             contentType: 'application/json; charset=utf-8',
@@ -113,7 +111,7 @@
         }, 10000);
 
         $.ajax({
-            url: "GetList/Register",
+            url: "@Url.Action("GetList", "Register")",
             type: "GET",
             dataType: "json",
             contentType: 'application/json; charset=utf-8',
@@ -130,7 +128,8 @@
 
     function BindEmailId() {
         $.ajax({
-            url: "GetList/Register",
+            /*url: "GetList/Register",*/
+            url: "@Url.Action("GetList", "Register")",
             type: "GET",
             dataType: "json",
             contentType: 'application/json; charset=utf-8',
@@ -157,8 +156,14 @@
             data: JSON.stringify(writeobject),
           /*  dataType: "json",*/
             type: "POST",
-            success: function (result) {
-                alert('success');
+             success: function (result) {
+                 document.getElementById('listingurlbutton').disabled = true;
+                 document.getElementById('showing').disabled = true;
+                 document.getElementById('notshowing').disabled = true;
+                 document.getElementById('skip').disabled = true;
+                 incTimer();
+                 BindEmailId();
+                //alert('success');
             },
              error: function (result) {
                  alert('failure');
@@ -166,4 +171,4 @@
         });
 
     }
-</script>-->
+</script>
