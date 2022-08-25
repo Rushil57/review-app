@@ -7,7 +7,7 @@ namespace ItsReviewApp.ViewModels
 {
     public class LeadViewModel
     {
-        public int id { get; set; }
+        public int id  { get; set; }
 
         public string SalesId { get; set; }
         public string CompanyName { get; set; }
