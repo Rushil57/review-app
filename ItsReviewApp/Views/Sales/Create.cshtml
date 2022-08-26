@@ -63,6 +63,7 @@
                 <button type="submit" class="btn btn-primary" id="btnsave">Save</button>
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#LeadModal">Create Lead</button>
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#LeadModalId">Lead Data</button>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#LeadModalId">Lead</button>
             </div>
 
             <!-- Create Lead -->
@@ -127,8 +128,12 @@
                                                 <th>NumberOfReview</th>
                                                 <th>NicheName</th>
                                                 <th>City</th>
+                                                <th></th>
                                             </tr>
                                         </thead>
+                                        <tbody>
+
+                                        </tbody>
                                     </table>
                                 </div>
                             </div>
@@ -197,7 +202,7 @@
             '</div>' +
             '</td>';
         addcontrols += "</tr>";
-        $("table tbody").append(addcontrols);
+        $("table .ReviewTableClass").append(addcontrols);
         BindNiche("RowId_" + count,NicheName);
         BindCity("RowId_" + count, CityName);
         BindPaltform("RowId_" + count, Platform);
@@ -527,7 +532,8 @@
                         { "data": "CompanyName" },
                         { "data": "NumberOfReview" },
                         { "data": "NicheName" },
-                        { "data": "City" }
+                        { "data": "City" },
+                        { "defaultContent": '<button class="btn-view" type="submit" data-dismiss="modal">OPEN</button>' }
 
                     ],
                 });
@@ -535,4 +541,26 @@
             }
         })
     }
+
+    $('#LeadModalDataId tbody').on('click', '.btn-view', function (e) {
+        //$("#LeadModalId").modal("hide");
+        
+        var currentRow = $(this).closest("tr");
+        var col1 = currentRow.find("td:eq(0)").text();
+        var col2 = currentRow.find("td:eq(1)").text();
+        var col3 = currentRow.find("td:eq(2)").text();
+        var col4 = currentRow.find("td:eq(3)").text();
+
+        
+        var NicheName = $("#tblSales tbody tr td:eq(0)").find(".dropdownNiche option:selected").text(col3);
+        $("#tblSales tbody tr td:eq(0)").find(".dropdownNiche option:selected").trigger('chosen:updated');
+
+        //$("#tblSales tbody tr td:eq(0)").find(".dropdownNiche").val(col3); // Select the option with a value of '1'
+        //$("#tblSales tbody tr td:eq(0)").find(".dropdownNiche").trigger('change');
+
+        var city = $("#tblSales tbody tr td:eq(0)").find(".dropdownCity option:selected").text(col4);
+        $("#tblSales tbody tr td:eq(0)").find(".dropdownCity option:selected").trigger('chosen:updated');
+
+        var CompanyName = $("#tblSales tbody tr td:eq(0)").find(".companyname").val(col1);
+    });
 </script>

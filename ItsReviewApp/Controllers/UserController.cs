@@ -1,10 +1,12 @@
 ﻿using Dapper;
+using ExcelDataReader;
 using ItsReviewApp.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -148,6 +150,87 @@ namespace ItsReviewApp.Controllers
                 new SelectListItem {Text = "TripAdvisor", Value = "2"},
                 new SelectListItem {Text = "FaceBook", Value = "3"},};
                 return Json(palform, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public ActionResult Upload()
+        {
+           
+            if (Request.Files.Count > 0)
+            {
+                
+                var files = Request.Files;
+                foreach (string str in files)
+                {
+                    HttpPostedFileBase file = Request.Files[str] as HttpPostedFileBase;
+                    if (file != null)
+                    {
+                        Stream stream = file.InputStream;
+                        IExcelDataReader reader = null;
+                        if (file.FileName.EndsWith(".xls"))
+                        {
+                            reader = ExcelReaderFactory.CreateBinaryReader(stream);
+                        }
+                        else if (file.FileName.EndsWith(".xlsx"))
+                        {
+                            reader = ExcelReaderFactory.CreateOpenXmlReader(stream);
+                        }
+                        else
+                        {
+                            ModelState.AddModelError("File", "This file format is not supported");
+                            return View();
+                        }
+                        int fieldcount = reader.FieldCount;
+                        int rowcount = reader.RowCount;
+                        DataTable dt = new DataTable();
+                        DataRow row;
+                        DataTable dt_ = new DataTable();
+                        try
+                        {
+                            dt_ = reader.AsDataSet().Tables[0];
+                            for (int i = 0; i < dt_.Columns.Count; i++)
+                            {
+                                dt.Columns.Add(dt_.Rows[0][i].ToString());
+                            }
+                            int rowcounter = 0;
+                            for (int row_ = 1; row_ < dt_.Rows.Count; row_++)
+                            {
+                                row = dt.NewRow();
+
+                                for (int col = 0; col < dt_.Columns.Count; col++)
+                                {
+                                    row[col] = dt_.Rows[row_][col].ToString();
+                                    rowcounter++;
+                                }
+                                dt.Rows.Add(row);
+                            }
+
+                        }
+                        catch (Exception ex)
+                        {
+                            ModelState.AddModelError("File", "Unable to Upload file!");
+                            return View();
+                        }
+
+                        DataSet result = new DataSet();
+                        result.Tables.Add(dt);
+                        reader.Close();
+                        reader.Dispose();
+                        DataTable tmp = result.Tables[0];
+                        Session["tmpdata"] = tmp;  //store datatable into session
+                        //return Json(tmp, JsonRequestBehavior.AllowGet);
+                        return RedirectToAction("Create","User");
+
+
+                    }
+
+                }
+                return View();
+            }
+            else
+            {
+                return Json("File", "Please Upload Your file");
+            }
         }
 
     }

@@ -23,7 +23,10 @@
             <select data-placeholder="Select Category" class='form-control dropdownCategory' name='dropdowCategory' multiple="multiple" id="dropdownCategory"></select>
         </div>
         <div class="form-group">
-            <button type="button" class="btn btn-dark" id="newrows"><b>Add More</b></button>
+            @*<button type="button" class="btn btn-dark" id="newrows"><b>Add More</b></button>*@
+            <input type="file" id="files" name="files" />
+            <input type="button" id="emailupload" value="Upload" class="btn btn-primary" />
+
             <div style="padding-top:10px;" class="table-responsive-sm" id="tableUser">
                 <table class="table table-bordered" id="tblUsers">
                     <thead>
@@ -47,14 +50,6 @@
                                 <input type="text" placeholder="Enter EmailId" class="name form-control" value="" id="emailid" />
                             </td>
                             <td>
-                                @*<select data-placeholder="Select Platform" class="form-control dropdownPlatform" name="dropdownPlatform" multiple="multiple" id="platform">
-                                        <option>Taurus</option>
-                                        <option>Gemini</option>
-                                        <option>Cancer</option>
-                                        <option>Leo	Leo</option>
-                                        <option>Virgo</option>
-                                    </select>*@
-
                                 <select data-placeholder="Select Category" class='form-control dropdownCategory' name='dropdowCategory' multiple="multiple" id="Category"></select>
 
                             </td>
@@ -95,8 +90,6 @@
         BindCategory(0);
         MultiSelectChckBox();
     });
-
-
     var count = 1;
     $("#newrows").click(function () {
         tblBind();
@@ -120,7 +113,7 @@
     }
 
     $('#btnSubmit').click(function () {
-      
+
         var RegisterId = $("#user option:selected").val();
         var Name = $("#name").val();
         var UserCategory = $("#dropdownCategory").val();
@@ -137,7 +130,7 @@
             }
             Users.push(User);
         });
-      
+
         var writeobject = new Object();
         writeobject.RegisterId = RegisterId,
             writeobject.Name = Name,
@@ -186,7 +179,7 @@
             type: "GET",
             dataType: "json",
             success: function (data) {
-               
+
                 $.each(data, function (index, item) {
                     var opt = new Option(item.Text, item.Value);
                     if (id == 0) {
@@ -198,7 +191,7 @@
 
                 });
                 $("#tblUsers").find("tr#" + id).find(".dropdownCategory").val(selectedId);
-               
+
                /* $('.dropdownCategory').chosen();*/
               /*  $("#tblSales").find("tr#" + id).find(".dropdownCategory").select2();*/
             }
@@ -240,7 +233,7 @@
     }
 
     function BindUsers() {
-        
+
         $.ajax({
             url: "GetList/User",
             type: "GET",
@@ -256,7 +249,7 @@
                         { "data": "LastName" },
                         { "data": "EmailId" },
                         { "data": "CategoryName" }
-                       
+
                     ]
                 });
 
@@ -265,24 +258,43 @@
     }
 
     function MultiSelectChckBox() {
-        //$(".js-select2").select2({
-        //    closeOnSelect: false,
-        //    allowClear: true,
-        //});
-
         $(".dropdownCategory").select2({
             closeOnSelect: false,
-            // allowHtml: true,
             allowClear: true,
             tags: true
         });
     }
 
-    //function GetSelectedValues() {
-    //    $("#tblSales").find(".dropdownCategory").select2("val", [1, 2])
-    //    $("#tblSales").find(".dropdownCategory").select2().trigger('change');
-    //}
+    $('#emailupload').click(function () {
+        
+        var fileUpload = $("#files").get(0);
+        var files = fileUpload.files;
+
+        // Create  a FormData object
+        var fileData = new FormData();
+
+        // if there are multiple files , loop through each files
+        for (var i = 0; i < files.length; i++) {
+            fileData.append(files[i].name, files[i]);
+        }
 
 
+        $.ajax({
+            url: "@Url.Action("Upload", "User")",
+           type: "POST", //as we will be posting files and other method POST is used
+           processData: false, //remember to set processData and ContentType to false, otherwise you may get an error
+           contentType: false,
+           data: fileData,
+
+            success: function (result) {
+                
+                alert("success");
+            },
+            error: function (result) {
+                
+                alert('failure');
+            }
+        });
+    })
 </script>
 

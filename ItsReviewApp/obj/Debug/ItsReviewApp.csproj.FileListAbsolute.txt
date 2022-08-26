@@ -173,3 +173,9 @@ P:\ItsReview\review-app\ItsReviewApp\obj\Debug\ItsReviewApp.csproj.CoreCompileIn
 P:\ItsReview\review-app\ItsReviewApp\obj\Debug\ItsReviewApp.csproj.CopyComplete
 P:\ItsReview\review-app\ItsReviewApp\obj\Debug\ItsReviewApp.dll
 P:\ItsReview\review-app\ItsReviewApp\obj\Debug\ItsReviewApp.pdb
+P:\ItsReview\review-app\ItsReviewApp\bin\ExcelDataReader.DataSet.dll
+P:\ItsReview\review-app\ItsReviewApp\bin\ExcelDataReader.dll
+P:\ItsReview\review-app\ItsReviewApp\bin\ExcelDataReader.pdb
+P:\ItsReview\review-app\ItsReviewApp\bin\ExcelDataReader.xml
+P:\ItsReview\review-app\ItsReviewApp\bin\ExcelDataReader.DataSet.pdb
+P:\ItsReview\review-app\ItsReviewApp\bin\ExcelDataReader.DataSet.xml
