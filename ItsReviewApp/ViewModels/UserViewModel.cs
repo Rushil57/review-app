@@ -26,8 +26,9 @@ namespace ItsReviewApp.ViewModels
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string EmailId { get; set; }
+        
+       // public string Category { get; set; }
         public List<string> UserCategoryViewModel { get; set; }
-        //public string Category { get; set; }
         //public string Platform { get; set; }
     }
 

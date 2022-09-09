@@ -42,7 +42,11 @@ namespace ItsReviewApp.Controllers
             parameters.Add("@Mode", 3, DbType.Int32, ParameterDirection.Input);
             using (IDbConnection connection = new SqlConnection(connectionString))
             {
-                logindata = connection.ExecuteScalar("sp_Register", parameters, commandType: CommandType.StoredProcedure);
+                logindata = con.Query<LoginViewModel>("sp_Register", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
+                if (logindata != null)
+                {
+                    Session["RegisterId"] = logindata.RegisterId;
+                }
                 connection.Close();
             }
 

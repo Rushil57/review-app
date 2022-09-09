@@ -181,3 +181,29 @@ tr:nth-child(even) {
 
 /*OVER/*/
 
+
+
+.ui-widget-header {
+    border: 0px !important;
+    background: #f9f9f9;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+    .ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active {
+        border: 1px solid #999;
+        background: #999999 !important;
+        font-weight: normal;
+        color: #ffffff;
+    }
+
+    /*.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
+        border: 1px solid #77d5f7;
+        background: #1f81b2 !important;
+        font-weight: normal;
+        color: #ffffff;
+    }*/
+
+.ui-state-hover a, .ui-state-hover a:hover {
+    color: #026890;
+}

@@ -16,16 +16,17 @@
             </div>*@
             <div class="form-group">
                 <label for="emailid">Email Id :</label>
-                <label for="suggestedemail"></label>
+                <label for="suggestedemail" id="suggestemail"></label>
                
             </div>
             <div class="form-group">
+                <button type="submit" class="btn btn-primary" id="addressId" onclick="CopyAddress()" disabled>Address</button>
                 <button type="submit" class="btn btn-primary" id="reviewbutton" onclick="disablereviewbutton()" disabled>Review</button>
                 <button type="submit" class="btn btn-primary" id="listingurlbutton" onclick="disableurllistingbutton()" disabled>Listing Url</button>
             </div>
             <div class="form-group" id="buttons">
-                <button type="submit" class="btn btn-primary" id="showing" disabled onclick="storedata(this.id)">Showing</button>
-                <button type="submit" class="btn btn-primary" id="notshowing" disabled onclick="storedata(this.id)">Not Showing</button>
+                <button type="submit" class="btn btn-primary" id="showing" disabled onclick="storedata(this.id)">Next</button>
+                @*<button type="submit" class="btn btn-primary" id="notshowing" disabled onclick="storedata(this.id)">Not Showing</button>*@
                 <button type="submit" class="btn btn-primary" id="skip" disabled onclick="storedata(this.id)">Skip</button>
             </div>
 
@@ -40,7 +41,6 @@
 
     $(document).ready(function () {
         BindPaltform(0);
-        incTimer();
         BindEmailId();
         /*BindCompany();*/
 
@@ -49,6 +49,7 @@
     function incTimer() {
         setTimeout(function () {
             document.getElementById('reviewbutton').disabled = null;
+            document.getElementById('addressId').disabled = null;
         }, 10000);
     }
      function BindPaltform(id) {
@@ -87,13 +88,42 @@
                // console.log(review);
                 writerid = data.reviews.Id;
 
-                var input = document.createElement('input');
-                input.setAttribute('value', review);
-                document.body.appendChild(input);
-                input.select();
-                var result = document.execCommand('copy');
-                document.body.removeChild(input);
-                return result;
+                var $temp = $("<input>");
+                $("body").append($temp);
+                $temp.val(review).select();
+                document.execCommand("copy");
+                $temp.remove();
+                //var aux = document.createElement("input");
+                //aux.setAttribute("value", review);
+                //document.body.appendChild(aux);
+                //aux.select();
+                //document.execCommand("copy");
+                //document.body.removeChild(aux);
+               
+            }
+        })
+    }
+
+    function CopyAddress() {
+
+        $.ajax({
+            url: "@Url.Action("GetList", "Register")",
+            type: "GET",
+            dataType: "json",
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                var address = data.company.Address;
+                var $temp = $("<input>");
+                $("body").append($temp);
+                $temp.val(address).select();
+                document.execCommand("copy");
+                $temp.remove();
+                //var aux = document.createElement("input");
+                //aux.setAttribute("value", address);
+                //document.body.appendChild(aux);
+                //aux.select();
+                //document.execCommand("copy");
+                //document.body.removeChild(aux);
             }
         })
     }
@@ -106,7 +136,7 @@
         setTimeout(function () {
             document.getElementById('listingurlbutton').disabled = null;
             document.getElementById('showing').disabled = null;
-            document.getElementById('notshowing').disabled = null;
+            /*document.getElementById('notshowing').disabled = null;*/
             document.getElementById('skip').disabled = null;
         }, 10000);
 
@@ -134,8 +164,24 @@
             dataType: "json",
             contentType: 'application/json; charset=utf-8',
             success: function (data) {
+                if (data.user == null) {
+                    $("label[for='suggestedemail']").text("work completed");
+                    userid = 0;
+                }
+                else if (data.user == "nocontent") {
+                    $("label[for='suggestedemail']").text("No content");
+                    userid = 0;
+                }
+                else if (data.reviews.ReviewName == "reviewnotfound") {
+                    $("label[for='suggestedemail']").text("Review not found");
+                    userid = 0;
+                }
+                else {
                     $("label[for='suggestedemail']").text(data.user.EmailId);
                     userid = data.user.Id;
+                    incTimer();
+                }
+                   
 
             }
         })
@@ -144,14 +190,16 @@
     function storedata(id) {
 
         var buttonclick = id;
+        var label = $('#suggestemail').text();
         var writeobject = new Object();
         writeobject.CompanyId = companyid,
             writeobject.WriterId = writerid,
             writeobject.UserId = userid;
-        writeobject.Status = buttonclick;
+        writeobject.Status = buttonclick,
+            writeobject.EmailId = label;
 
          $.ajax({
-            url: "@Url.Action("SaveTrackingData", "Register")",
+            url: "@Url.Action("SaveTrackingData", "User")",
             contentType: 'application/json',
             data: JSON.stringify(writeobject),
           /*  dataType: "json",*/
@@ -159,8 +207,9 @@
              success: function (result) {
                  document.getElementById('listingurlbutton').disabled = true;
                  document.getElementById('showing').disabled = true;
-                 document.getElementById('notshowing').disabled = true;
+                 /*document.getElementById('notshowing').disabled = true;*/
                  document.getElementById('skip').disabled = true;
+                 document.getElementById('addressId').disabled = true;
                  incTimer();
                  BindEmailId();
                 //alert('success');

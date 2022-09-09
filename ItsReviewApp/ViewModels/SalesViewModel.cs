@@ -17,8 +17,8 @@ namespace ItsReviewApp.ViewModels
         public string SalesId { get; set; }
 
         
-        [DisplayFormat(DataFormatString = "{0:dd/mm/yyyy}", ApplyFormatInEditMode = true)]
-        public DateTime FollowUpDate { get; set; }
+        //[DisplayFormat(DataFormatString = "{0:yyyy/dd/mm}", ApplyFormatInEditMode = true)]
+        public DateTime? FollowUpDate { get; set; }
         public string CompanyName { get; set; }
 
         public string CountryName { get; set; }
@@ -29,7 +29,6 @@ namespace ItsReviewApp.ViewModels
 
         public string ListingUrl { get; set; }
         public string NicheName { get; set; }
-        public DateTime ReviewDate { get; set; }
         public string CurrentReview { get; set; }
         public string RatePerReview { get; set; }
         public string EmailType { get; set; }
@@ -57,7 +56,8 @@ namespace ItsReviewApp.ViewModels
 
         public string ListingUrl { get; set; }
         public string NicheName { get; set; }
-        public DateTime ReviewDate { get; set; }
+        //[DisplayFormat(DataFormatString = "{0:yyyy/dd/mm}", ApplyFormatInEditMode = true)]
+        public DateTime? ReviewDate { get; set; }
         public string CurrentReview { get; set; }
 
         public string RatePerReview { get; set; }
@@ -69,6 +69,9 @@ namespace ItsReviewApp.ViewModels
       
         public string Status { get; set; }
         public List<string> CategoryViewModel { get; set; }
+        public string WriterId { get; set; }
+        public string Address { get; set; }
+        public string Version { get; set; }
     } 
 
     public class SalesCategoryViewModel

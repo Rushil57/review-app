@@ -11,6 +11,9 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <link href="~/Content/Site.css" rel="stylesheet" />
     <style>
+        .chosen-container {
+            width: 100% !important;
+        }
     </style>
 </head>
 <body>
@@ -62,7 +65,7 @@
                 </div>
                 <button type="submit" class="btn btn-primary" id="btnsave">Save</button>
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#LeadModal">Create Lead</button>
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#LeadModalId">Lead Data</button>
+                <button type="button" class="btn btn-primary" data-toggle="modal" onclick="BindLead();" data-target="#LeadModalId">Lead Data</button>
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#LeadModalId">Lead</button>
             </div>
 
@@ -114,7 +117,7 @@
                 </div>
             </div>
 
-            <!-- Create Lead -->
+            <!-- Lead Data-->
             <div class="modal fade" id="LeadModalId" tabindex="-1" role="dialog" aria-labelledby="LeadModalLabel" aria-hidden="true" style="padding-top:50px;">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
@@ -132,7 +135,6 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-
                                         </tbody>
                                     </table>
                                 </div>
@@ -152,30 +154,37 @@
 <script type="text/javascript">
 
     var getid = 0;
+    var categoryList = new Array();
     $(document).ready(function () {
-        BindLead();
+        /*BindLead();*/
         var url=window.location.search.split("=")[1]
         if (url != undefined && url != "") {
             GetDataById(url);
         }
         else {
-            BindCountry(0);
+            BindCountry(5);
+            categoryList = new Array();
+            SetDefaultCategory();
             for (i = 0; i < 2; i++) {
-                tblBind("0", "", "0", "", "", "", "", "", "0", null, "", "", "0", "");
+                tblBind("1", "", "", "", "", "", "", "", "1", null, "", "", "0", "" , categoryList,"0","");
             }
         }
     })
     var count = 0;
     $("#newrows").click(function () {
-        tblBind("0", "", "0", "", "", "", "", "", "0", null, "", "", "0", "");
+        categoryList = new Array();
+        SetDefaultCategory();
+        tblBind("1", "", "", "", "", "", "", "", "1", null, "", "", "0", "", categoryList,"0","");
     });
-    function tblBind(NicheName, CompanyName, CityName, ListingURL, CurrentReview, EmailType, ReviewPerDay, RatePerReview, Platform, ReviewDate, OldBalance, CurrentBalance, Status, CategoryId,CategoryList) {
+    function tblBind(NicheName, CompanyName, CityName, ListingURL, CurrentReview, EmailType, ReviewPerDay, RatePerReview, Platform, ReviewDate, OldBalance, CurrentBalance, Status, CategoryId,CategoryList,SalesDetailId,Address) {
         var addcontrols = "<tr id=\"RowId_" + count + "\">" + count + ">"
         addcontrols += '<td>' +
             '<div class="top_row">' +
+            '<div><input type="hidden" class="form-control hiddensalesdetailid" value="' + SalesDetailId + '" /></div>' +
             '<div><select class="dropdownclass form-control dropdownNiche" name="dropdownNiche"></select></div>' +
             '<div><input type="text" placeholder="Company Name" class="form-control companyname" value="' + CompanyName +'" /></div>' +
-            '<div><select class="dropdownclass form-control dropdownCity" name="dropdownCity" id="citydropdown"></select></div>' +
+        /*'<div><select class="dropdownclass form-control dropdownCity" name="dropdownCity" id="citydropdown"></select></div>' +*/
+            '<div><input type="text" placeholder="City Name" class="form-control cityname" value="' + CityName + '" /></div>' +
             '<div style="display:flex;">' +
             '<input type="text" class="form-control listingurls" placeholder="Url Listing" value="' + ListingURL +'" />' +
             '<a class="btn btn-primary btn-sm listingbutton" target="_blank" href="' + ListingURL +'" style="margin-left:7px;">GO</a>' +
@@ -199,12 +208,13 @@
             '<div><input type="text" placeholder="Current Balance" class="form-control currentbalance" value="' + CurrentBalance +'" /></div>' +
             '<div><select class="form-control dropdownStatus" name="dropdownStatus"></select></div>' +
             '<div><select data-placeholder="Select Category" class="form-control dropdownCategory" name="dropdownCategory" multiple="multiple"></select></div>' +
+            '<div><input type="text" placeholder="Address" class="form-control cls-Address" value="' + Address + '" /></div>' +
             '</div>' +
             '</td>';
         addcontrols += "</tr>";
         $("table .ReviewTableClass").append(addcontrols);
         BindNiche("RowId_" + count,NicheName);
-        BindCity("RowId_" + count, CityName);
+        /*BindCity("RowId_" + count, CityName);*/
         BindPaltform("RowId_" + count, Platform);
         BindStatus("RowId_" + count, Status);
         Bindcategory("RowId_" + count, CategoryId, CategoryList);
@@ -228,22 +238,24 @@
                       $('#clientname').val(sales.ClientName);
                       $('#phonenumber').val(sales.PhoneNumber);
                       $('#remarkid').val(sales.Remarks);
-                      $('#citydropdown').val(sales.CityName);
+                      /*$('#citydropdown').val(sales.CityName);*/
                       BindCountry(sales.CountryName);
                       /*var followUpDate = new Date(parseInt(data.saleslist[0].FollowUpDate.substr(6)));*/
-                      var followUpDate = new Date(parseInt(sales.FollowUpDate.substr(6)));
-                      var followDate = formatDate(followUpDate)
-                      $('#followupdate').val(followDate);
-
+                      if (sales.FollowUpDate != null) {
+                          var followUpDate = new Date(parseInt(sales.FollowUpDate.substr(6)));
+                          var followDate = formatDate(followUpDate)
+                          $('#followupdate').val(followDate);
+                      }
                       $("#tblSales tbody").html('');
                       $.each(data.detailslist, function (index, item) {
                           /* var reviewDate = new Date(parseInt(item.ReviewDate.substr(6)));*/
-                          var reviewDate = new Date(parseInt(item.ReviewDate.substr(6)));
-                          item.ReviewDate = formatDate(reviewDate);
+                          if (item.ReviewDate != null) {
+                              var reviewDate = new Date(parseInt(item.ReviewDate.substr(6)));
+                              item.ReviewDate = formatDate(reviewDate);
+                          }
                           var categoryList = data.categorylist.filter(function (e)
                           { return e.SalesdetailId == item.Id })
-
-                              tblBind(item.NicheName, item.CompanyName, item.CityName, item.ListingUrl, item.CurrentReview, item.EmailType, item.ReviewsPerDay, item.RatePerReview, item.Platform, item.ReviewDate, item.OldBalance, item.CurrentBalance, item.Status, item.CategoryId, categoryList);
+                          tblBind(item.NicheName, item.CompanyName, item.CityName, item.ListingUrl, item.CurrentReview, item.EmailType, item.ReviewsPerDay, item.RatePerReview, item.Platform, item.ReviewDate, item.OldBalance, item.CurrentBalance, item.Status, item.CategoryId, categoryList, item.Id, item.Address);
                       });
                   }
 
@@ -359,6 +371,7 @@
         })
     }
     $('#btnsave').click(function () {
+        $('#btnsave').prop("disabled", true);
         var getvalue = getid;
         var clientname = $("#clientname").val();
         var phoneNumber = $("#phonenumber").val();
@@ -374,7 +387,7 @@
 
             Review.NicheName = row.find(".dropdownNiche").val();
             Review.CompanyName = row.find(".companyname").val();
-            Review.CityName = row.find(".dropdownCity").val();
+            Review.CityName = row.find(".cityname").val();
             Review.ListingUrl = row.find(".listingurls").val();
             Review.CurrentReview = row.find(".currentreview").val();
             Review.EmailType = row.find(".emailtype").val();
@@ -386,7 +399,12 @@
             Review.CurrentBalance = row.find(".currentbalance").val();
             Review.Status = row.find(".dropdownStatus").val();
             Review.CategoryViewModel = row.find(".dropdownCategory").val();
-            Reviews.push(Review);
+            Review.Id = row.find(".hiddensalesdetailid").val();
+            Review.Address = row.find(".cls-Address").val();
+
+            if (row.find(".companyname").val() != "") {
+                Reviews.push(Review);
+            }
         });
 
 
@@ -407,6 +425,7 @@
           /*  dataType: "json",*/
             type: "POST",
             success: function (result) {
+                ResetSalesData();
                 alert('success');
             },
             error: function (result) {
@@ -418,7 +437,7 @@
 
         $('.example1').datepicker({
             autoclose: true,
-            format: "dd/mm/yyyy",
+            format: "yyyy/mm/dd",
             orientation: 'bottom',
             icons: {
                 time: "fa fa-clock-o",
@@ -439,14 +458,14 @@
         if (day.length < 2)
             day = '0' + day;
 
-        return [day, month, year].join('-');
+        return [year, month, day].join('-');
     }
 
     $(document).on("focusout", ".listingurls", function () {
         var linkURL = $(this).closest('td').find('.listingurls').val();
         $(this).closest('td').find('.listingbutton').attr('href', linkURL);
     })
-    function Bindcategory(id, selectedId,categoryList) {
+    function Bindcategory(id, selectedId, categoryList) {
         $.ajax({
             url: "@Url.Action("GetCategory", "Sales")",
             type: "GET",
@@ -463,7 +482,7 @@
                     }
                 });
                 $("#tblSales").find("tr#" + id).find(".dropdownCategory").val(selectedId);
-                if (categoryList.length != undefined && categoryList.length > 0) {
+                if (categoryList != undefined && categoryList != null && categoryList.length > 0) {
                     $.each(categoryList, function (index, item) {
                         $("#tblSales").find("tr#" + id).find(".dropdownCategory option[value='" + item.CategoryId + "']").prop("selected", true);
                     });
@@ -481,7 +500,7 @@
     }
 
     $('#btnsavemodel').click(function () {
-        
+
         var clientname = $(".clientname option:selected").val();
         var companyname = $("#companyname").val();
         var noofreview = $("#noofreview").val();
@@ -494,10 +513,10 @@
         var writeobject = new Object();
         writeobject.SalesId = clientname,
         writeobject.CompanyName = companyname,
-            writeobject.NumberOfReview = noofreview,
-            writeobject.Rating = rating,
-            writeobject.NicheName = niche,
-            writeobject.Url = url;
+        writeobject.NumberOfReview = noofreview,
+        writeobject.Rating = rating,
+        writeobject.NicheName = niche,
+        writeobject.Url = url;
         writeobject.City = City;
         writeobject.Listing = dropdownlisting;
         $.ajax({
@@ -507,6 +526,7 @@
           /*  dataType: "json",*/
             type: "POST",
             success: function (result) {
+                ResetLeadData();
                 alert('success');
             },
             error: function (result) {
@@ -524,7 +544,12 @@
             dataType: "json",
             contentType: 'application/json; charset=utf-8',
             success: function (data) {
-                
+                if ($.fn.DataTable.isDataTable('#LeadModalDataId')) {
+                    $('#LeadModalDataId').DataTable().destroy();
+                }
+
+               // $('#LeadModalDataId tbody').empty();
+
                 $('#LeadModalDataId').dataTable({
                     /* destroy: true,*/
                     data: data,
@@ -533,7 +558,13 @@
                         { "data": "NumberOfReview" },
                         { "data": "NicheName" },
                         { "data": "City" },
-                        { "defaultContent": '<button class="btn-view" type="submit" data-dismiss="modal">OPEN</button>' }
+                        {
+                            render: function (data, type, row) {
+                                
+                                return '<button class="btn btn-primary" data-city="' + row.City + '" data-CompanyName="' + row.CompanyName + '" data-Listing="' + row.Listing + '" data-NicheName="' + row.NicheName + '" data-NumberOfReview="' + row.NumberOfReview + '" data-Rating="' + row.Rating + '" data-SalesId="' + row.SalesId + '" data-Url="' + row.Url +'" onClick="BindCompany(this);" type="submit" data-dismiss="modal">OPEN</button>';
+                            }
+                        },
+                        /*{ "defaultContent": '<button class="btn-view" type="submit" data-dismiss="modal">OPEN</button>' }*/
 
                     ],
                 });
@@ -544,14 +575,14 @@
 
     $('#LeadModalDataId tbody').on('click', '.btn-view', function (e) {
         //$("#LeadModalId").modal("hide");
-        
+
         var currentRow = $(this).closest("tr");
         var col1 = currentRow.find("td:eq(0)").text();
         var col2 = currentRow.find("td:eq(1)").text();
         var col3 = currentRow.find("td:eq(2)").text();
         var col4 = currentRow.find("td:eq(3)").text();
 
-        
+
         var NicheName = $("#tblSales tbody tr td:eq(0)").find(".dropdownNiche option:selected").text(col3);
         $("#tblSales tbody tr td:eq(0)").find(".dropdownNiche option:selected").trigger('chosen:updated');
 
@@ -563,4 +594,56 @@
 
         var CompanyName = $("#tblSales tbody tr td:eq(0)").find(".companyname").val(col1);
     });
+
+    function BindCompany(row) {
+        var city = $(row).attr("data-city");
+        var companyname = $(row).attr("data-companyname");
+        var listing = $(row).attr("data-listing");
+        var nichename = $(row).attr("data-nichename");
+        var numberofreview = $(row).attr("data-numberofreview");
+        var rating = $(row).attr("data-rating");
+        var salesid = $(row).attr("data-salesid");
+        var url = $(row).attr("data-url");
+        categoryList = new Array();
+        SetDefaultCategory();
+        $("#tblSales tbody").html('');
+        tblBind(nichename, companyname, city, url, "", "", numberofreview, rating, "1", null, "", "", "0", "", categoryList, "", "");
+    }
+
+    $("#clientname").on("keyup", function () {
+        $('#btnsave').prop("disabled", false);
+    });
+    function SetDefaultCategory() {
+        var obj1 = { CategoryId: '1' }
+        categoryList.push(obj1);
+        var obj5 = { CategoryId: '5' }
+        categoryList.push(obj5);
+        var obj6 = { CategoryId: '6' }
+        categoryList.push(obj6);
+    }
+
+    function ResetSalesData() {
+       $("#clientname").val('');
+       $("#phonenumber").val('');
+       $("#remarkid").val('');
+        $("#followupdate").val('')
+        BindCountry(5);
+        categoryList = new Array();
+        $("#tblSales tbody").html('');
+        SetDefaultCategory();
+        for (i = 0; i < 2; i++) {
+            tblBind("1", "", "", "", "", "", "", "", "1", null, "", "", "0", "", categoryList, "0", "");
+        }
+    }
+
+    function ResetLeadData() {
+        $(".clientname").val('');
+        $("#companyname").val('');
+        $("#noofreview").val('');
+        $("#rating").val('');
+        $("#niche").val('');
+        $("#url").val('');
+        $("#City").val('');
+        $("#listing").val('')
+    }
 </script>

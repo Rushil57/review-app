@@ -12,7 +12,7 @@ namespace ItsReviewApp.ViewModels
         //public string CountryValue { get; set; }
         //public string TypeValue { get; set; }
 
-        public string Id { get; set; }
+        public int Id { get; set; }
         public string CompanyId { get; set; }
         public string ReviewName { get; set; }
 

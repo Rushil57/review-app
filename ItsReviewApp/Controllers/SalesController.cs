@@ -5,7 +5,10 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 
@@ -31,7 +34,7 @@ namespace ItsReviewApp.Controllers
         {
             List<SalesViewModel> salesViewModels = new List<SalesViewModel>();
 
-          
+
             con.Open();
             List<SelectListItem> Listing = new List<SelectListItem>() {
             new SelectListItem {Text = "Type 1", Value = "1"},
@@ -69,154 +72,136 @@ namespace ItsReviewApp.Controllers
         [HttpPost]
         public ActionResult Create(SalesViewModel salesViewModel)
         {
-            if (salesViewModel.Id == 0)
+            try
             {
-                var parameters = new DynamicParameters();
-                parameters.Add("@ClientName", salesViewModel.ClientName, DbType.String, ParameterDirection.Input);
-                parameters.Add("@PhoneNumber", salesViewModel.PhoneNumber, DbType.String, ParameterDirection.Input);
-                parameters.Add("@FollowUpDate", salesViewModel.FollowUpDate, DbType.DateTime, ParameterDirection.Input);
-                parameters.Add("@CountryName", salesViewModel.CountryName, DbType.String, ParameterDirection.Input);
-                //parameters.Add("@City", salesViewModel.SalesPropertyViewModel, DbType.String, ParameterDirection.Input);
-                //parameters.Add("@Keywords", salesViewModel.SalesPropertyViewModel, DbType.String, ParameterDirection.Input);
-                //parameters.Add("@FoodName", salesViewModel.SalesPropertyViewModel, DbType.String, ParameterDirection.Input);
-                //parameters.Add("@TreatmentName", salesViewModel.SalesPropertyViewModel, DbType.String, ParameterDirection.Input);
-                parameters.Add("@Remarks", salesViewModel.Remarks, DbType.String, ParameterDirection.Input);
-                parameters.Add("@FollowUpCheck", salesViewModel.FollowUpCheck, DbType.Boolean, ParameterDirection.Input);
-                parameters.Add("@Mode", 1, DbType.Int32, ParameterDirection.Input);
-                using (IDbConnection connection = new SqlConnection(connectionString))
+                var salesId = 0;
+                if (Session["RegisterId"] != null)
                 {
-                    var reviewSave = connection.ExecuteScalar("sp_Sales", parameters, commandType: CommandType.StoredProcedure);
-                    salesViewModel.SalesId = reviewSave.ToString();
-                    connection.Close();
+                    salesId = Convert.ToInt32(Session["RegisterId"]);
                 }
-
-                foreach (var item in salesViewModel.SalesDetailsViewModel)
+                else
                 {
-                    parameters = new DynamicParameters();
-                    parameters.Add("@NicheName", item.NicheName, DbType.String, ParameterDirection.Input);
-                    parameters.Add("@ListingUrl", item.ListingUrl, DbType.String, ParameterDirection.Input);
-                    parameters.Add("@CompanyName", item.CompanyName, DbType.String, ParameterDirection.Input);
-                    parameters.Add("@CityName", item.CityName, DbType.String, ParameterDirection.Input);
-                    parameters.Add("@ReviewsPerDay", item.ReviewsPerDay, DbType.String, ParameterDirection.Input);
-                    parameters.Add("@Platform", item.Platform, DbType.String, ParameterDirection.Input);
-                    parameters.Add("@ReviewDate", item.ReviewDate, DbType.DateTime, ParameterDirection.Input);
-                    parameters.Add("@CurrentReview", item.CurrentReview, DbType.String, ParameterDirection.Input);
-                    parameters.Add("@SalesId", salesViewModel.SalesId, DbType.Int32, ParameterDirection.Input);
-                    parameters.Add("@RatePerReview", item.RatePerReview, DbType.String, ParameterDirection.Input);
-                    parameters.Add("@EmailType", item.EmailType, DbType.String, ParameterDirection.Input);
-                    parameters.Add("@OldBalance", item.OldBalance, DbType.String, ParameterDirection.Input);
-                    parameters.Add("@CurrentBalance", item.CurrentBalance, DbType.String, ParameterDirection.Input);
-                    parameters.Add("@Status", item.Status, DbType.String, ParameterDirection.Input);
-                    parameters.Add("@Mode", 1, DbType.Int32, ParameterDirection.Input);
-
-                    using (IDbConnection connection = new SqlConnection(connectionString))
-                    {
-                        var reviewSave = connection.ExecuteScalar("sp_Salesdetails", parameters, commandType: CommandType.StoredProcedure);
-                        if (reviewSave != null)
-                        {
-                            foreach (var category in item.CategoryViewModel)
-                            {
-                                parameters = new DynamicParameters();
-                                parameters.Add("@CategoryId", category, DbType.Int32, ParameterDirection.Input);
-                                parameters.Add("@SalesdetailId", reviewSave, DbType.Int32, ParameterDirection.Input);
-                                parameters.Add("@Mode", 1, DbType.Int32, ParameterDirection.Input);
-                                using (IDbConnection conn = new SqlConnection(connectionString))
-                                {
-                                    var categorysave = conn.ExecuteScalar("sp_Salescategory", parameters, commandType: CommandType.StoredProcedure);
-                                    connection.Close();
-                                }
-                            }
-                        }
-
-                        connection.Close();
-                    }
-
+                    new HttpStatusCodeResult(HttpStatusCode.OK);
                 }
-
-
-            }
-
-            else
-            {
+                var mode = 0;
+                if (salesViewModel.Id == 0)
+                {
+                    mode = 1;
+                }
+                else
+                {
+                    mode = 4;
+                }
                 var parameters = new DynamicParameters();
                 parameters.Add("@Id", salesViewModel.Id, DbType.Int32, ParameterDirection.Input);
                 parameters.Add("@ClientName", salesViewModel.ClientName, DbType.String, ParameterDirection.Input);
                 parameters.Add("@PhoneNumber", salesViewModel.PhoneNumber, DbType.String, ParameterDirection.Input);
                 parameters.Add("@FollowUpDate", salesViewModel.FollowUpDate, DbType.DateTime, ParameterDirection.Input);
                 parameters.Add("@CountryName", salesViewModel.CountryName, DbType.String, ParameterDirection.Input);
-                //parameters.Add("@City", salesViewModel.SalesPropertyViewModel, DbType.String, ParameterDirection.Input);
-                //parameters.Add("@Keywords", salesViewModel.SalesPropertyViewModel, DbType.String, ParameterDirection.Input);
-                //parameters.Add("@FoodName", salesViewModel.SalesPropertyViewModel, DbType.String, ParameterDirection.Input);
-                //parameters.Add("@TreatmentName", salesViewModel.SalesPropertyViewModel, DbType.String, ParameterDirection.Input);
                 parameters.Add("@Remarks", salesViewModel.Remarks, DbType.String, ParameterDirection.Input);
                 parameters.Add("@FollowUpCheck", salesViewModel.FollowUpCheck, DbType.Boolean, ParameterDirection.Input);
-                parameters.Add("@Mode", 4, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("@SalesId", salesId, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("@Mode", mode, DbType.Int32, ParameterDirection.Input);
                 using (IDbConnection connection = new SqlConnection(connectionString))
                 {
                     var reviewSave = connection.ExecuteScalar("sp_Sales", parameters, commandType: CommandType.StoredProcedure);
-                    salesViewModel.SalesId = salesViewModel.Id.ToString();
+                    if (reviewSave != null)
+                    {
+                        salesViewModel.SalesId = reviewSave.ToString();
+                    }
+                    else
+                    {
+                        salesViewModel.SalesId = salesViewModel.Id.ToString();
+                    }
+
+                    connection.Close();
+                }
+                if (salesViewModel.SalesDetailsViewModel != null)
+                {
+                    SaveSalesDetail(salesViewModel.SalesDetailsViewModel, salesViewModel.SalesId);
+                }
+            }
+            catch (Exception ex)
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append("Error Message: " + ex.Message + "             StackTrace:" + ex.StackTrace);
+                var filepath = Server.MapPath("~/ErrorLog/errorlog.txt");
+                System.IO.File.AppendAllText(filepath, sb.ToString());
+                sb.Clear();
+            }
+            //return View(salesViewModel);
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
+
+        }
+
+        public void SaveSalesDetail(List<SalesDetailsViewModel> SalesDetailsViewModel, string SalesId)
+        {
+            foreach (var item in SalesDetailsViewModel)
+            {
+                var salesdetailId = Convert.ToInt32(item.Id);
+                var mode = 0;
+                if (salesdetailId == 0)
+                {
+                    mode = 1;
+                }
+                else
+                {
+                    mode = 5;
+                }
+                var parameters = new DynamicParameters();
+                parameters.Add("@id", salesdetailId, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("@NicheName", item.NicheName, DbType.String, ParameterDirection.Input);
+                parameters.Add("@ListingUrl", item.ListingUrl, DbType.String, ParameterDirection.Input);
+                parameters.Add("@CompanyName", item.CompanyName, DbType.String, ParameterDirection.Input);
+                parameters.Add("@CityName", item.CityName, DbType.String, ParameterDirection.Input);
+                parameters.Add("@ReviewsPerDay", item.ReviewsPerDay, DbType.String, ParameterDirection.Input);
+                parameters.Add("@Platform", item.Platform, DbType.String, ParameterDirection.Input);
+                parameters.Add("@ReviewDate", item.ReviewDate, DbType.DateTime, ParameterDirection.Input);
+                parameters.Add("@CurrentReview", item.CurrentReview, DbType.String, ParameterDirection.Input);
+                parameters.Add("@SalesId", SalesId, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("@RatePerReview", item.RatePerReview, DbType.String, ParameterDirection.Input);
+                parameters.Add("@EmailType", item.EmailType, DbType.String, ParameterDirection.Input);
+                parameters.Add("@OldBalance", item.OldBalance, DbType.String, ParameterDirection.Input);
+                parameters.Add("@CurrentBalance", item.CurrentBalance, DbType.String, ParameterDirection.Input);
+                parameters.Add("@Status", item.Status, DbType.String, ParameterDirection.Input);
+                parameters.Add("@Address", item.Address, DbType.String, ParameterDirection.Input);
+                parameters.Add("@Mode", mode, DbType.Int32, ParameterDirection.Input);
+
+                using (IDbConnection connection = new SqlConnection(connectionString))
+                {
+                    var reviewSave = connection.ExecuteScalar("sp_Salesdetails", parameters, commandType: CommandType.StoredProcedure);
+                    if (reviewSave == null)
+                    {
+                        reviewSave = salesdetailId;
+                    }
+                    if (mode == 5)
+                    {
+                        var parameter = new DynamicParameters();
+                        parameter = new DynamicParameters();
+                        parameter.Add("@SalesdetailId", salesdetailId, DbType.Int32, ParameterDirection.Input);
+                        parameter.Add("@Mode", 2, DbType.Int32, ParameterDirection.Input);
+                        var deletelist = con.Query<SalesCategoryViewModel>("sp_Salescategory", parameter, commandType: CommandType.StoredProcedure).ToList();
+                    }
+                    if (item.CategoryViewModel != null)
+                    {
+                        foreach (var category in item.CategoryViewModel)
+                        {
+                            parameters = new DynamicParameters();
+                            parameters.Add("@CategoryId", category, DbType.Int32, ParameterDirection.Input);
+                            parameters.Add("@SalesdetailId", reviewSave, DbType.Int32, ParameterDirection.Input);
+                            parameters.Add("@Mode", 1, DbType.Int32, ParameterDirection.Input);
+                            using (IDbConnection conn = new SqlConnection(connectionString))
+                            {
+                                var categorysave = conn.ExecuteScalar("sp_Salescategory", parameters, commandType: CommandType.StoredProcedure);
+                                connection.Close();
+                            }
+                        }
+                    }
+
                     connection.Close();
                 }
 
-                var parameter = new DynamicParameters();
-                parameter = new DynamicParameters();
-                parameter.Add("@SalesdetailId", salesViewModel.SalesId, DbType.Int32, ParameterDirection.Input);
-                parameter.Add("@Mode", 2, DbType.Int32, ParameterDirection.Input);
-                var deletelist = con.Query<SalesCategoryViewModel>("sp_Salescategory", parameter, commandType: CommandType.StoredProcedure).ToList();
-
-
-                var para = new DynamicParameters();
-                para = new DynamicParameters();
-                para.Add("@SalesId", salesViewModel.SalesId, DbType.Int32, ParameterDirection.Input);
-                para.Add("@Mode", 3, DbType.Int32, ParameterDirection.Input);
-                var empList = con.Query<SalesDetailsViewModel>("sp_Salesdetails", para, commandType: CommandType.StoredProcedure).ToList();
-
-
-                foreach (var item in salesViewModel.SalesDetailsViewModel)
-                {
-                    parameters = new DynamicParameters();
-                    parameters.Add("@NicheName", item.NicheName, DbType.String, ParameterDirection.Input);
-                    parameters.Add("@ListingUrl", item.ListingUrl, DbType.String, ParameterDirection.Input);
-                    parameters.Add("@CompanyName", item.CompanyName, DbType.String, ParameterDirection.Input);
-                    parameters.Add("@CityName", item.CityName, DbType.String, ParameterDirection.Input);
-                    parameters.Add("@ReviewsPerDay", item.ReviewsPerDay, DbType.String, ParameterDirection.Input);
-                    parameters.Add("@Platform", item.Platform, DbType.String, ParameterDirection.Input);
-                    parameters.Add("@ReviewDate", item.ReviewDate, DbType.DateTime, ParameterDirection.Input);
-                    parameters.Add("@CurrentReview", item.CurrentReview, DbType.String, ParameterDirection.Input);
-                    parameters.Add("@SalesId", salesViewModel.SalesId, DbType.Int32, ParameterDirection.Input);
-                    parameters.Add("@RatePerReview", item.RatePerReview, DbType.String, ParameterDirection.Input);
-                    parameters.Add("@EmailType", item.EmailType, DbType.String, ParameterDirection.Input);
-                    parameters.Add("@OldBalance", item.OldBalance, DbType.String, ParameterDirection.Input);
-                    parameters.Add("@CurrentBalance", item.CurrentBalance, DbType.String, ParameterDirection.Input);
-                    parameters.Add("@Status", item.Status, DbType.String, ParameterDirection.Input);
-                    parameters.Add("@Mode", 1, DbType.Int32, ParameterDirection.Input);
-
-                    using (IDbConnection connection = new SqlConnection(connectionString))
-                    {
-                        var reviewSave = connection.ExecuteScalar("sp_Salesdetails", parameters, commandType: CommandType.StoredProcedure);
-                        if (reviewSave != null)
-                        {
-                            foreach (var category in item.CategoryViewModel)
-                            {
-                                parameters = new DynamicParameters();
-                                parameters.Add("@CategoryId", category, DbType.Int32, ParameterDirection.Input);
-                                parameters.Add("@SalesdetailId", reviewSave, DbType.Int32, ParameterDirection.Input);
-                                parameters.Add("@Mode", 1, DbType.Int32, ParameterDirection.Input);
-                                using (IDbConnection conn = new SqlConnection(connectionString))
-                                {
-                                    var categorysave = conn.ExecuteScalar("sp_Salescategory", parameters, commandType: CommandType.StoredProcedure);
-                                    connection.Close();
-                                }
-                            }
-                        }
-                        connection.Close();
-                    }
-                }
-
             }
-            //return View(salesViewModel);
-            return RedirectToAction("Create","Sales");
-
         }
 
         [HttpGet]
@@ -244,8 +229,18 @@ namespace ItsReviewApp.Controllers
             List<SalesViewModel> empList = new List<SalesViewModel>();
             try
             {
+                var salesId = 0;
+                if (Session["RegisterId"] != null)
+                {
+                    salesId = Convert.ToInt32(Session["RegisterId"]);
+                }
+                else
+                {
+                    new HttpStatusCodeResult(HttpStatusCode.OK);
+                }
                 con.Open();
                 var parameters = new DynamicParameters();
+                parameters.Add("@SalesId", salesId, DbType.Int32, ParameterDirection.Input);
                 parameters.Add("@Mode", 2, DbType.Int32, ParameterDirection.Input);
                 empList = con.Query<SalesViewModel>("sp_Sales", parameters, commandType: CommandType.StoredProcedure).ToList();
             }
@@ -313,11 +308,12 @@ namespace ItsReviewApp.Controllers
         {
             List<SelectListItem> Niche = new List<SelectListItem>() {
             new SelectListItem {Text = "Select Niche", Value = "0"},
-            new SelectListItem {Text = "Niche 1", Value = "1"},
-            new SelectListItem {Text = "Niche 2", Value = "2"},
-            new SelectListItem {Text = "Niche 3", Value = "3"},
-            new SelectListItem {Text = "Niche 4", Value = "4"},
-            new SelectListItem {Text = "Niche 5", Value = "5"},};
+            new SelectListItem {Text = "Packers Movers", Value = "1"},
+            new SelectListItem {Text = "Niche 1", Value = "2"},
+            new SelectListItem {Text = "Niche 2", Value = "3"},
+            new SelectListItem {Text = "Niche 3", Value = "4"},
+            new SelectListItem {Text = "Niche 4", Value = "5"},
+            new SelectListItem {Text = "Niche 5", Value = "6"},};
             return Json(Niche, JsonRequestBehavior.AllowGet);
         }
 
@@ -370,11 +366,12 @@ namespace ItsReviewApp.Controllers
 
         public JsonResult BindLeadData()
         {
-            var mail = Session["EmailId"];
-            var getdata = (dynamic)null;
+            //var mail = Session["EmailId"];
+            //var getdata = (dynamic)null;
+            List<LeadViewModel> getdata = new List<LeadViewModel>();
             var parameters = new DynamicParameters();
             parameters = new DynamicParameters();
-            parameters.Add("@EmailId", mail, DbType.String, ParameterDirection.Input);
+            //parameters.Add("@EmailId", mail, DbType.String, ParameterDirection.Input);
             parameters.Add("@Mode", 3, DbType.Int32, ParameterDirection.Input);
             using (IDbConnection connection = new SqlConnection(connectionString))
             {
@@ -405,7 +402,7 @@ namespace ItsReviewApp.Controllers
 
             return Json(dynamiclist, JsonRequestBehavior.AllowGet);
         }
-        
+
         [HttpPost]
         public ActionResult LeadCreate(LeadViewModel leadViewModel)
         {
@@ -424,7 +421,7 @@ namespace ItsReviewApp.Controllers
                 var leadsave = connection.ExecuteScalar("sp_Lead", parameters, commandType: CommandType.StoredProcedure);
                 connection.Close();
             }
-            return RedirectToAction("Create","Sales");
+            return RedirectToAction("Create", "Sales");
         }
 
 

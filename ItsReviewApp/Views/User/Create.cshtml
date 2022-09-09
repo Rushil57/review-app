@@ -10,8 +10,9 @@
     <div class="container" style="padding-top:30px;">
         <div class="form-group" id="user">
             <label for="user">Select User</label>
-            @*<input type="text" class="form-control" placeholder="Enter User" id="user">*@
+            @*@Html.DropDownList("Name", (IEnumerable<SelectListItem>)ViewBag.Name, "Select User", new { @class = "form-control", @onfocusout = "ExcelUploadEnable();" })*@
             @Html.DropDownList("Name", (IEnumerable<SelectListItem>)ViewBag.Name, "Select User", new { @class = "form-control" })
+
         </div>
         <div class="form-group">
             <label for="name">Name</label>
@@ -19,20 +20,17 @@
         </div>
         <div class="form-group">
             <label for="category">Select Category</label>
-            @*<input type="text" class="form-control" placeholder="Enter Name" id="name">*@
             <select data-placeholder="Select Category" class='form-control dropdownCategory' name='dropdowCategory' multiple="multiple" id="dropdownCategory"></select>
         </div>
         <div class="form-group">
-            @*<button type="button" class="btn btn-dark" id="newrows"><b>Add More</b></button>*@
-            <input type="file" id="files" name="files" />
-            <input type="button" id="emailupload" value="Upload" class="btn btn-primary" />
+            <button type="button" class="btn btn-dark" id="newrows"><b>Add More</b></button>
 
             <div style="padding-top:10px;" class="table-responsive-sm" id="tableUser">
                 <table class="table table-bordered" id="tblUsers">
                     <thead>
                         <tr>
-                            <th scope="col">First Name</th>
-                            <th scope="col">Last Name</th>
+                            <th scope="col">Name</th>
+                            @*<th scope="col">Last Name</th>*@
                             <th scope="col">EmailId</th>
                             <th scope="col">Category</th>
                             <th></th>
@@ -41,17 +39,16 @@
                     <tbody class="UserTableClass">
                         <tr>
                             <td>
-                                <input type="text" placeholder="Enter First Name" class="name form-control" value="" id="fname" />
+                                <input type="text" placeholder="Enter Name" class="name form-control" value="" id="fname" />
                             </td>
-                            <td>
+                            @*<td>
                                 <input type="text" placeholder="Enter Last Name" class="name form-control" value="" id="lastname" />
-                            </td>
+                            </td>*@
                             <td>
                                 <input type="text" placeholder="Enter EmailId" class="name form-control" value="" id="emailid" />
                             </td>
                             <td>
                                 <select data-placeholder="Select Category" class='form-control dropdownCategory' name='dropdowCategory' multiple="multiple" id="Category"></select>
-
                             </td>
                             <td>
                                 <input type='button' id='btnDelete' class='btn btn-danger btn-sm deletebutton' Value='Delete' style='width:60px;'>
@@ -61,7 +58,18 @@
                 </table>
             </div>
         </div>
-        <button type="button" id="btnSubmit" class="btn btn-primary btn-md btn-sm">Save</button>
+        <div class="form-group">
+            <button type="button" id="btnSubmit" class="btn btn-primary btn-md btn-sm" disabled>Save</button>
+            <input type="button" id="exceluploadbutton" value="Excel Upload" class="btn btn-primary btn-md btn-sm" disabled />
+        </div>
+        <div class="form-group excelupload">
+            <input type="file" id="files" name="files" />
+            <input type="button" id="excelupload" value="Upload" class="btn btn-primary btn-md btn-sm" />
+        </div>
+        @*<input type="file" id="files" name="files" disabled />
+        <button type="button" id="btnSubmit" class="btn btn-primary btn-md btn-sm">Excel Upload</button>*@
+        @*<input type="button" id="emailupload" value="Excel Upload" class="btn btn-primary" disabled />*@
+
     </div>
 </div>
 
@@ -72,7 +80,7 @@
                 <tr>
                     <th>RegisterId</th>
                     <th>First Name</th>
-                    <th>Last Name</th>
+                    @*<th>Last Name</th>*@
                     <th>Email Id</th>
                     <th>Category</th>
                 </tr>
@@ -89,6 +97,7 @@
         BindPlatform(0);
         BindCategory(0);
         MultiSelectChckBox();
+        $(".excelupload").hide();
     });
     var count = 1;
     $("#newrows").click(function () {
@@ -97,8 +106,8 @@
 
     function tblBind() {
         var addcontrols = "<tr id=\"RowId_" + count + "\">" + count + ">"
-        addcontrols += "<td><input type='text' name='firstname' placeholder='Enter First Name' class='name form-control'></td>"
-        addcontrols += "<td><input type='text' name='lastname' placeholder='Enter Last Name' class='name form-control'></td>"
+        addcontrols += "<td><input type='text' name='firstname' placeholder='Enter Name' class='name form-control'></td>"
+       /* addcontrols += "<td><input type='text' name='lastname' placeholder='Enter Last Name' class='name form-control'></td>"*/
         addcontrols += "<td><input type='text' name='emailid' placeholder='Enter Email Id' class='emailid form-control'></td>"
         addcontrols += "<td><select data-placeholder='Select Category' class='form-control dropdownCategory' name='dropdowCategory' multiple='multiple' id='dropdownCategory'></select></td>"
         addcontrols += "<td><input type='button' id='btnDelete' class='btn btn-danger btn-sm deletebutton' Value='Delete' style='width:60px;'></td>"
@@ -111,67 +120,6 @@
         MultiSelectChckBox();
         count++;
     }
-
-    $('#btnSubmit').click(function () {
-
-        var RegisterId = $("#user option:selected").val();
-        var Name = $("#name").val();
-        var UserCategory = $("#dropdownCategory").val();
-        var Users = new Array();
-        $("#tblUsers tbody tr").each(function () {
-            var row = $(this);
-            var User = {};
-            User.FirstName = row.find("td:eq(0) input[type='text']").val();
-            User.LastName = row.find("td:eq(1) input[type='text']").val();
-            User.EmailId = row.find("td:eq(2) input[type='text']").val();
-            User.UserCategoryViewModel = row.find("td:eq(3) select").val();
-            if (User.UserCategoryViewModel.length == 0) {
-                User.UserCategoryViewModel = UserCategory;
-            }
-            Users.push(User);
-        });
-
-        var writeobject = new Object();
-        writeobject.RegisterId = RegisterId,
-            writeobject.Name = Name,
-            writeobject.Users = Users;
-
-        const duplicateIds = Users
-            .map(v => v.EmailId)
-            .filter((v, i, vIds) => vIds.indexOf(v) !== i)
-        const duplicates = Users
-            .filter(obj => duplicateIds.includes(obj.EmailId));
-        console.log(duplicates);
-        var duplicatelist = new Array();
-        for (var i = 0; i < duplicates.length; i++) {
-            var duplicate = duplicates[i].EmailId;
-            duplicatelist.push(duplicate + "\n");
-        }
-        if (duplicatelist.length > 0) {
-            alert(duplicatelist);
-            return;
-        }
-
-
-
-         $.ajax({
-            url: 'Create/User',
-            contentType: 'application/json',
-            data: JSON.stringify(writeobject),
-            type: "POST",
-             success: function (EmailList) {
-                 if (EmailList.length != 0) {
-                     alert("Cannot Store Email : \n" + EmailList.toString().replaceAll(",","\n"));
-                 }
-                 else {
-                     alert('Success');
-                 }
-            },
-            error: function () {
-                alert('failure');
-            }
-        });
-    });
 
     function BindCategory(id, selectedId) {
         $.ajax({
@@ -246,7 +194,7 @@
                     "columns": [
                         { "data": "RegisterId" },
                         { "data": "FirstName" },
-                        { "data": "LastName" },
+                        /*{ "data": "LastName" },*/
                         { "data": "EmailId" },
                         { "data": "CategoryName" }
 
@@ -265,36 +213,123 @@
         });
     }
 
-    $('#emailupload').click(function () {
-        
+    $('#excelupload').click(function () {
+        var RegisterId = $("#user option:selected").val();
         var fileUpload = $("#files").get(0);
         var files = fileUpload.files;
-
-        // Create  a FormData object
         var fileData = new FormData();
-
-        // if there are multiple files , loop through each files
+        fileData.append('RegisterId', RegisterId);
         for (var i = 0; i < files.length; i++) {
             fileData.append(files[i].name, files[i]);
         }
-
+       
 
         $.ajax({
             url: "@Url.Action("Upload", "User")",
-           type: "POST", //as we will be posting files and other method POST is used
-           processData: false, //remember to set processData and ContentType to false, otherwise you may get an error
+           type: "POST", 
+           processData: false,
            contentType: false,
-           data: fileData,
-
+             data: fileData,
+            /*data: { 'RegisterId': RegisterId},*/
             success: function (result) {
-                
-                alert("success");
+                if (result.length != 0) {
+                    alert("Cannot Store Email : \n" + result.toString().replaceAll(",", "\n"));
+                    /*alert(result);*/
+                }
+                else {
+                    $("#files").val('');
+                    alert('Upload Successfully');
+                }
             },
             error: function (result) {
-                
                 alert('failure');
             }
         });
     })
+
+    $('#btnSubmit').click(function () {
+        
+        var RegisterId = $("#user option:selected").val();
+        var Name = $("#name").val();
+        var UserCategory = $("#dropdownCategory").val();
+        var Users = new Array();
+        $("#tblUsers tbody tr").each(function () {
+            var row = $(this);
+            var User = {};
+            User.FirstName = row.find("td:eq(0) input[type='text']").val();
+          /*  User.LastName = row.find("td:eq(1) input[type='text']").val();*/
+            User.EmailId = row.find("td:eq(1) input[type='text']").val();
+            User.UserCategoryViewModel = row.find("td:eq(2) select").val();
+            if (User.UserCategoryViewModel.length == 0) {
+                User.UserCategoryViewModel = UserCategory;
+            }
+            Users.push(User);
+            debugger;
+            if (User.UserCategoryViewModel.length != 0 || UserCategory.length != 0) {
+                alert(" Category Selected");
+            }
+        });
+
+        var writeobject = new Object();
+        writeobject.RegisterId = RegisterId,
+            writeobject.Name = Name,
+            writeobject.Users = Users;
+
+        const duplicateIds = Users
+            .map(v => v.EmailId)
+            .filter((v, i, vIds) => vIds.indexOf(v) !== i)
+        const duplicates = Users
+            .filter(obj => duplicateIds.includes(obj.EmailId));
+        console.log(duplicates);
+        var duplicatelist = new Array();
+        for (var i = 0; i < duplicates.length; i++) {
+            var duplicate = duplicates[i].EmailId;
+            duplicatelist.push(duplicate + "\n");
+        }
+        if (duplicatelist.length > 0) {
+            alert(duplicatelist);
+            return;
+        }
+        $.ajax({
+            url: 'Create/User',
+            contentType: 'application/json',
+            data: JSON.stringify(writeobject),
+            type: "POST",
+            success: function (EmailList) {
+                if (EmailList.length != 0) {
+                    alert("Cannot Store Email : \n" + EmailList.toString().replaceAll(",", "\n"));
+                }
+                else {
+                    alert('Success');
+                }
+            },
+            error: function () {
+                alert('failure');
+            }
+        });
+    });
+
+
+    $('#user').on('change', function () {
+        ExcelUploadEnable();
+    });
+
+
+    function ExcelUploadEnable() {
+        var RegisterId = $("#user option:selected").val();
+        if (RegisterId == "" || RegisterId == undefined) {
+            document.getElementById('exceluploadbutton').disabled = true;
+            document.getElementById('btnSubmit').disabled = true;
+        }
+        else {
+            document.getElementById('exceluploadbutton').disabled = false;
+            document.getElementById('btnSubmit').disabled = false;
+        }
+    }
+
+    $('#exceluploadbutton').click(function () {
+        $(".excelupload").show();
+    })
 </script>
+
 

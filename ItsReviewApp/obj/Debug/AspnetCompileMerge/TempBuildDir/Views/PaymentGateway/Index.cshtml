@@ -1,0 +1,68 @@
+﻿@model ItsReviewApp.ViewModels.PaymentRequestViewModel
+@{
+    ViewBag.Title = "Index";
+}
+
+
+<div class="container-fluid">
+    <div class="header">
+        <h5 style="color:#fff;margin-right: 40px;">ItsReview App</h5>
+    </div>
+
+    <div class="container" style="padding-top:30px;">
+        @using (Html.BeginForm("CreateOrder", "PaymentGateway", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="row">
+                <label for="name">Customer Name</label>
+                @Html.TextBoxFor(x => x.Name, new { @class = "form-control" })
+            </div>
+            <div class="row">
+                <label for="email">Email ID</label>
+                @Html.TextBoxFor(x => x.Email, new { @class = "form-control" })
+            </div>
+            <div class="row">
+                <label for="amount">Amount (INR)</label>
+                @Html.TextBoxFor(x => x.Amount, new { @class = "form-control" })
+            </div>
+            @*<div class="row">
+                <label for="amount">Mobile Number</label>
+                @Html.TextBoxFor(x => x.MobileNumber, new { @class = "form-control" })
+            </div>*@
+            <div class="row">
+                <br />
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        }
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $('#submit').click(function () {
+
+        var Customername = $("#Customername").val();
+        var email = $("#email").val();
+        var amount = $('#amount').val();
+
+        var writeobject = new Object();
+        writeobject.Name = Customername
+        writeobject.Email = email;
+        writeobject.Amount = amount;
+
+        $.ajax({
+            url: "@Url.Action("CreateOrder", "PaymentGateway")",
+            contentType: 'application/json',
+            data: JSON.stringify(writeobject),
+            type: "POST",
+            success: function (result) {
+              alert('success');
+                   
+            },
+            error: function (result) {
+                alert('failure');
+            }
+        });
+    });
+</script>

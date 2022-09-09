@@ -1,5 +1,9 @@
 ﻿@{
     ViewBag.Title = "Create";
+    if(Session["EmailId"] == null)
+    {
+        Response.Redirect("~/Login/Login");
+    }
 
 }
 
@@ -7,6 +11,11 @@
 <html>
 <head>
     <link href="~/Content/Site.css" rel="stylesheet" />
+    <style>
+        .dataTables_length{
+            display:none;
+        }
+    </style>
 </head>
 <body>
     <div class="container-fluid">
@@ -17,7 +26,7 @@
     </div>
     <div class="container" style="margin-top:30px;">
         <div class="row col-md-12">
-            <div class="form-group col-md-3" id="nicheid">
+            @*<div class="form-group col-md-3" id="nicheid">
                 <label>Select Niche: </label>
                 <div>
                     @Html.DropDownList("MySkills", (IEnumerable<SelectListItem>)ViewBag.MySkills, new { @class = "form-control chosen" })
@@ -28,7 +37,7 @@
                 <div>
                     @Html.DropDownList("Country", (IEnumerable<SelectListItem>)ViewBag.Country, new { @class = "form-control chosen" })
                 </div>
-            </div>
+            </div>*@
             <div class="form-group col-md-3" id="typeid">
                 <label>Select Type: </label>
                 <div>
@@ -38,37 +47,94 @@
             <div class="form-group col-md-3" id="companyid">
                 <label>Select Company: </label>
                 <div>
-                    @Html.DropDownList("CompanyName", (IEnumerable<SelectListItem>)ViewBag.Company, new { @class = "form-control chosen" })
+                    @Html.DropDownList("CompanyName", (IEnumerable<SelectListItem>)ViewBag.Company, "-- select --", new { @class = "form-control chosen", @onchange = "OnCompantChange(this);" })
+                </div>
+            </div>
+            <div class="form-group col-md-3">
+                <label>City Name: </label>
+                <div>
+                    <input type="text" class="form-control" id="cityName" readonly>
+                </div>
+            </div>
+            <div class="form-group col-md-3">
+                <label>Listing URL: </label>
+                <div>
+                    <a target="_blank" class="btn btn-primary" href="" id="listingURL">Go</a>
                 </div>
             </div>
         </div>
 
-        <div class="row col-md-12">
-            <div class="form-group col-md-8">
-                <label>Enter Review: </label>
-                <input type="button" class="btn btn-dark" value="Add New Row" id="newrows" style="margin-left:30px;" />
+        <div id="tabs" style="margin-top:100px;">
+            <ul>
+                <li><a href="#tabs-1">Enter Review</a></li>
+                <li><a href="#tabs-3" id="tab3">Review List</a></li>
+                <li><a href="#tabs-2">Excel Upload</a></li>
+            </ul>
+            <div id="tabs-1">
                 <div style="padding-top:10px;">
                     <table class="table table-bordered" id="reviewtableid">
                         <thead>
                             <tr>
+                                <th scope="col"></th>
                                 <th scope="col">Review</th>
                             </tr>
                         </thead>
                         <tbody class="ReviewTableClass">
-                            <tr>
-                                <td>
-                                    <input type="text" placeholder="Enter Review" class="name form-control" value="" onfocusout="ReviewValidation(this)" id="fname" />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <input type="text" placeholder="Enter Review" class="name form-control" onfocusout="ReviewValidation(this)" value="" />
-                                </td>
-                            </tr>
                         </tbody>
                     </table>
                     <button type="button" id="btnSubmit" class="btn btn-primary btn-md btn-sm">Save</button>
-                   
+                    <input type="button" class="btn btn-dark" value="Add New Row" id="newrows" style="margin-left:30px;" />
+                </div>
+            </div>
+            <div id="tabs-2">
+                <div class="form-group excelupload">
+                    <input type="file" id="files" name="files" /> <br />
+                    <input type="button" id="excelupload" value="Upload" class="btn btn-primary btn-md btn-sm" />
+                </div>
+            </div>
+            <div id="tabs-3">
+                <div class="form-group">
+                    <table id="datatableid" class="table table-bordered table-responsive" style="width: 100%">
+                        <thead>
+                            <tr>
+                                <th style="width:7% !important;">No.</th>
+                                <th style="width: 85% !important;">Review Name</th>
+                                <th style="width:3% !important;"></th>
+                                <th style="width:3% !important;"></th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="margin-top: 80px;">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Edit Review</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <input type="hidden" class="form-control" id="reviewid">
+                        </div>
+                        <div class="form-group">
+                            <label for="reviewname">Review Name</label>
+                            @*<input type="text" class="form-control" placeholder="Enter Review" id="reviewname">*@
+                            <textarea name='reviewname' class='form-control' rows='3' cols='50' id="reviewname"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="ReviewUpdate()" data-dismiss="modal">Save changes</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -77,29 +143,60 @@
 </html>
 
 <script type="text/javascript">
+
+    var count = 4;
+    var rowCount = 0;
     $(document).ready(function () {
-        var count = 2;
+        for (i = 0; i <= count; i++) {
+            rowCount++;
+            BindReview(i);
+        }
         $("#newrows").click(function () {
-            count++;
-            var addcontrols = "<tr id=\"RowId_" + count + "\">" + count + ">"
-            addcontrols += "<td><input type='text' onfocusout='ReviewValidation(this)' name='reviewname' placeholder='Enter Review' class='name form-control'></td>"
-            addcontrols += "</tr>";
-            $("table tbody").append(addcontrols);
+            for (i = 0; i <= 4; i++) {
+                rowCount++;
+                BindReview();
+            }
+           /* BindReview(count);*/
         });
 
-    })
+        var selected_tab = 0;
+        $(function () {
+            var tabs = $("#tabs").tabs({
+                select: function (e, i) {
+                    selected_tab = i.index;
+                }
+            });
+            selected_tab = $("#selectedTab").val() != "" ? parseInt($("#selectedTab").val()) : 0;
+            tabs.tabs('select', selected_tab);
+            $("form").submit(function () {
+                $("#selectedTab").val(selected_tab);
+            });
+        });
+
+
+    });
+
+    function BindReview(count) {
+        var addcontrols = "<tr id=\"RowId_" + rowCount + "\">" + rowCount + ">"
+        /*addcontrols += "<td><input type='text' onchange='ReviewValidation(this)' name='reviewname' placeholder='Enter Review' class='name form-control'></td>"*/
+        addcontrols += "<td>" + rowCount + "</td>";
+        addcontrols += "<td><textarea onchange='ReviewValidation(this)' name='reviewname' placeholder='Enter Review' class='cls-review-name form-control' rows='3' cols='50'></textarea></td>"
+        addcontrols += "</tr>";
+        $("table tbody").append(addcontrols);
+    }
 
 
     $('#btnSubmit').click(function () {
         var CompanyId = $("#companyid option:selected").val();
 
         var Reviews = new Array();
-        $("#reviewtableid tbody tr").each(function () {
-
-            var row = $(this);
+        $("textarea.cls-review-name").each(function () {
             var Review = {};
-            Review.ReviewName = row.find("td:eq(0) input[type='text']").val();
-            Reviews.push(Review);
+            var reviewName = $(this).val();
+            Review.ReviewName = reviewName;
+            if (reviewName != "") {
+                Reviews.push(Review);
+            }
         });
 
         var writeobject = new Object();
@@ -112,6 +209,13 @@
             data: JSON.stringify(writeobject),
             type: "POST",
             success: function () {
+                count = 4;
+                rowCount = 0;
+                $("#reviewtableid tbody tr").empty();
+                for (i = 0; i <= count; i++) {
+                    rowCount++;
+                    BindReview(i);
+                }
                 alert('success');
             },
             error: function () {
@@ -148,6 +252,169 @@
         });
     }
 
+    function OnCompantChange() {
+        var companyId = $("#CompanyName").val();
+         $.ajax({
+             url: '@Url.Action("GetDataByComapnyID", "Writer")?companyId=' + companyId,
+            type: "GET",
+            dataType: "json",
+             success: function (data) {
+                 if (data != undefined && data != null) {
+                     $("#cityName").val(data.CityName);
+                     $("#listingURL").attr("href", data.ListingUrl);
+                 }
+                 var tab = $("#tabs ul li a#tab3").closest("li").find(".ui-tabs-selected").prevObject.length;
+                 if (tab > 0) {
+                     ReviewList();
+                 }
+             }
+         })
+    }
+
+    $('#excelupload').click(function () {
+        var companyId = $("#companyid option:selected").val();
+        var fileUpload = $("#files").get(0);
+        var files = fileUpload.files;
+        var fileData = new FormData();
+        fileData.append('companyId', companyId);
+        for (var i = 0; i < files.length; i++) {
+            fileData.append(files[i].name, files[i]);
+        }
+
+
+        $.ajax({
+            url: "@Url.Action("Upload", "Writer")",
+           type: "POST",
+           processData: false,
+           contentType: false,
+             data: fileData,
+            success: function (result) {
+                if (result.length != 0) {
+                    alert(result);
+                }
+                else {
+                    $("#files").val('');
+                    alert('Upload Successfully');
+                }
+            },
+            error: function (result) {
+                alert('failure');
+            }
+        });
+    })
+
+    $("#tabs").on('click', '#tab3', function () {
+        ReviewList();
+
+    })
+    function ReviewList() {
+         var CompanyId = $("#companyid option:selected").val();
+        if (CompanyId != "") {
+            $.ajax({
+                url: "@Url.Action("GetReviewByComapnyID", "Writer")",
+                type: "GET",
+                data: {CompanyId : CompanyId},
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                     $('#datatableid').dataTable({
+                        destroy: true,
+                         data: data,
+                         "pageLength": 20,
+                        "columns": [
+                            { "data": "Id" },
+                            {
+                                "data": "ReviewName",
+                                "render": function (data, type, row) {
+                                    var reviewName = data.length > 95 ? data.substring(0, 95) + "..." : data;
+                                    return "<span title='" + data + "'>" + reviewName + "</span>";
+                                }
+                            },
+                            {
+                                data: { Id: "Id", ReviewName: "ReviewName"},
+                                mRender: function (data, type, full) {
+                                   /* return data.Id + ' ' + data.ReviewName;*/
+                                    return '<button type="button" class="btn btn-primary" data-toggle="modal" onclick="UpdateWriterReview(this)" data-target="#exampleModal" data-id="' + data.Id + '" data-reviewname="' + data.ReviewName + '">EDIT</button>'
+                                }
+                            },
+                            {
+                                "data": "Id",
+                                "render": function (data, type, row) {
+                                    return '<input type="button" onclick="RemoveWriterReview(this)" data-id="' + data + '" class="btn btn-danger btn-sm" value="Delete"/>';
+                                }
+                            }
+
+                         ]
+                    });
+
+
+                }
+            })
+        }
+        else {
+            alert("Please Choose Company!");
+        }
+    }
+    function UpdateWriterReview(row) {
+       var reviewname = $(row)[0];
+       var reviewId = $(reviewname).attr("data-id");
+        var reviewName = $(reviewname).attr("data-reviewname");
+        var review = $("#exampleModal").find("#reviewname").val(reviewName);
+        var Id = $("#exampleModal").find("#reviewid").val(reviewId);
+    }
+
+
+    function RemoveWriterReview(row) {
+        if (confirm('Are you sure want to delete review?')) {
+            var deleteId = $(row)[0];
+            deleteId = $(deleteId).attr("data-id");
+
+            var writeobject = new Object();
+            writeobject.Id = deleteId
+
+            $.ajax({
+                url: "@Url.Action("DeleteReviewByComapnyID", "Writer")",
+                contentType: 'application/json',
+                data: JSON.stringify(writeobject),
+                type: "POST",
+                success: function (result) {
+                    ReviewList();
+                    alert('Delete Successully!');
+                    //$('#datatableid').reload();
+
+                },
+                error: function () {
+                    alert('failure');
+                }
+            });
+        }
+        else {
+            return;
+        }
+    }
+
+    function ReviewUpdate() {
+        var reviewname = $("#exampleModal").find("#reviewname").val();
+        var reviewId = $("#exampleModal").find("#reviewid").val();
+
+        var writeobject = new Object();
+        writeobject.Id = reviewId
+        writeobject.ReviewName = reviewname
+
+        $.ajax({
+              url: "@Url.Action("UpdateReviewByComapnyID", "Writer")",
+            contentType: 'application/json',
+            data: JSON.stringify(writeobject),
+            type: "POST",
+            success: function (result) {
+                ReviewList();
+                alert('Update Successully!');
+
+            },
+            error: function () {
+                alert('failure');
+            }
+        });
+    }
 
 </script>
 
