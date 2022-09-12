@@ -63,6 +63,7 @@
                     <input type="checkbox" class="form-check-input" id="followupcheck" checked>
                     <label class="form-check-label" for="followupcheck">Save to FollowUp List</label>
                 </div>
+                <button type="submit" onclick="location.href='@Url.Action("Index", "Sales")'" class="btn btn-primary" id="btnBack">Back</button>
                 <button type="submit" class="btn btn-primary" id="btnsave">Save</button>
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#LeadModal">Create Lead</button>
                 <button type="button" class="btn btn-primary" data-toggle="modal" onclick="BindLead();" data-target="#LeadModalId">Lead Data</button>

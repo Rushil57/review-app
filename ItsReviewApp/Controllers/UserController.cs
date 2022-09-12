@@ -420,6 +420,10 @@ namespace ItsReviewApp.Controllers
                 }
                 else
                 {
+                    parameters = new DynamicParameters();
+                    parameters.Add("@CompanyId", userTrackingViewModel.CompanyId, DbType.String, ParameterDirection.Input);
+                    parameters.Add("@WriterId", userTrackingViewModel.WriterId, DbType.String, ParameterDirection.Input);
+                    parameters.Add("@Mode", 3, DbType.Int32, ParameterDirection.Input);
                     connection.Close();
                 }
                

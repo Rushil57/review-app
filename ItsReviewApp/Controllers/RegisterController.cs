@@ -20,6 +20,7 @@ namespace ItsReviewApp.Controllers
         bool companyResult = false;
         object emailresult;
         int emailCount = 0;
+        int userId = 0;
         public RegisterController()
         {
             con = new SqlConnection(connectionString);
@@ -59,6 +60,7 @@ namespace ItsReviewApp.Controllers
             {
                 con.Open();
                 var parameters = new DynamicParameters();
+                parameters.Add("@RegisterId", registerId, DbType.Int32, ParameterDirection.Input);
                 parameters.Add("@Mode", 8, DbType.Int32, ParameterDirection.Input);
                 userTrackingViewModel = con.Query<UserTrackingViewModel>("sp_User", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
                 if (companyId != 0)
@@ -79,6 +81,11 @@ namespace ItsReviewApp.Controllers
                 {
                     defaultCompanyId = 0;
                 }
+                if (userId == 1)
+                {
+                    userTrackingViewModel.UserId = "0";
+                    userId = 0;
+                }
                 parameters = new DynamicParameters();
                 parameters.Add("@CompanyId", defaultCompanyId, DbType.Int32, ParameterDirection.Input);
                 parameters.Add("@Mode", 7, DbType.Int32, ParameterDirection.Input);
@@ -87,8 +94,8 @@ namespace ItsReviewApp.Controllers
                 parameters = new DynamicParameters();
                 parameters.Add("@CompanyId", companylist.Id, DbType.Int32, ParameterDirection.Input);
                 parameters.Add("@Mode", 10, DbType.Int32, ParameterDirection.Input);
-                var reviewcompanylist = con.Query<SalesDetailsViewModel>("sp_User", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
-                if(reviewcompanylist == null)
+                var reviewcompanylist = con.Query<int>("sp_User", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
+                if(reviewcompanylist == 0)
                 {
                     emailCount++;
                     if (emailCount > 170)
@@ -108,6 +115,7 @@ namespace ItsReviewApp.Controllers
                     trackingCompanyId = 0;
                     parameters = new DynamicParameters();
                     parameters.Add("@CompanyId", companylist.Id, DbType.Int32, ParameterDirection.Input);
+                    parameters.Add("@RegisterId", registerId, DbType.Int32, ParameterDirection.Input);
                     parameters.Add("@Mode", 9, DbType.Int32, ParameterDirection.Input);
                     var list = con.Query<UserTrackingViewModel>("sp_User", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
                     if (userTrackingViewModel.UserId == null)
@@ -125,18 +133,6 @@ namespace ItsReviewApp.Controllers
                         parameters = new DynamicParameters();
                         parameters.Add("@Mode", 6, DbType.Int32, ParameterDirection.Input);
                         parameters.Add("@CompanyId", companylist.Id, DbType.Int32, ParameterDirection.Input);
-                        //if (companylist.WriterId != null)
-                        //{
-                        //    if (userTrackingViewModel.WriterId == null)
-                        //    {
-                        //        companylist.WriterId = "0";
-                        //    }
-                        //    else
-                        //    {
-                        //        companylist.WriterId = userTrackingViewModel.WriterId;
-                        //    }
-                        //    parameters.Add("@WriterId", companylist.WriterId, DbType.String, ParameterDirection.Input);
-                        //}
                         review = con.Query<WriterViewModel>("sp_User", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
                         if (review == null)
                         {
@@ -146,7 +142,7 @@ namespace ItsReviewApp.Controllers
                             emailCount++;
                             if (emailCount > 170)
                             {
-                                emailresult = new { user = userlist, reviews = review, company = companylist };
+                                emailresult = new { user = userlist, reviews = "reviewnotound", company = companylist };
                                 return Json(emailresult, JsonRequestBehavior.AllowGet);
                             }
                             companyId = companylist.Id;
@@ -168,13 +164,13 @@ namespace ItsReviewApp.Controllers
                         emailCount++;
                         if (emailCount > 170)
                         {
-                            emailresult = new { user = userlist, reviews = review, company = companylist };
+                            emailresult = new { user = "usernotound", reviews = review, company = companylist };
                             return Json(emailresult, JsonRequestBehavior.AllowGet);
                         }
-                        companyId = companylist.Id;
                         con.Close();
-                        if (companyId != 0)
+                        if (userId == 0)
                         {
+                            userId = 1;
                             GetList();
                         }
                     }

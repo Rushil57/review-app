@@ -176,6 +176,10 @@
                     $("label[for='suggestedemail']").text("Review not found");
                     userid = 0;
                 }
+                else if (data.user == "usernotound") {
+                    $("label[for='suggestedemail']").text("User not found");
+                    userid = 0;
+                }
                 else {
                     $("label[for='suggestedemail']").text(data.user.EmailId);
                     userid = data.user.Id;

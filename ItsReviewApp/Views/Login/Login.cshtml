@@ -49,7 +49,6 @@
             data: JSON.stringify(writeobject),
             type: "POST",
             success: function (result) {
-                debugger;
                 if (result != null && result != undefined) {
                     if (result.RoleName == "Writer") {
                         var url = '@Url.Action("Create", "Writer")';
