@@ -56,13 +56,11 @@
     })
 
     function incTimer() {
-        //setTimeout(function () {
-        //    document.getElementById('reviewbutton').disabled = null;
-        //    document.getElementById('addressId').disabled = null;
-        //}, 10000);
+        setTimeout(function () {
             document.getElementById('reviewbutton').disabled = null;
             document.getElementById('addressId').disabled = null;
             document.getElementById('listingurlbutton').disabled = null;
+        }, 10000);
     }
      function BindPaltform(id) {
         $.ajax({
@@ -85,81 +83,32 @@
     }
 
     function disablereviewbutton() {
-        @*setTimeout(function () {
-            document.getElementById('reviewbutton').disabled = true;
-            document.getElementById('listingurlbutton').disabled = null;
-        });
 
-        $.ajax({
-            url: "@Url.Action("GetList", "Register")",
-            type: "GET",
-            dataType: "json",
-            contentType: 'application/json; charset=utf-8',
-            success: function (data) {
-                var review = data.reviews.ReviewName;
-               // console.log(review);
-                writerid = data.reviews.Id;*@
                 var review = $("#hdnreview").val();
                 var $temp = $("<input>");
                 $("body").append($temp);
                 $temp.val(review).select();
                 document.execCommand("copy");
                 $temp.remove();
-
-
-        //    }
-        //})
     }
 
     function CopyAddress() {
-
-        @*$.ajax({
-            url: "@Url.Action("GetList", "Register")",
-            type: "GET",
-            dataType: "json",
-            contentType: 'application/json; charset=utf-8',
-            success: function (data) {*@
                 var address = $("#hdnAddress").val();
                 var $temp = $("<input>");
                 $("body").append($temp);
                 $temp.val(address).select();
                 document.execCommand("copy");
                 $temp.remove();
-                //var aux = document.createElement("input");
-                //aux.setAttribute("value", address);
-                //document.body.appendChild(aux);
-                //aux.select();
-                //document.execCommand("copy");
-                //document.body.removeChild(aux);
-        //    }
-        //})
     }
 
     function disableurllistingbutton() {
-        //setTimeout(function () {
-        //    document.getElementById('listingurlbutton').disabled = true;
-        //});
+        var listingurl = $("#hdnListingUrl").val();
+        window.open(listingurl, '_blank');
 
-        //setTimeout(function () {
-        //    document.getElementById('listingurlbutton').disabled = null;
-        //    document.getElementById('showing').disabled = null;
-        //    document.getElementById('skip').disabled = null;
-        //}, 10000);
+        setTimeout(function () {
         document.getElementById('showing').disabled = null;
-        document.getElementById('skip').disabled = null;
-        @*$.ajax({
-            url: "@Url.Action("GetList", "Register")",
-            type: "GET",
-            dataType: "json",
-            contentType: 'application/json; charset=utf-8',
-            success: function (data) {*@
-                var listingurl = $("#hdnListingUrl").val();
-                //companyid = data.company.Id;
-                window.open(listingurl, '_blank');
-
-        //    }
-        //})
-
+            document.getElementById('skip').disabled = null;
+        }, 5000);
     }
 
 
@@ -167,8 +116,11 @@
         $("#hdnreview").val('');
         $("#hdnAddress").val('');
         $("#hdnListingUrl").val('');
+        $("#hdnCompanyId").val('');
+        $("#hdnWriterId").val('');
+        $("#hdnUserId").val('');
+        $("#suggestemailName").text('');
         $.ajax({
-            /*url: "GetList/Register",*/
             url: "@Url.Action("GetList", "Register")",
             type: "GET",
             dataType: "json",
@@ -176,6 +128,10 @@
             success: function (data) {
                 if (data.user == null) {
                     $("label[for='suggestedemail']").text("work completed");
+                }
+                else if (data.user == "usernotlogin") {
+                        var url = '@Url.Action("Login", "Login")';
+                        window.location.href = url;
                 }
                 else if (data.user == "nocontent") {
                     $("label[for='suggestedemail']").text("No content");
@@ -206,6 +162,9 @@
     function storedata(id) {
         document.getElementById('showing').disabled = true;
         document.getElementById('skip').disabled = true;
+        document.getElementById('reviewbutton').disabled = true;
+        document.getElementById('addressId').disabled = true;
+        document.getElementById('listingurlbutton').disabled = true;
         var buttonclick = id;
         var label = $('#suggestemail').text();
         var writeobject = new Object();
@@ -222,15 +181,14 @@
           /*  dataType: "json",*/
             type: "POST",
              success: function (result) {
-                 //document.getElementById('listingurlbutton').disabled = true;
-                 //document.getElementById('showing').disabled = true;
-                 //document.getElementById('skip').disabled = true;
-                 //document.getElementById('addressId').disabled = true;
-                 incTimer();
                  BindEmailId();
-                //alert('success');
             },
              error: function (result) {
+                 document.getElementById('showing').disabled = null;
+                 document.getElementById('skip').disabled = null;
+                 document.getElementById('reviewbutton').disabled = null;
+                 document.getElementById('addressId').disabled = null;
+                 document.getElementById('listingurlbutton').disabled = null;
                  alert('failure');
             }
         });

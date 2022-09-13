@@ -16,7 +16,6 @@ namespace ItsReviewApp.Controllers
         string connectionString = ConfigurationManager.ConnectionStrings["DbEntities"].ToString();
         SqlConnection con;
         int companyId = 0;
-        int trackingCompanyId = 0;
         bool companyResult = false;
         object emailresult;
         int emailCount = 0;
@@ -56,92 +55,38 @@ namespace ItsReviewApp.Controllers
             {
                 registerId = Convert.ToInt32(Session["RegisterId"]);
             }
+            else
+            {
+                emailresult = new { user = "usernotlogin", reviews = "", company = "" };
+                return Json(emailresult, JsonRequestBehavior.AllowGet);
+            }
             try
             {
                 con.Open();
                 var parameters = new DynamicParameters();
                 parameters.Add("@RegisterId", registerId, DbType.Int32, ParameterDirection.Input);
                 parameters.Add("@Mode", 8, DbType.Int32, ParameterDirection.Input);
-                var reader = con.QueryMultiple("sp_User", parameters, commandType: CommandType.StoredProcedure);
-                var userTracking = reader.Read<UserTrackingViewModel>().FirstOrDefault();
-                var userTrackingWithRegister = reader.Read<UserTrackingViewModel>().FirstOrDefault();
-                userTrackingViewModel.CompanyId = userTracking.CompanyId;
-
-                if (userTrackingWithRegister==null || userTrackingWithRegister.WriterId==null)
-                {
-                    userTrackingViewModel.WriterId = "0";
-                }
-                else
-                {
-                    userTrackingViewModel.WriterId = userTrackingWithRegister.WriterId;
-                }
-                if (userTrackingWithRegister == null || userTrackingWithRegister.UserId==null)
-                {
-                    userTrackingViewModel.UserId = "0";
-                }
-                else
-                {
-                    userTrackingViewModel.UserId = userTrackingWithRegister.UserId;
-                }
-                
-                
-                //userTrackingViewModel = con.Query<UserTrackingViewModel>("sp_User", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
+                userTrackingViewModel = con.Query<UserTrackingViewModel>("sp_User", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
+                                
                 if (companyId != 0)
                 {
                     userTrackingViewModel.CompanyId = companyId.ToString();
                     companyId = 0;
                 }
-                var defaultCompanyId = 0;
-                if (userTrackingViewModel != null && userTrackingViewModel.CompanyId != null)
-                {
-                    defaultCompanyId = Convert.ToInt32(userTrackingViewModel.CompanyId);
-                }
-                else
-                {
-                    userTrackingViewModel = new UserTrackingViewModel();
-                }
-                if (trackingCompanyId != 0)
-                {
-                    defaultCompanyId = 0;
-                }
+                
                 if (userId > -1)
                 {
                     userTrackingViewModel.UserId = userId.ToString();
                     userId = -1;
                 }
                 parameters = new DynamicParameters();
-                parameters.Add("@CompanyId", defaultCompanyId, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("@RegisterId", registerId, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("@CompanyId", userTrackingViewModel.CompanyId, DbType.Int32, ParameterDirection.Input);
                 parameters.Add("@Mode", 7, DbType.Int32, ParameterDirection.Input);
                 companylist = con.Query<SalesDetailsViewModel>("sp_User", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
 
-                //parameters = new DynamicParameters();
-                //parameters.Add("@CompanyId", companylist.Id, DbType.Int32, ParameterDirection.Input);
-                //parameters.Add("@Mode", 10, DbType.Int32, ParameterDirection.Input);
-                //var reviewcompanylist = con.Query<int>("sp_User", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
-                //if (reviewcompanylist == 0)
-                //{
-                //    emailCount++;
-                //    if (emailCount > 170)
-                //    {
-                //        emailresult = new { user = "", reviews = "", company = "" };
-                //        return Json(emailresult, JsonRequestBehavior.AllowGet);
-                //    }
-                //    companyId = companylist.Id;
-                //    con.Close();
-                //    if (companyId != 0)
-                //    {
-                //        GetList();
-                //    }
-                //}
                 if (companylist != null)
-                {
-                    trackingCompanyId = 0;
-                    //parameters = new DynamicParameters();
-                    //parameters.Add("@CompanyId", companylist.Id, DbType.Int32, ParameterDirection.Input);
-                    //parameters.Add("@RegisterId", registerId, DbType.Int32, ParameterDirection.Input);
-                    //parameters.Add("@Mode", 9, DbType.Int32, ParameterDirection.Input);
-                    //var list = con.Query<UserTrackingViewModel>("sp_User", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
-                    
+                {   
                     parameters = new DynamicParameters();
                     parameters.Add("@CompanyId", companylist.Id, DbType.Int32, ParameterDirection.Input);
                     parameters.Add("@RegisterId", registerId, DbType.Int32, ParameterDirection.Input);
@@ -172,7 +117,7 @@ namespace ItsReviewApp.Controllers
                             review = new WriterViewModel();
                             review.ReviewName = "reviewnotfound";
                             emailCount++;
-                            if (emailCount > 170)
+                            if (emailCount > 10)
                             {
                                 emailresult = new { user = userlist, reviews = "reviewnotound", company = companylist };
                                 return Json(emailresult, JsonRequestBehavior.AllowGet);
@@ -236,7 +181,7 @@ namespace ItsReviewApp.Controllers
             parameters.Add("@Status", userTrackingViewModel.Status, DbType.String, ParameterDirection.Input);
             parameters.Add("@EmailId", userTrackingViewModel.EmailId, DbType.String, ParameterDirection.Input);
             parameters.Add("@RegisterId", userTrackingViewModel.RegisterId, DbType.Int32, ParameterDirection.Input);
-            parameters.Add("@Mode", 1, DbType.Int32, ParameterDirection.Input);
+            parameters.Add("@Mode", 4, DbType.Int32, ParameterDirection.Input);
             using (IDbConnection connection = new SqlConnection(connectionString))
             {
                 trackdata = connection.ExecuteScalar("sp_UserTracking", parameters, commandType: CommandType.StoredProcedure);
