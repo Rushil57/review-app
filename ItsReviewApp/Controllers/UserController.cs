@@ -408,9 +408,8 @@ namespace ItsReviewApp.Controllers
             parameters.Add("@UserId", userTrackingViewModel.UserId, DbType.String, ParameterDirection.Input);
             parameters.Add("@Status", userTrackingViewModel.Status, DbType.String, ParameterDirection.Input);
             parameters.Add("@EmailId", userTrackingViewModel.EmailId, DbType.String, ParameterDirection.Input);
-            //parameters.Add("@RegisterId", registerId, DbType.Int32, ParameterDirection.Input);
             parameters.Add("@RegisterId", userTrackingViewModel.RegisterId, DbType.Int32, ParameterDirection.Input);
-            parameters.Add("@Mode", 1, DbType.Int32, ParameterDirection.Input);
+            parameters.Add("@Mode", 4, DbType.Int32, ParameterDirection.Input);
             using (IDbConnection connection = new SqlConnection(connectionString))
             {
                 trackdata = connection.ExecuteScalar("sp_UserTracking", parameters, commandType: CommandType.StoredProcedure);
@@ -418,15 +417,16 @@ namespace ItsReviewApp.Controllers
                 {
                     EmailList.Add(userTrackingViewModel.EmailId);
                 }
-                else
-                {
-                    parameters = new DynamicParameters();
-                    parameters.Add("@CompanyId", userTrackingViewModel.CompanyId, DbType.String, ParameterDirection.Input);
-                    parameters.Add("@WriterId", userTrackingViewModel.WriterId, DbType.String, ParameterDirection.Input);
-                    parameters.Add("@Mode", 3, DbType.Int32, ParameterDirection.Input);
-                    connection.Close();
-                }
-               
+                //else
+                //{
+                //    //parameters = new DynamicParameters();
+                //    //parameters.Add("@CompanyId", userTrackingViewModel.CompanyId, DbType.String, ParameterDirection.Input);
+                //    //parameters.Add("@WriterId", userTrackingViewModel.WriterId, DbType.String, ParameterDirection.Input);
+                //    //parameters.Add("@Mode", 3, DbType.Int32, ParameterDirection.Input);
+                //    //connection.ExecuteScalar("sp_UserTracking", parameters, commandType: CommandType.StoredProcedure);
+                //    connection.Close();
+                //}
+                connection.Close();
             }
 
             //return View();

@@ -11,13 +11,21 @@
     <div class="container" style="padding-top:30px;">
         <form onsubmit="return false">
             @*<div class="form-group">
-                    <label for="platform">Select Platform</label>
-                    <select class="form-control dropdownPaltform" name="dropdownPaltform"></select>
-            </div>*@
+                        <label for="platform">Select Platform</label>
+                        <select class="form-control dropdownPaltform" name="dropdownPaltform"></select>
+                </div>*@
             <div class="form-group">
+                <div>
+                    <label for="" id="suggestemailName"></label>
+                </div>
                 <label for="emailid">Email Id :</label>
                 <label for="suggestedemail" id="suggestemail"></label>
-               
+                <input type="hidden" id="hdnreview" value="0" />
+                <input type="hidden" id="hdnAddress" value="0" />
+                <input type="hidden" id="hdnListingUrl" value="0" />
+                <input type="hidden" id="hdnCompanyId" value="0" />
+                <input type="hidden" id="hdnWriterId" value="0" />
+                <input type="hidden" id="hdnUserId" value="0" />
             </div>
             <div class="form-group">
                 <button type="submit" class="btn btn-primary" id="addressId" onclick="CopyAddress()" disabled>Address</button>
@@ -28,6 +36,7 @@
                 <button type="submit" class="btn btn-primary" id="showing" disabled onclick="storedata(this.id)">Next</button>
                 @*<button type="submit" class="btn btn-primary" id="notshowing" disabled onclick="storedata(this.id)">Not Showing</button>*@
                 <button type="submit" class="btn btn-primary" id="skip" disabled onclick="storedata(this.id)">Skip</button>
+                <button type="submit" class="btn btn-primary" id="Logout" onclick="storedata(this.id)">Log Out</button>
             </div>
 
         </form>
@@ -47,10 +56,13 @@
     })
 
     function incTimer() {
-        setTimeout(function () {
+        //setTimeout(function () {
+        //    document.getElementById('reviewbutton').disabled = null;
+        //    document.getElementById('addressId').disabled = null;
+        //}, 10000);
             document.getElementById('reviewbutton').disabled = null;
             document.getElementById('addressId').disabled = null;
-        }, 10000);
+            document.getElementById('listingurlbutton').disabled = null;
     }
      function BindPaltform(id) {
         $.ajax({
@@ -73,7 +85,7 @@
     }
 
     function disablereviewbutton() {
-        setTimeout(function () {
+        @*setTimeout(function () {
             document.getElementById('reviewbutton').disabled = true;
             document.getElementById('listingurlbutton').disabled = null;
         });
@@ -86,33 +98,28 @@
             success: function (data) {
                 var review = data.reviews.ReviewName;
                // console.log(review);
-                writerid = data.reviews.Id;
-
+                writerid = data.reviews.Id;*@
+                var review = $("#hdnreview").val();
                 var $temp = $("<input>");
                 $("body").append($temp);
                 $temp.val(review).select();
                 document.execCommand("copy");
                 $temp.remove();
-                //var aux = document.createElement("input");
-                //aux.setAttribute("value", review);
-                //document.body.appendChild(aux);
-                //aux.select();
-                //document.execCommand("copy");
-                //document.body.removeChild(aux);
-               
-            }
-        })
+
+
+        //    }
+        //})
     }
 
     function CopyAddress() {
 
-        $.ajax({
+        @*$.ajax({
             url: "@Url.Action("GetList", "Register")",
             type: "GET",
             dataType: "json",
             contentType: 'application/json; charset=utf-8',
-            success: function (data) {
-                var address = data.company.Address;
+            success: function (data) {*@
+                var address = $("#hdnAddress").val();
                 var $temp = $("<input>");
                 $("body").append($temp);
                 $temp.val(address).select();
@@ -124,39 +131,42 @@
                 //aux.select();
                 //document.execCommand("copy");
                 //document.body.removeChild(aux);
-            }
-        })
+        //    }
+        //})
     }
 
     function disableurllistingbutton() {
-        setTimeout(function () {
-            document.getElementById('listingurlbutton').disabled = true;
-        });
+        //setTimeout(function () {
+        //    document.getElementById('listingurlbutton').disabled = true;
+        //});
 
-        setTimeout(function () {
-            document.getElementById('listingurlbutton').disabled = null;
-            document.getElementById('showing').disabled = null;
-            /*document.getElementById('notshowing').disabled = null;*/
-            document.getElementById('skip').disabled = null;
-        }, 10000);
-
-        $.ajax({
+        //setTimeout(function () {
+        //    document.getElementById('listingurlbutton').disabled = null;
+        //    document.getElementById('showing').disabled = null;
+        //    document.getElementById('skip').disabled = null;
+        //}, 10000);
+        document.getElementById('showing').disabled = null;
+        document.getElementById('skip').disabled = null;
+        @*$.ajax({
             url: "@Url.Action("GetList", "Register")",
             type: "GET",
             dataType: "json",
             contentType: 'application/json; charset=utf-8',
-            success: function (data) {
-                var listingurl = data.company.ListingUrl;
-                companyid = data.company.Id;
+            success: function (data) {*@
+                var listingurl = $("#hdnListingUrl").val();
+                //companyid = data.company.Id;
                 window.open(listingurl, '_blank');
 
-            }
-        })
+        //    }
+        //})
 
     }
 
 
     function BindEmailId() {
+        $("#hdnreview").val('');
+        $("#hdnAddress").val('');
+        $("#hdnListingUrl").val('');
         $.ajax({
             /*url: "GetList/Register",*/
             url: "@Url.Action("GetList", "Register")",
@@ -166,39 +176,42 @@
             success: function (data) {
                 if (data.user == null) {
                     $("label[for='suggestedemail']").text("work completed");
-                    userid = 0;
                 }
                 else if (data.user == "nocontent") {
                     $("label[for='suggestedemail']").text("No content");
-                    userid = 0;
                 }
                 else if (data.reviews.ReviewName == "reviewnotfound") {
                     $("label[for='suggestedemail']").text("Review not found");
-                    userid = 0;
                 }
                 else if (data.user == "usernotound") {
                     $("label[for='suggestedemail']").text("User not found");
-                    userid = 0;
                 }
                 else {
                     $("label[for='suggestedemail']").text(data.user.EmailId);
-                    userid = data.user.Id;
+                    $("#hdnreview").val(data.reviews.ReviewName);
+                    $("#hdnAddress").val(data.company.Address);
+                    $("#hdnListingUrl").val(data.company.ListingUrl);
+                    $("#hdnCompanyId").val(data.company.Id);
+                    $("#hdnWriterId").val(data.reviews.Id);
+                    $("#hdnUserId").val(data.user.Id);
+                    $("#suggestemailName").text(data.user.FirstName);
                     incTimer();
                 }
-                   
+
 
             }
         })
     }
 
     function storedata(id) {
-
+        document.getElementById('showing').disabled = true;
+        document.getElementById('skip').disabled = true;
         var buttonclick = id;
         var label = $('#suggestemail').text();
         var writeobject = new Object();
-        writeobject.CompanyId = companyid,
-            writeobject.WriterId = writerid,
-            writeobject.UserId = userid;
+        writeobject.CompanyId = $("#hdnCompanyId").val(),
+            writeobject.WriterId = $("#hdnWriterId").val(),
+            writeobject.UserId = $("#hdnUserId").val();
         writeobject.Status = buttonclick,
             writeobject.EmailId = label;
 
@@ -209,11 +222,10 @@
           /*  dataType: "json",*/
             type: "POST",
              success: function (result) {
-                 document.getElementById('listingurlbutton').disabled = true;
-                 document.getElementById('showing').disabled = true;
-                 /*document.getElementById('notshowing').disabled = true;*/
-                 document.getElementById('skip').disabled = true;
-                 document.getElementById('addressId').disabled = true;
+                 //document.getElementById('listingurlbutton').disabled = true;
+                 //document.getElementById('showing').disabled = true;
+                 //document.getElementById('skip').disabled = true;
+                 //document.getElementById('addressId').disabled = true;
                  incTimer();
                  BindEmailId();
                 //alert('success');
