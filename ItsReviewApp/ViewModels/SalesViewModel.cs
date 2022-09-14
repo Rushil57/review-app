@@ -72,6 +72,8 @@ namespace ItsReviewApp.ViewModels
         public string WriterId { get; set; }
         public string Address { get; set; }
         public string Version { get; set; }
+
+        public int Days { get; set; }
     } 
 
     public class SalesCategoryViewModel

@@ -113,9 +113,10 @@
                         <thead>
                             <tr>
                                 <th style="width: 85% !important;">Company Name</th>
-                                <th style="width:3% !important;">CityName</th>
+                                <th style="width:6% !important;">CityName</th>
                                 <th style="width:3% !important;">ReviewsPerDay</th>
-                                <th></th>
+                                <th style="width:3% !important;">Days</th>
+                                <th style="width:3% !important;"></th>
                             </tr>
                         </thead>
 
@@ -435,24 +436,20 @@
             $.ajax({
                 url: "@Url.Action("GetSalesDetails", "Writer")",
                 type: "GET",
-              /*  data: {CompanyId : CompanyId},*/
                 contentType: 'application/json; charset=utf-8',
                 success: function (data) {
+                    debugger;
                     $('#companydetailtable').dataTable({
                         destroy: true,
                         data: data,
+                        order: [[3, 'asc']],
                         "pageLength": 20,
                         "columns": [
                             { "data": "CompanyName" },
                             { "data": "CityName" },
                             { "data": "ReviewsPerDay" },
-                            //{
-                            //    render: function (data, type, row) { 
-                            //        return '<button class="btn btn-primary btn-sm" data-id="' + row.Id+'" onclick="OpenSalesDetailById(this)" type="submit">OPEN</button>';
-                            //    }
-                            //},
+                            { "data": "Days" },
                             {
-                                data: { Id: "Id", CompanyName: "CompanyName" },
                                 mRender: function (data, type, row) {
                                     return '<button type="button" class="btn btn-primary" onclick="OpenSalesDetailById(this)" data-id="' + row.Id + '" data-CompanyName="' + row.CompanyName + '">Open</button>'
                                 }

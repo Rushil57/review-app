@@ -28,6 +28,7 @@
                 <input type="hidden" id="hdnUserId" value="0" />
             </div>
             <div class="form-group">
+                <button type="submit" class="btn btn-primary" id="startProcessId" onclick="StartReviewProcess()">Start</button>
                 <button type="submit" class="btn btn-primary" id="addressId" onclick="CopyAddress()" disabled>Address</button>
                 <button type="submit" class="btn btn-primary" id="reviewbutton" onclick="disablereviewbutton()" disabled>Review</button>
                 <button type="submit" class="btn btn-primary" id="listingurlbutton" onclick="disableurllistingbutton()" disabled>Listing Url</button>
@@ -50,9 +51,6 @@
 
     $(document).ready(function () {
         BindPaltform(0);
-        BindEmailId();
-        /*BindCompany();*/
-
     })
 
     function incTimer() {
@@ -193,5 +191,9 @@
             }
         });
 
+    }
+
+    function StartReviewProcess() {
+        BindEmailId();
     }
 </script>
