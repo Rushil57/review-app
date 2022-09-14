@@ -417,6 +417,11 @@ namespace ItsReviewApp.Controllers
                 {
                     EmailList.Add(userTrackingViewModel.EmailId);
                 }
+
+                parameters = new DynamicParameters();
+                parameters.Add("@RegisterId", userTrackingViewModel.RegisterId, DbType.String, ParameterDirection.Input);
+                parameters.Add("@Mode", 5, DbType.Int32, ParameterDirection.Input);
+                trackdata = con.Query<int>("sp_UserTracking", parameters, commandType: CommandType.StoredProcedure);
                 //else
                 //{
                 //    //parameters = new DynamicParameters();
@@ -431,7 +436,7 @@ namespace ItsReviewApp.Controllers
 
             //return View();
             // return RedirectToAction("Create", "Register");
-            return Json(EmailList, JsonRequestBehavior.AllowGet);
+            return Json(trackdata, JsonRequestBehavior.AllowGet);
         }
 
 

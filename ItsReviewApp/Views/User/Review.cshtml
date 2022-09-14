@@ -18,8 +18,20 @@
                 <div>
                     <label for="" id="suggestemailName"></label>
                 </div>
-                <label for="emailid">Email Id :</label>
-                <label for="suggestedemail" id="suggestemail"></label>
+                @*<label for="emailid">Email Id :</label>*@
+                <div>
+                    <label for="suggestedemail" style="color:red;" id="suggestemail"></label>
+                </div>
+                <div>
+                    <label id="companyId"></label>
+                </div>
+                <div>
+                    <label id="cityId"></label>
+                </div>
+                <div>
+                    <input type="text" id="companyUrl" />
+                    <a class="btn btn-primary" target="_blank" style="margin-left:7px;">GO</a>
+                </div>
                 <input type="hidden" id="hdnreview" value="0" />
                 <input type="hidden" id="hdnAddress" value="0" />
                 <input type="hidden" id="hdnListingUrl" value="0" />
@@ -28,7 +40,7 @@
                 <input type="hidden" id="hdnUserId" value="0" />
             </div>
             <div class="form-group">
-                <button type="submit" class="btn btn-primary" id="startProcessId" onclick="StartReviewProcess()">Start</button>
+                @*<button type="submit" class="btn btn-primary" id="startProcessId" onclick="StartReviewProcess()">Start</button>*@
                 <button type="submit" class="btn btn-primary" id="addressId" onclick="CopyAddress()" disabled>Address</button>
                 <button type="submit" class="btn btn-primary" id="reviewbutton" onclick="disablereviewbutton()" disabled>Review</button>
                 <button type="submit" class="btn btn-primary" id="listingurlbutton" onclick="disableurllistingbutton()" disabled>Listing Url</button>
@@ -38,6 +50,9 @@
                 @*<button type="submit" class="btn btn-primary" id="notshowing" disabled onclick="storedata(this.id)">Not Showing</button>*@
                 <button type="submit" class="btn btn-primary" id="skip" disabled onclick="storedata(this.id)">Skip</button>
                 <button type="submit" class="btn btn-primary" id="Logout" onclick="storedata(this.id)">Log Out</button>
+            </div>
+            <div>
+                Today Count: <label id="lblTodayCount"></label>
             </div>
 
         </form>
@@ -51,6 +66,7 @@
 
     $(document).ready(function () {
         BindPaltform(0);
+        BindEmailId();
     })
 
     function incTimer() {
@@ -141,14 +157,17 @@
                     $("label[for='suggestedemail']").text("User not found");
                 }
                 else {
+                    debugger;
                     $("label[for='suggestedemail']").text(data.user.EmailId);
                     $("#hdnreview").val(data.reviews.ReviewName);
                     $("#hdnAddress").val(data.company.Address);
                     $("#hdnListingUrl").val(data.company.ListingUrl);
                     $("#hdnCompanyId").val(data.company.Id);
+                    $("#companyId").text(data.company.CompanyName)
                     $("#hdnWriterId").val(data.reviews.Id);
                     $("#hdnUserId").val(data.user.Id);
                     $("#suggestemailName").text(data.user.FirstName);
+                    $("#cityId").text(data.company.CityName);
                     incTimer();
                 }
 
@@ -179,6 +198,7 @@
           /*  dataType: "json",*/
             type: "POST",
              success: function (result) {
+                 $("#lblTodayCount").text(result);
                  BindEmailId();
             },
              error: function (result) {
