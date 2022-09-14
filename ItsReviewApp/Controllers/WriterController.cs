@@ -298,5 +298,66 @@ namespace ItsReviewApp.Controllers
             con.Close();
             return RedirectToAction("Create", "Writer");
         }
+
+        public ActionResult GetSalesDetails()
+        {
+            var salesdetails = (dynamic)null;
+            con.Open();
+            var parameters = new DynamicParameters();
+            parameters.Add("@Mode", 2, DbType.Int32, ParameterDirection.Input);
+            using (IDbConnection connection = new SqlConnection(connectionString))
+            {
+                 salesdetails = con.Query<SalesDetailsViewModel>("sp_Salesdetails", parameters, commandType: CommandType.StoredProcedure).ToList();
+            }
+            con.Close();
+            return Json(salesdetails, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult GetReviewsPerDay(string CompanyId)
+        {
+            var totalreview = (dynamic)null;
+            con.Open();
+            var parameters = new DynamicParameters();
+            parameters.Add("@CompanyId", CompanyId, DbType.String, ParameterDirection.Input);
+            parameters.Add("@Mode", 9, DbType.Int32, ParameterDirection.Input);
+            using (IDbConnection connection = new SqlConnection(connectionString))
+            {
+                //var ReviewCount = connection.ExecuteScalar("sp_Writer", parameters, commandType: CommandType.StoredProcedure);
+                var ReviewCount = con.Query<SalesDetailsViewModel>("sp_Writer", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
+                if(ReviewCount != null)
+                {
+                    if(ReviewCount.CurrentReview == null || ReviewCount.ReviewsPerDay == null)
+                    {
+                        if(ReviewCount.ReviewsPerDay == null)
+                        {
+                            totalreview = 0;
+                        }
+                        else
+                        {
+                            totalreview = Int32.Parse(ReviewCount.ReviewsPerDay) * 5;
+                        }
+
+                    }
+                    else
+                    {
+                        var totalreviewperday = Int32.Parse(ReviewCount.ReviewsPerDay) * 5;
+                        totalreview = totalreviewperday - Int32.Parse(ReviewCount.CurrentReview);
+                        if(totalreviewperday < 1)
+                        {
+                            totalreview = 0;
+                        }
+                    }
+                   
+                }
+                else
+                {
+                    totalreview = 0;
+                }
+
+            }
+            
+            con.Close();
+            return Json(totalreview, JsonRequestBehavior.AllowGet);
+        }
     }
 }
