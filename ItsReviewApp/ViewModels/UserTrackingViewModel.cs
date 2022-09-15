@@ -14,6 +14,6 @@ namespace ItsReviewApp.ViewModels
         public string Status { get; set; }
         public string EmailId { get; set; }
         public string RegisterId { get; set; }
-
+        public string UserListingUrl { get; set; }
     }
 }

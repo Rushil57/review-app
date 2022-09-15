@@ -420,6 +420,8 @@ namespace ItsReviewApp.Controllers
 
                 parameters = new DynamicParameters();
                 parameters.Add("@RegisterId", userTrackingViewModel.RegisterId, DbType.String, ParameterDirection.Input);
+                parameters.Add("@CompanyId", userTrackingViewModel.CompanyId, DbType.String, ParameterDirection.Input);
+                parameters.Add("@UserListingUrl", userTrackingViewModel.UserListingUrl, DbType.String, ParameterDirection.Input);
                 parameters.Add("@Mode", 5, DbType.Int32, ParameterDirection.Input);
                 trackdata = con.Query<int>("sp_UserTracking", parameters, commandType: CommandType.StoredProcedure);
                 //else

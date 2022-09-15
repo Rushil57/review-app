@@ -30,7 +30,7 @@
                 </div>
                 <div>
                     <input type="text" id="companyUrl" />
-                    <a class="btn btn-primary" target="_blank" style="margin-left:7px;">GO</a>
+                    <a class="btn btn-primary" onclick="CopyURLAndPasteGo()" id="btnGo" target="_blank" style="margin-left:7px;">GO</a>
                 </div>
                 <input type="hidden" id="hdnreview" value="0" />
                 <input type="hidden" id="hdnAddress" value="0" />
@@ -157,7 +157,6 @@
                     $("label[for='suggestedemail']").text("User not found");
                 }
                 else {
-                    debugger;
                     $("label[for='suggestedemail']").text(data.user.EmailId);
                     $("#hdnreview").val(data.reviews.ReviewName);
                     $("#hdnAddress").val(data.company.Address);
@@ -168,6 +167,7 @@
                     $("#hdnUserId").val(data.user.Id);
                     $("#suggestemailName").text(data.user.FirstName);
                     $("#cityId").text(data.company.CityName);
+                    $("#companyUrl").val(data.company.UserListingUrl);
                     incTimer();
                 }
 
@@ -185,11 +185,12 @@
         var buttonclick = id;
         var label = $('#suggestemail').text();
         var writeobject = new Object();
-        writeobject.CompanyId = $("#hdnCompanyId").val(),
-            writeobject.WriterId = $("#hdnWriterId").val(),
-            writeobject.UserId = $("#hdnUserId").val();
-        writeobject.Status = buttonclick,
-            writeobject.EmailId = label;
+        writeobject.CompanyId = $("#hdnCompanyId").val();
+            writeobject.WriterId = $("#hdnWriterId").val();
+        writeobject.UserId = $("#hdnUserId").val();
+        writeobject.Status = buttonclick;
+        writeobject.EmailId = label;
+        writeobject.UserListingUrl = $("#companyUrl").val();
 
          $.ajax({
             url: "@Url.Action("SaveTrackingData", "User")",
@@ -215,5 +216,14 @@
 
     function StartReviewProcess() {
         BindEmailId();
+    }
+    function CopyURLAndPasteGo() {
+        var url = $("#companyUrl").val();
+        if (url != '') {
+            $("#btnGo").attr("href", url);
+        }
+        else {
+            $("#btnGo").attr("href", '');
+        }
     }
 </script>
