@@ -18,6 +18,7 @@ namespace ItsReviewApp.Controllers
     {
         string connectionString = ConfigurationManager.ConnectionStrings["DbEntities"].ToString();
         SqlConnection con;
+       
 
         public SalesController()
         {
@@ -72,6 +73,7 @@ namespace ItsReviewApp.Controllers
         [HttpPost]
         public ActionResult Create(SalesViewModel salesViewModel)
         {
+            List<string> CompanyList = new List<string>();
             try
             {
                 var salesId = 0;
@@ -118,7 +120,7 @@ namespace ItsReviewApp.Controllers
                 }
                 if (salesViewModel.SalesDetailsViewModel != null)
                 {
-                    SaveSalesDetail(salesViewModel.SalesDetailsViewModel, salesViewModel.SalesId);
+                    SaveSalesDetail(salesViewModel.SalesDetailsViewModel, salesViewModel.SalesId,ref CompanyList);
                 }
             }
             catch (Exception ex)
@@ -130,11 +132,12 @@ namespace ItsReviewApp.Controllers
                 sb.Clear();
             }
             //return View(salesViewModel);
-            return new HttpStatusCodeResult(HttpStatusCode.OK);
+            //return new HttpStatusCodeResult(HttpStatusCode.OK);
+            return Json(CompanyList, JsonRequestBehavior.AllowGet);
 
         }
 
-        public void SaveSalesDetail(List<SalesDetailsViewModel> SalesDetailsViewModel, string SalesId)
+        public void SaveSalesDetail(List<SalesDetailsViewModel> SalesDetailsViewModel, string SalesId, ref List<string> CompanyList)
         {
             foreach (var item in SalesDetailsViewModel)
             {
@@ -174,6 +177,10 @@ namespace ItsReviewApp.Controllers
                     {
                         reviewSave = salesdetailId;
                     }
+                    if(reviewSave.ToString().ToUpper() == "FALSE")
+                    {
+                        CompanyList.Add(item.CompanyName);
+                    }
                     if (mode == 5)
                     {
                         var parameter = new DynamicParameters();
@@ -182,7 +189,9 @@ namespace ItsReviewApp.Controllers
                         parameter.Add("@Mode", 2, DbType.Int32, ParameterDirection.Input);
                         var deletelist = con.Query<SalesCategoryViewModel>("sp_Salescategory", parameter, commandType: CommandType.StoredProcedure).ToList();
                     }
-                    if (item.CategoryViewModel != null)
+
+
+                    if (item.CategoryViewModel != null && reviewSave.ToString().ToUpper() != "FALSE")
                     {
                         foreach (var category in item.CategoryViewModel)
                         {
@@ -200,7 +209,6 @@ namespace ItsReviewApp.Controllers
 
                     connection.Close();
                 }
-
             }
         }
 
@@ -423,7 +431,6 @@ namespace ItsReviewApp.Controllers
             }
             return RedirectToAction("Create", "Sales");
         }
-
 
     }
 }

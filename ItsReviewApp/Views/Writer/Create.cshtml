@@ -307,11 +307,11 @@
            contentType: false,
              data: fileData,
             success: function (result) {
+                $("#files").val('');
                 if (result.length != 0) {
-                    alert(result);
+                    alert("Review Already Exists : \n" + result.toString().replaceAll(",", "\n"));
                 }
                 else {
-                    $("#files").val('');
                     alert('Upload Successfully');
                 }
             },

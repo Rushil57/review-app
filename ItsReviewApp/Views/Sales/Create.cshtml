@@ -185,7 +185,7 @@
             '<div><select class="dropdownclass form-control dropdownNiche" name="dropdownNiche"></select></div>' +
             '<div><input type="text" placeholder="Company Name" class="form-control companyname" value="' + CompanyName +'" /></div>' +
         /*'<div><select class="dropdownclass form-control dropdownCity" name="dropdownCity" id="citydropdown"></select></div>' +*/
-            '<div><input type="text" placeholder="City Name" class="form-control cityname" value="' + CityName + '" /></div>' +
+            '<div><input type="text" placeholder="City Name" class="form-control cityname" value="' + CityName + '"/></div>' +
             '<div style="display:flex;">' +
             '<input type="text" class="form-control listingurls" placeholder="Url Listing" value="' + ListingURL +'" />' +
             '<a class="btn btn-primary btn-sm listingbutton" target="_blank" href="' + ListingURL +'" style="margin-left:7px;">GO</a>' +
@@ -426,8 +426,14 @@
           /*  dataType: "json",*/
             type: "POST",
             success: function (result) {
+                if (result != 0) {
+                    alert("Company Already Exists : \n" + result.toString().replaceAll(",", "\n"));
+                }
+                else {
+                    alert('success');
+                }
                 ResetSalesData();
-                alert('success');
+               
             },
             error: function (result) {
                 alert('failure');
@@ -561,7 +567,7 @@
                         { "data": "City" },
                         {
                             render: function (data, type, row) {
-                                
+
                                 return '<button class="btn btn-primary" data-city="' + row.City + '" data-CompanyName="' + row.CompanyName + '" data-Listing="' + row.Listing + '" data-NicheName="' + row.NicheName + '" data-NumberOfReview="' + row.NumberOfReview + '" data-Rating="' + row.Rating + '" data-SalesId="' + row.SalesId + '" data-Url="' + row.Url +'" onClick="BindCompany(this);" type="submit" data-dismiss="modal">OPEN</button>';
                             }
                         },
@@ -647,4 +653,5 @@
         $("#City").val('');
         $("#listing").val('')
     }
+
 </script>

@@ -18,7 +18,7 @@ namespace ItsReviewApp.Controllers
     {
         string connectionString = ConfigurationManager.ConnectionStrings["DbEntities"].ToString();
         SqlConnection con;
-
+        List<string> ReviewList = new List<string>();
 
         public WriterController()
         {
@@ -122,6 +122,7 @@ namespace ItsReviewApp.Controllers
         [HttpPost]
         public async Task<ActionResult> Upload()
         {
+
             try
             {
                 string companyId = Request.Form["companyId"];
@@ -200,7 +201,8 @@ namespace ItsReviewApp.Controllers
                         }
 
                     }
-                    return Json("Success");
+                    //return Json("Success");
+                    return Json(ReviewList, JsonRequestBehavior.AllowGet);
                 }
                 else
                 {
@@ -243,8 +245,17 @@ namespace ItsReviewApp.Controllers
                     using (IDbConnection connection = new SqlConnection(connectionString))
                     {
                         var reviewSave = connection.ExecuteScalar("sp_Writer", parameters, commandType: CommandType.StoredProcedure);
-                        count += 0.1;
+                        if (reviewSave.ToString().ToUpper() == "FALSE")
+                        {
+                            ReviewList.Add(item.ReviewName);
+                        }
+                        else
+                        {
+                            count += 0.1;
+                          
+                        }
                         connection.Close();
+
                     }
                 }
             }
@@ -315,11 +326,11 @@ namespace ItsReviewApp.Controllers
                 {
                     SalesDetailsViewModel salesDetailsViewModel = new SalesDetailsViewModel();
                     salesDetailsViewModel.Id = item.Id;
-                    salesDetailsViewModel.CompanyName=item.CompanyName;
-                    salesDetailsViewModel.CityName=item.CityName;
+                    salesDetailsViewModel.CompanyName = item.CompanyName;
+                    salesDetailsViewModel.CityName = item.CityName;
                     salesDetailsViewModel.ReviewsPerDay = item.ReviewsPerDay;
                     var companyCount = companyList.Where(x => x.CompanyId == item.Id.ToString()).FirstOrDefault();
-                    if(companyCount != null && companyCount.CompanyCount > 0)
+                    if (companyCount != null && companyCount.CompanyCount > 0)
                     {
                         if (item.ReviewsPerDay != null && item.ReviewsPerDay != "")
                         {
@@ -354,11 +365,11 @@ namespace ItsReviewApp.Controllers
             {
                 //var ReviewCount = connection.ExecuteScalar("sp_Writer", parameters, commandType: CommandType.StoredProcedure);
                 var ReviewCount = con.Query<SalesDetailsViewModel>("sp_Writer", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
-                if(ReviewCount != null)
+                if (ReviewCount != null)
                 {
-                    if(ReviewCount.CurrentReview == null || ReviewCount.ReviewsPerDay == null)
+                    if (ReviewCount.CurrentReview == null || ReviewCount.ReviewsPerDay == null)
                     {
-                        if(ReviewCount.ReviewsPerDay == null)
+                        if (ReviewCount.ReviewsPerDay == null)
                         {
                             totalreview = 0;
                         }
@@ -372,12 +383,12 @@ namespace ItsReviewApp.Controllers
                     {
                         var totalreviewperday = Int32.Parse(ReviewCount.ReviewsPerDay) * 5;
                         totalreview = totalreviewperday - Int32.Parse(ReviewCount.CurrentReview);
-                        if(totalreviewperday < 1)
+                        if (totalreviewperday < 1)
                         {
                             totalreview = 0;
                         }
                     }
-                   
+
                 }
                 else
                 {
@@ -385,7 +396,7 @@ namespace ItsReviewApp.Controllers
                 }
 
             }
-            
+
             con.Close();
             return Json(totalreview, JsonRequestBehavior.AllowGet);
         }
