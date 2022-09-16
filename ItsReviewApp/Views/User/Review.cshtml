@@ -11,9 +11,9 @@
     <div class="container" style="padding-top:30px;">
         <form onsubmit="return false">
             @*<div class="form-group">
-                        <label for="platform">Select Platform</label>
-                        <select class="form-control dropdownPaltform" name="dropdownPaltform"></select>
-                </div>*@
+                <label for="platform">Select Platform</label>
+                <select class="form-control dropdownPaltform" name="dropdownPaltform"></select>
+        </div>*@
             <div class="form-group">
                 <div>
                     <label for="" id="suggestemailName"></label>
@@ -38,6 +38,7 @@
                 <input type="hidden" id="hdnCompanyId" value="0" />
                 <input type="hidden" id="hdnWriterId" value="0" />
                 <input type="hidden" id="hdnUserId" value="0" />
+                <input type="hidden" id="hdnTrackOrder" value="0" />
             </div>
             <div class="form-group">
                 @*<button type="submit" class="btn btn-primary" id="startProcessId" onclick="StartReviewProcess()">Start</button>*@
@@ -53,6 +54,9 @@
             </div>
             <div>
                 Today Count: <label id="lblTodayCount"></label>
+            </div>
+            <div>
+                Yesterday Count: <label id="lblYesterdayCount"></label>
             </div>
 
         </form>
@@ -133,6 +137,7 @@
         $("#hdnCompanyId").val('');
         $("#hdnWriterId").val('');
         $("#hdnUserId").val('');
+        $("#hdnTrackOrder").val('');
         $("#suggestemailName").text('');
         $.ajax({
             url: "@Url.Action("GetList", "Register")",
@@ -140,7 +145,7 @@
             dataType: "json",
             contentType: 'application/json; charset=utf-8',
             success: function (data) {
-                if (data.user == null) {
+                if (data.company == "WorkCompleted") {
                     $("label[for='suggestedemail']").text("work completed");
                 }
                 else if (data.user == "usernotlogin") {
@@ -168,6 +173,7 @@
                     $("#suggestemailName").text(data.user.FirstName);
                     $("#cityId").text(data.company.CityName);
                     $("#companyUrl").val(data.company.UserListingUrl);
+                    $("#hdnTrackOrder").val(data.company.TrackOrder);
                     incTimer();
                 }
 
@@ -191,6 +197,7 @@
         writeobject.Status = buttonclick;
         writeobject.EmailId = label;
         writeobject.UserListingUrl = $("#companyUrl").val();
+        writeobject.TrackOrder = $("#hdnTrackOrder").val();
 
          $.ajax({
             url: "@Url.Action("SaveTrackingData", "User")",
@@ -200,6 +207,7 @@
             type: "POST",
              success: function (result) {
                  $("#lblTodayCount").text(result);
+                 $("#lblYesterdayCount").text(result);
                  BindEmailId();
             },
              error: function (result) {

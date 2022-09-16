@@ -403,6 +403,7 @@ namespace ItsReviewApp.Controllers
                 //registerId = Convert.ToInt32(Session["RegisterId"]);
                 userTrackingViewModel.RegisterId = Session["RegisterId"].ToString();
             }
+            parameters.Add("@TrackOrder", userTrackingViewModel.TrackOrder, DbType.String, ParameterDirection.Input);
             parameters.Add("@CompanyId", userTrackingViewModel.CompanyId, DbType.String, ParameterDirection.Input);
             parameters.Add("@WriterId", userTrackingViewModel.WriterId, DbType.String, ParameterDirection.Input);
             parameters.Add("@UserId", userTrackingViewModel.UserId, DbType.String, ParameterDirection.Input);

@@ -210,6 +210,7 @@ namespace ItsReviewApp.Controllers
                     connection.Close();
                 }
             }
+            UpdateTrackOrder();
         }
 
         [HttpGet]
@@ -431,6 +432,28 @@ namespace ItsReviewApp.Controllers
             }
             return RedirectToAction("Create", "Sales");
         }
+        public void UpdateTrackOrder()
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@Mode", 7, DbType.Int32, ParameterDirection.Input);
+            using (IDbConnection connection = new SqlConnection(connectionString))
+            {
+                var companyList = connection.Query<SalesDetailsViewModel>("sp_Salesdetails", parameters, commandType: CommandType.StoredProcedure).ToList();
+                int i=1;
+                foreach (var item in companyList)
+                {
+                    SalesDetailsViewModel salesDetailsViewModel = new SalesDetailsViewModel();
+                    salesDetailsViewModel.Id=item.Id;
+                    salesDetailsViewModel.TrackOrder=item.TrackOrder;
 
+                    parameters = new DynamicParameters();
+                    parameters.Add("@id", item.Id, DbType.Int32, ParameterDirection.Input);
+                    parameters.Add("@TrackOrder", i++, DbType.Int32, ParameterDirection.Input);
+                    parameters.Add("@Mode", 8, DbType.Int32, ParameterDirection.Input);
+                    connection.ExecuteScalar("sp_Salesdetails", parameters, commandType: CommandType.StoredProcedure);
+                }
+                connection.Close();
+            }
+        }
     }
 }

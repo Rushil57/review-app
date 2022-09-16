@@ -20,6 +20,7 @@ namespace ItsReviewApp.Controllers
         object emailresult;
         int emailCount = 0;
         int userId = -1;
+        int OrderTrackingId=0;
         public RegisterController()
         {
             con = new SqlConnection(connectionString);
@@ -68,10 +69,10 @@ namespace ItsReviewApp.Controllers
                 parameters.Add("@Mode", 8, DbType.Int32, ParameterDirection.Input);
                 userTrackingViewModel = con.Query<UserTrackingViewModel>("sp_User", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
                                 
-                if (companyId != 0)
+                if (OrderTrackingId > 0)
                 {
-                    userTrackingViewModel.CompanyId = companyId.ToString();
-                    companyId = 0;
+                    userTrackingViewModel.TrackOrder = OrderTrackingId;
+                    OrderTrackingId = 0;
                 }
                 
                 if (userId > -1)
@@ -80,11 +81,36 @@ namespace ItsReviewApp.Controllers
                     userId = -1;
                 }
                 parameters = new DynamicParameters();
-                parameters.Add("@RegisterId", registerId, DbType.Int32, ParameterDirection.Input);
-                parameters.Add("@CompanyId", userTrackingViewModel.CompanyId, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("@trackOrderId", userTrackingViewModel.TrackOrder, DbType.Int32, ParameterDirection.Input);
                 parameters.Add("@Mode", 7, DbType.Int32, ParameterDirection.Input);
                 companylist = con.Query<SalesDetailsViewModel>("sp_User", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
 
+                parameters = new DynamicParameters();
+                parameters.Add("@CompanyId", companylist.Id, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("@Mode", 10, DbType.Int32, ParameterDirection.Input);
+                var status = con.Query<SalesDetailsViewModel>("sp_User", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
+                if(status != null && status.ReviewsPerDay=="0")
+                {
+                    OrderTrackingId = userTrackingViewModel.TrackOrder;
+                    userlist = new UserViewModel();
+                    review = new WriterViewModel();
+                    companylist=new SalesDetailsViewModel();
+                    emailCount++;
+                    if (emailCount > status.CompanyCount)
+                    {
+                        emailresult = new { company = "WorkCompleted" };
+                        return Json(emailresult, JsonRequestBehavior.AllowGet);
+                    }
+                    con.Close();
+                    if (OrderTrackingId > 0)
+                    {
+                        GetList();
+                    }
+                }
+                else
+                {
+                    emailCount=0;
+                }
                 if (companylist != null)
                 {   
                     parameters = new DynamicParameters();
@@ -107,6 +133,7 @@ namespace ItsReviewApp.Controllers
                             objUserTrackingViewModel.EmailId = userlist.EmailId;
                             objUserTrackingViewModel.RegisterId = registerId.ToString();
                             objUserTrackingViewModel.UserId = userlist.Id;
+                            objUserTrackingViewModel.TrackOrder = companylist.TrackOrder;
                             SaveTrackingData(objUserTrackingViewModel);
 
                             emailresult = new { user = userlist, reviews = review, company = companylist };
@@ -122,9 +149,10 @@ namespace ItsReviewApp.Controllers
                                 emailresult = new { user = userlist, reviews = "reviewnotound", company = companylist };
                                 return Json(emailresult, JsonRequestBehavior.AllowGet);
                             }
-                            companyId = companylist.Id;
+                            //companyId = companylist.Id;
+                            OrderTrackingId = userTrackingViewModel.TrackOrder;
                             con.Close();
-                            if (companyId != 0)
+                            if (OrderTrackingId > 0)
                             {
                                 GetList();
                             }
@@ -141,7 +169,7 @@ namespace ItsReviewApp.Controllers
                         con.Close();
                         if(userID == null)
                         {
-                            companyId = companylist.Id;
+                            OrderTrackingId = companylist.TrackOrder;
                             GetList();
                         }
                         else
@@ -175,13 +203,14 @@ namespace ItsReviewApp.Controllers
             var trackdata = (dynamic)null;
             var parameters = new DynamicParameters();
             // int registerId = 0;
+            parameters.Add("@TrackOrder", userTrackingViewModel.TrackOrder, DbType.String, ParameterDirection.Input);
             parameters.Add("@CompanyId", userTrackingViewModel.CompanyId, DbType.String, ParameterDirection.Input);
             parameters.Add("@WriterId", userTrackingViewModel.WriterId, DbType.String, ParameterDirection.Input);
             parameters.Add("@UserId", userTrackingViewModel.UserId, DbType.String, ParameterDirection.Input);
             parameters.Add("@Status", userTrackingViewModel.Status, DbType.String, ParameterDirection.Input);
             parameters.Add("@EmailId", userTrackingViewModel.EmailId, DbType.String, ParameterDirection.Input);
             parameters.Add("@RegisterId", userTrackingViewModel.RegisterId, DbType.Int32, ParameterDirection.Input);
-            parameters.Add("@Mode", 4, DbType.Int32, ParameterDirection.Input);
+            parameters.Add("@Mode", 1, DbType.Int32, ParameterDirection.Input);
             using (IDbConnection connection = new SqlConnection(connectionString))
             {
                 trackdata = connection.ExecuteScalar("sp_UserTracking", parameters, commandType: CommandType.StoredProcedure);

@@ -15,5 +15,6 @@ namespace ItsReviewApp.ViewModels
         public string EmailId { get; set; }
         public string RegisterId { get; set; }
         public string UserListingUrl { get; set; }
+        public int TrackOrder { get; set; }
     }
 }
