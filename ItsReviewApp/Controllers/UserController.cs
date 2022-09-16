@@ -424,7 +424,7 @@ namespace ItsReviewApp.Controllers
                 parameters.Add("@CompanyId", userTrackingViewModel.CompanyId, DbType.String, ParameterDirection.Input);
                 parameters.Add("@UserListingUrl", userTrackingViewModel.UserListingUrl, DbType.String, ParameterDirection.Input);
                 parameters.Add("@Mode", 5, DbType.Int32, ParameterDirection.Input);
-                trackdata = con.Query<int>("sp_UserTracking", parameters, commandType: CommandType.StoredProcedure);
+                trackdata = connection.ExecuteScalar("sp_UserTracking", parameters, commandType: CommandType.StoredProcedure);
                 //else
                 //{
                 //    //parameters = new DynamicParameters();
@@ -439,7 +439,7 @@ namespace ItsReviewApp.Controllers
 
             //return View();
             // return RedirectToAction("Create", "Register");
-            return Json(trackdata, JsonRequestBehavior.AllowGet);
+            return Json(0, JsonRequestBehavior.AllowGet);
         }
 
 

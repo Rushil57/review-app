@@ -16,5 +16,7 @@ namespace ItsReviewApp.ViewModels
         public string RegisterId { get; set; }
         public string UserListingUrl { get; set; }
         public int TrackOrder { get; set; }
+        public int TodayCount { get; set; }
+        public int YesterDayCount { get; set; }
     }
 }

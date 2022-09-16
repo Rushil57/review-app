@@ -134,9 +134,9 @@ namespace ItsReviewApp.Controllers
                             objUserTrackingViewModel.RegisterId = registerId.ToString();
                             objUserTrackingViewModel.UserId = userlist.Id;
                             objUserTrackingViewModel.TrackOrder = companylist.TrackOrder;
-                            SaveTrackingData(objUserTrackingViewModel);
+                            SaveTrackingData(ref objUserTrackingViewModel);
 
-                            emailresult = new { user = userlist, reviews = review, company = companylist };
+                            emailresult = new { user = userlist, reviews = review, company = companylist,userTrack= objUserTrackingViewModel };
                         }
                         else
                         {
@@ -198,9 +198,9 @@ namespace ItsReviewApp.Controllers
             return Json(emailresult, JsonRequestBehavior.AllowGet);
         }
 
-        public void SaveTrackingData(UserTrackingViewModel userTrackingViewModel)
+        public void SaveTrackingData(ref UserTrackingViewModel userTrackingViewModel)
         {
-            var trackdata = (dynamic)null;
+            //var trackdata = (dynamic)null;
             var parameters = new DynamicParameters();
             // int registerId = 0;
             parameters.Add("@TrackOrder", userTrackingViewModel.TrackOrder, DbType.String, ParameterDirection.Input);
@@ -213,7 +213,7 @@ namespace ItsReviewApp.Controllers
             parameters.Add("@Mode", 1, DbType.Int32, ParameterDirection.Input);
             using (IDbConnection connection = new SqlConnection(connectionString))
             {
-                trackdata = connection.ExecuteScalar("sp_UserTracking", parameters, commandType: CommandType.StoredProcedure);
+                userTrackingViewModel = con.Query<UserTrackingViewModel>("sp_UserTracking", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
 
             }
 
