@@ -1,0 +1,89 @@
+﻿@{
+    ViewBag.Title = "UserReport";
+}
+
+<div class="container">
+    <div class="row form-group">
+        <div class="col-md-6">
+            <label for="date">From Date:</label>
+            <div class='input-group date fromtodate'>
+                <input type='text' class="form-control" id="txtFromDate" />
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <label for="date">To Date:</label>
+            <div class='input-group date fromtodate'>
+                <input type='text' class="form-control" id="txtToDate" />
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <a onclick="BindUser()">Report Generate</a>
+    </div>
+    <div class="form-group">
+
+        <table id="tblUserReport" class="table table-bordered table-responsive">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email Id</th>
+                    <th>Review</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        BindDate();
+    });
+
+    function BindDate(){
+        $('.fromtodate').datepicker({
+            autoclose: true,
+            format: "yyyy/mm/dd",
+            orientation: 'bottom',
+            icons: {
+                time: "fa fa-clock-o",
+                date: "fa fa-calendar",
+                up: "fa fa-arrow-up",
+                down: "fa fa-arrow-down"
+            }
+        });
+    }
+    function BindUser() {
+        var fromDate = $("#txtFromDate").val();
+        var toDate = $("#txtToDate").val();
+        $.ajax({
+            url: "@Url.Action("GetUserReport","Admin")",
+            type: "GET",
+            dataType: "json",
+            data: {
+                FromDate: fromDate,
+                ToDate: toDate
+            },
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+               
+                $('#tblUserReport').dataTable({
+                    destroy: true,
+                    data: data,
+                    "columns": [
+                        { "data": "Name" },
+                        { "data": "EmailId" },
+                        { "data": "RecordCount" }
+                    ]
+                });
+
+            }
+        })
+    }
+</script>
