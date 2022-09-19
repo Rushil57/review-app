@@ -156,6 +156,7 @@
     <Compile Include="ViewModels\RazorPayOrderViewModel.cs" />
     <Compile Include="ViewModels\RoleViewModel.cs" />
     <Compile Include="ViewModels\LeadViewModel.cs" />
+    <Compile Include="ViewModels\TrackUserDataViewModel.cs" />
     <Compile Include="ViewModels\UserViewModel.cs" />
     <Compile Include="ViewModels\SalesViewModel.cs" />
     <Compile Include="ViewModels\UserTrackingViewModel.cs" />
