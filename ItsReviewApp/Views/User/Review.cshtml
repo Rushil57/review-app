@@ -30,7 +30,7 @@
                 </div>
                 <div>
                     <input type="text" id="companyUrl" />
-                    <a class="btn btn-primary" onclick="CopyURLAndPasteGo()" id="btnGo" target="_blank" style="margin-left:7px;">GO</a>
+                    <a class="btn btn-primary" onclick="CopyURLAndPasteGo()" href="#" id="btnGo" style="margin-left:7px;">GO</a>
                 </div>
                 <input type="hidden" id="hdnreview" value="0" />
                 <input type="hidden" id="hdnAddress" value="0" />
@@ -41,7 +41,7 @@
                 <input type="hidden" id="hdnTrackOrder" value="0" />
             </div>
             <div class="form-group">
-                @*<button type="submit" class="btn btn-primary" id="startProcessId" onclick="StartReviewProcess()">Start</button>*@
+                <button type="submit" class="btn btn-primary" id="startProcessId" onclick="StartReviewProcess()">Start</button>
                 <button type="submit" class="btn btn-primary" id="addressId" onclick="CopyAddress()" disabled>Address</button>
                 <button type="submit" class="btn btn-primary" id="reviewbutton" onclick="disablereviewbutton()" disabled>Review</button>
                 <button type="submit" class="btn btn-primary" id="listingurlbutton" onclick="disableurllistingbutton()" disabled>Listing Url</button>
@@ -70,7 +70,8 @@
 
     $(document).ready(function () {
         BindPaltform(0);
-        BindEmailId();
+        GetTrackUserData();
+        /*BindEmailId();*/
     })
 
     function incTimer() {
@@ -107,7 +108,8 @@
                 $("body").append($temp);
                 $temp.val(review).select();
                 document.execCommand("copy");
-                $temp.remove();
+        $temp.remove();
+        TrackUserData("review");
     }
 
     function CopyAddress() {
@@ -116,13 +118,14 @@
                 $("body").append($temp);
                 $temp.val(address).select();
                 document.execCommand("copy");
-                $temp.remove();
+        $temp.remove();
+        TrackUserData("Address");
     }
 
     function disableurllistingbutton() {
+        TrackUserData("ListingURL");
         var listingurl = $("#hdnListingUrl").val();
         window.open(listingurl, '_blank');
-
         setTimeout(function () {
         document.getElementById('showing').disabled = null;
             document.getElementById('skip').disabled = null;
@@ -131,6 +134,8 @@
 
 
     function BindEmailId() {
+        $("#startProcessId").css("display", "none");
+        $("#hdnDefaultPage").val('1');
         $("#hdnreview").val('');
         $("#hdnAddress").val('');
         $("#hdnListingUrl").val('');
@@ -228,10 +233,85 @@
     function CopyURLAndPasteGo() {
         var url = $("#companyUrl").val();
         if (url != '') {
+            $("#btnGo").attr("target", "_blank");
             $("#btnGo").attr("href", url);
         }
         else {
-            $("#btnGo").attr("href", '');
+            $("#btnGo").attr("target", "");
+            $("#btnGo").attr("href", '#');
         }
+    }
+
+     function TrackUserData(name) {
+         var writeobject = new Object();
+         writeobject.CompanyId = $("#hdnCompanyId").val();
+         writeobject.WriterId = $("#hdnWriterId").val();
+         writeobject.UserId = $("#hdnUserId").val();
+         writeobject.EmailId = $('#suggestemail').text();
+         writeobject.UserListingUrl = $("#companyUrl").val();
+         writeobject.TrackOrder = $("#hdnTrackOrder").val();
+         writeobject.ReviewName = $("#hdnreview").val();
+         writeobject.Address = $("#hdnAddress").val();
+         writeobject.Type = name;
+         writeobject.City = $("#cityId").text();
+         writeobject.CompanyName = $("#companyId").text();
+         writeobject.Name = $("#suggestemailName").text();
+         writeobject.Listingurl = $("#hdnListingUrl").val();
+         $.ajax({
+            url: "@Url.Action("SaveTrackUserData", "User")",
+            contentType: 'application/json',
+             data: JSON.stringify(writeobject),
+            type: "POST",
+             success: function (result) {
+            },
+             error: function (result) {
+
+            }
+        });
+
+    }
+
+    function GetTrackUserData() {
+         $.ajax({
+            url: "@Url.Action("GetTrackUserData", "User")",
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                if (data.length > 0) {
+                   $("#startProcessId").css("display","none")
+                    $("#hdnreview").val(data[0].ReviewName);
+                    $("#hdnAddress").val(data[0].Address);
+                    $("#hdnListingUrl").val(data[0].Listingurl);
+                    $("#hdnCompanyId").val(data[0].CompanyId);
+                    $("#hdnWriterId").val(data[0].WriterId);
+                    $("#hdnUserId").val(data[0].UserId);
+                    $("#hdnTrackOrder").val(data[0].TrackOrder);
+                    $("#cityId").text(data[0].City);
+                    $("#companyId").text(data[0].CompanyName);
+                    $('#suggestemail').text(data[0].EmailId)
+                    $("#suggestemailName").text(data[0].Name);
+                    $("#companyUrl").val(data[0].UserListingUrl)
+                    /*$("#listingurlbutton").text(data[0].Listingurl)*/
+                    if (data[0].Type == "ListingURL") {
+                        document.getElementById('reviewbutton').disabled = null;
+                        document.getElementById('addressId').disabled = null;
+                        document.getElementById('listingurlbutton').disabled = null;
+                        document.getElementById('showing').disabled = null;
+                        document.getElementById('skip').disabled = null;
+                    }
+                    else {
+                        document.getElementById('reviewbutton').disabled = null;
+                        document.getElementById('addressId').disabled = null;
+                        document.getElementById('listingurlbutton').disabled = null;
+                    }
+                }
+                else {
+                    var pageLodVal = $("#hdnDefaultPage").val();
+                    if (pageLodVal == 0) {
+                        $("#startProcessId").css("dispaly", "block");
+                    }
+                }
+            }
+        })
     }
 </script>

@@ -140,6 +140,7 @@ namespace ItsReviewApp.Controllers
                                 SaveTrackingData(ref objUserTrackingViewModel);
                                 emailCount = 0;
                                 recursion = true;
+                                userlist.RegisterId = Convert.ToString(registerId);
                                 emailresult = new { user = userlist, reviews = review, company = companylist, userTrack = objUserTrackingViewModel };
                             }
                             else

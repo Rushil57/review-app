@@ -341,12 +341,14 @@ namespace ItsReviewApp.Controllers
                         {
                             salesDetailsViewModel.Days = 0;
                         }
+                        salesDetailsViewModel.CompanyCount = companyCount.CompanyCount;
                     }
                     else
                     {
+                        salesDetailsViewModel.CompanyCount = 0;
                         salesDetailsViewModel.Days = 0;
                     }
-                    salesDetailsViewModel.CompanyCount = companyCount.CompanyCount;
+                    
                     salesDetailsViewModelList.Add(salesDetailsViewModel);
                 }
             }

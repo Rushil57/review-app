@@ -425,23 +425,59 @@ namespace ItsReviewApp.Controllers
                 parameters.Add("@UserListingUrl", userTrackingViewModel.UserListingUrl, DbType.String, ParameterDirection.Input);
                 parameters.Add("@Mode", 5, DbType.Int32, ParameterDirection.Input);
                 trackdata = connection.ExecuteScalar("sp_UserTracking", parameters, commandType: CommandType.StoredProcedure);
-                //else
-                //{
-                //    //parameters = new DynamicParameters();
-                //    //parameters.Add("@CompanyId", userTrackingViewModel.CompanyId, DbType.String, ParameterDirection.Input);
-                //    //parameters.Add("@WriterId", userTrackingViewModel.WriterId, DbType.String, ParameterDirection.Input);
-                //    //parameters.Add("@Mode", 3, DbType.Int32, ParameterDirection.Input);
-                //    //connection.ExecuteScalar("sp_UserTracking", parameters, commandType: CommandType.StoredProcedure);
-                //    connection.Close();
-                //}
+
+                parameters.Add("@RegisterId", userTrackingViewModel.RegisterId, DbType.String, ParameterDirection.Input);
+                parameters.Add("@Mode", 3, DbType.Int32, ParameterDirection.Input);
+                var reviewList = con.Query<TrackUserDataViewModel>("sp_TrackingData", parameters, commandType: CommandType.StoredProcedure).ToList();
+
                 connection.Close();
             }
 
-            //return View();
-            // return RedirectToAction("Create", "Register");
             return Json(0, JsonRequestBehavior.AllowGet);
         }
 
+        [HttpPost]
+        public ActionResult SaveTrackUserData(TrackUserDataViewModel trackUserDataViewModel)
+        {
+            if (Session["RegisterId"] != null)
+            {
+                trackUserDataViewModel.RegisterId = Session["RegisterId"].ToString();
+            }
+            var parameters = new DynamicParameters();
+            parameters.Add("@EmailId", trackUserDataViewModel.EmailId, DbType.String, ParameterDirection.Input);
+            parameters.Add("@CompanyId", trackUserDataViewModel.CompanyId, DbType.Int32, ParameterDirection.Input);
+            parameters.Add("@WriterId", trackUserDataViewModel.WriterId, DbType.Int32, ParameterDirection.Input);
+            parameters.Add("@UserId", trackUserDataViewModel.UserId, DbType.Int32, ParameterDirection.Input);
+            parameters.Add("@TrackOrder", trackUserDataViewModel.TrackOrder, DbType.Int32, ParameterDirection.Input);
+            parameters.Add("@UserListingUrl", trackUserDataViewModel.UserListingUrl, DbType.String, ParameterDirection.Input);
+            parameters.Add("@RegisterId", trackUserDataViewModel.RegisterId, DbType.Int32, ParameterDirection.Input);
+            parameters.Add("@Type", trackUserDataViewModel.Type, DbType.String, ParameterDirection.Input);
+            parameters.Add("@ReviewName", trackUserDataViewModel.ReviewName, DbType.String, ParameterDirection.Input);
+            parameters.Add("@Address", trackUserDataViewModel.Address, DbType.String, ParameterDirection.Input);
+            parameters.Add("@Name", trackUserDataViewModel.Name, DbType.String, ParameterDirection.Input);
+            parameters.Add("@City", trackUserDataViewModel.City, DbType.String, ParameterDirection.Input);
+            parameters.Add("@CompanyName", trackUserDataViewModel.CompanyName, DbType.String, ParameterDirection.Input);
+            parameters.Add("@Listingurl", trackUserDataViewModel.Listingurl, DbType.String, ParameterDirection.Input);
+            parameters.Add("@Mode", 1, DbType.Int32, ParameterDirection.Input);
+            using (IDbConnection connection = new SqlConnection(connectionString))
+            {
+               var trackdata = connection.ExecuteScalar("sp_TrackingData", parameters, commandType: CommandType.StoredProcedure);
+               
+            }
+                return Json(0, JsonRequestBehavior.AllowGet);
+        }
 
+        [HttpGet]
+        public ActionResult GetTrackUserData()
+        {
+            con.Open();
+            var registerId= Session["RegisterId"].ToString();
+            var parameters = new DynamicParameters();
+            parameters.Add("@RegisterId", registerId, DbType.String, ParameterDirection.Input);
+            parameters.Add("@Mode", 2, DbType.Int32, ParameterDirection.Input);
+            var reviewList = con.Query<TrackUserDataViewModel>("sp_TrackingData", parameters, commandType: CommandType.StoredProcedure).ToList();
+            con.Close();
+            return Json(reviewList, JsonRequestBehavior.AllowGet);
+        }
     }
 }
