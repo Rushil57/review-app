@@ -27,29 +27,37 @@
     <div class="container" style="margin-top:30px;">
         <div class="row col-md-12">
             @*<div class="form-group col-md-3" id="nicheid">
-                    <label>Select Niche: </label>
-                    <div>
-                        @Html.DropDownList("MySkills", (IEnumerable<SelectListItem>)ViewBag.MySkills, new { @class = "form-control chosen" })
-                    </div>
+                <label>Select Niche: </label>
+                <div>
+                    @Html.DropDownList("MySkills", (IEnumerable<SelectListItem>)ViewBag.MySkills, new { @class = "form-control chosen" })
                 </div>
-                <div class="form-group col-md-3" id="countryid">
-                    <label>Select Country: </label>
-                    <div>
-                        @Html.DropDownList("Country", (IEnumerable<SelectListItem>)ViewBag.Country, new { @class = "form-control chosen" })
-                    </div>
-                </div>*@
+            </div>
+            <div class="form-group col-md-3" id="countryid">
+                <label>Select Country: </label>
+                <div>
+                    @Html.DropDownList("Country", (IEnumerable<SelectListItem>)ViewBag.Country, new { @class = "form-control chosen" })
+                </div>
+            </div>*@
             <div class="form-group col-md-3" id="typeid">
                 <label>Select Type: </label>
                 <div>
                     @Html.DropDownList("Type", (IEnumerable<SelectListItem>)ViewBag.Type, new { @class = "form-control chosen" })
                 </div>
             </div>
-            <div class="form-group col-md-3" id="companyid">
+            <div class="form-group col-md-6" id="companyid">
                 <label>Select Company: </label>
                 <div>
-                    @Html.DropDownList("CompanyName", (IEnumerable<SelectListItem>)ViewBag.Company, "-- select --", new { @class = "form-control chosen",@id="drpCompanyId", @onchange = "OnCompantChange(this);" })
+                    @Html.DropDownList("CompanyName", (IEnumerable<SelectListItem>)ViewBag.Company, "-- select --", new { @class = "form-control chosen", @id = "drpCompanyId", @onchange = "OnCompantChange(this);" })
                 </div>
             </div>
+            <div class="form-group col-md-3">
+                <label>Copy Company: </label>
+                <div>
+                    <a class="btn btn-primary" id="companyCopy">Copy</a>
+                </div>
+            </div>
+        </div>
+        <div class="row col-md-12">
             <div class="form-group col-md-3">
                 <label>City Name: </label>
                 <div>
@@ -64,12 +72,12 @@
             </div>
         </div>
 
-        <div id="tabs" style="margin-top:100px;">
+        <div id="tabs" style="margin-top:170px;">
             <ul>
+                <li><a href="#tabs-4" id="tab4">Company List</a></li>
                 <li><a href="#tabs-1">Enter Review</a></li>
                 <li><a href="#tabs-3" id="tab3">Review List</a></li>
                 <li><a href="#tabs-2">Excel Upload</a></li>
-                <li><a href="#tabs-4" id="tab4">Company List</a></li>
             </ul>
             <div id="tabs-1">
                 <div style="padding-top:10px;">
@@ -95,13 +103,16 @@
             </div>
             <div id="tabs-3">
                 <div class="form-group">
+                    <div class="row">
+                        Review Count: <label id="lblReviewCount"></label>
+                    </div>
                     <table id="datatableid" class="table table-bordered table-responsive" style="width: 100%">
                         <thead>
                             <tr>
-                                <th style="width:7% !important;">No.</th>
-                                <th style="width: 85% !important;">Review Name</th>
-                                <th style="width:3% !important;"></th>
-                                <th style="width:3% !important;"></th>
+                                <th>No.</th>
+                                <th>Review Name</th>
+                                <th></th>
+                                <th></th>
                             </tr>
                         </thead>
                     </table>
@@ -112,11 +123,12 @@
                     <table id="companydetailtable" class="table table-bordered table-responsive" style="width: 100%">
                         <thead>
                             <tr>
-                                <th style="width: 85% !important;">Company Name</th>
-                                <th style="width:6% !important;">CityName</th>
-                                <th style="width:3% !important;">ReviewsPerDay</th>
-                                <th style="width:3% !important;">Days</th>
-                                <th style="width:3% !important;"></th>
+                                <th>Company Name</th>
+                                <th>CityName</th>
+                                <th>ReviewsPerDay</th>
+                                <th>Days</th>
+                                <th>Reviews</th>
+                                <th></th>
                             </tr>
                         </thead>
 
@@ -334,28 +346,29 @@
                 data: {CompanyId : CompanyId},
                 contentType: 'application/json; charset=utf-8',
                 success: function (data) {
+                    $("#lblReviewCount").text(data.length);
                      $('#datatableid').dataTable({
                         destroy: true,
                          data: data,
                          "pageLength": 20,
                         "columns": [
-                            { "data": "Id" },
+                            { "data": "Id", "width": "7%" },
                             {
-                                "data": "ReviewName",
+                                "data": "ReviewName", "width": "85%",
                                 "render": function (data, type, row) {
                                     var reviewName = data.length > 95 ? data.substring(0, 95) + "..." : data;
                                     return "<span title='" + data + "'>" + reviewName + "</span>";
                                 }
                             },
                             {
-                                data: { Id: "Id", ReviewName: "ReviewName"},
+                                data: { Id: "Id", ReviewName: "ReviewName", "width": "3%"},
                                 mRender: function (data, type, full) {
                                    /* return data.Id + ' ' + data.ReviewName;*/
                                     return '<button type="button" class="btn btn-primary" data-toggle="modal" onclick="UpdateWriterReview(this)" data-target="#exampleModal" data-id="' + data.Id + '" data-reviewname="' + data.ReviewName + '">EDIT</button>'
                                 }
                             },
                             {
-                                "data": "Id",
+                                "data": "Id", "width": "3%",
                                 "render": function (data, type, row) {
                                     return '<input type="button" onclick="RemoveWriterReview(this)" data-id="' + data + '" class="btn btn-danger btn-sm" value="Delete"/>';
                                 }
@@ -451,11 +464,13 @@
                         order: [[3, 'asc']],
                         "pageLength": 20,
                         "columns": [
-                            { "data": "CompanyName" },
-                            { "data": "CityName" },
-                            { "data": "ReviewsPerDay" },
-                            { "data": "Days" },
+                            { "data": "CompanyName", "width": "78%"},
+                            { "data": "CityName", "width": "10%" },
+                            { "data": "ReviewsPerDay", "width": "3%" },
+                            { "data": "Days", "width": "3%" },
+                            { "data": "CompanyCount", "width": "3%" },
                             {
+                                "width": "3%",
                                 mRender: function (data, type, row) {
                                     return '<button type="button" class="btn btn-primary" onclick="OpenSalesDetailById(this)" data-id="' + row.Id + '" data-CompanyName="' + row.CompanyName + '">Open</button>'
                                 }
@@ -494,7 +509,14 @@
                 }
             })
     }
-
+    $("#companyCopy").on('click', function () {
+        var address = $("#drpCompanyId option:selected").text();
+        var $temp = $("<input>");
+        $("body").append($temp);
+        $temp.val(address).select();
+        document.execCommand("copy");
+        $temp.remove();
+    });
 
 </script>
 

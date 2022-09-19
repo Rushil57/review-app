@@ -346,6 +346,7 @@ namespace ItsReviewApp.Controllers
                     {
                         salesDetailsViewModel.Days = 0;
                     }
+                    salesDetailsViewModel.CompanyCount = companyCount.CompanyCount;
                     salesDetailsViewModelList.Add(salesDetailsViewModel);
                 }
             }
