@@ -27,6 +27,10 @@ namespace ItsReviewApp.Controllers
 
         public ActionResult UserReport()
         {
+            if (Session["RegisterId"] == null)
+            {
+                return RedirectToAction("Login", "Login", new { area = "" });
+            }
             return View();
         }
         [HttpGet]

@@ -66,6 +66,10 @@
                         var url = '@Url.Action("Index", "Sales")';
                         window.location.href = url;
                     }
+                    else if (result.RoleName == "Super Admin") {
+                        var url = '@Url.Action("UserReport", "Admin")';
+                        window.location.href = url;
+                    }
                     else if (result.RoleName == "FALSE") {
                         alert('Email address or password not valid.');
                     }

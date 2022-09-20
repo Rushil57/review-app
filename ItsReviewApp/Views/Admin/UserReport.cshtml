@@ -70,6 +70,7 @@
 <script type="text/javascript">
     $(document).ready(function () {
         BindDate();
+        var selected_tab = 0;
         $(function () {
             var tabs = $("#tabs").tabs({
                 select: function (e, i) {
@@ -96,7 +97,11 @@
                 down: "fa fa-arrow-down"
             }
         });
+
+        $('#txtFromDate').datepicker({ format: 'yyyy/mm/dd', }).datepicker("setDate", 'now');
+        $('#txtToDate').datepicker({ format: 'yyyy/mm/dd', }).datepicker("setDate", 'now');
     }
+    
     function BindUser() {
         var fromDate = $("#txtFromDate").val();
         var toDate = $("#txtToDate").val();
