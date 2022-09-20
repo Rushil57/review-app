@@ -18,5 +18,8 @@ namespace ItsReviewApp.ViewModels
         public int TrackOrder { get; set; }
         public int TodayCount { get; set; }
         public int YesterDayCount { get; set; }
+        public Int32 ExpectedReview { get; set; }
+        public Int32 UseReview { get; set; }
+        public DateTime CreatedDate { get; set; }
     }
 }

@@ -54,5 +54,40 @@ namespace ItsReviewApp.Controllers
             }
             return Json(RoleList, JsonRequestBehavior.AllowGet);
         }
+        [HttpGet]
+        public ActionResult GetUserReviewDayReport(DateTime FromDate, DateTime ToDate)
+        {
+            List<UserTrackingViewModel> ExpectedReviewList = new List<UserTrackingViewModel>();
+            try
+            {
+                con.Open();
+                var parameters = new DynamicParameters();
+                parameters.Add("@FromDate", FromDate, DbType.DateTime, ParameterDirection.Input);
+                parameters.Add("@ToDate", ToDate, DbType.DateTime, ParameterDirection.Input);
+                parameters.Add("@Mode", 2, DbType.Int32, ParameterDirection.Input);
+                //RoleList = con.Query<RegisterViewModel>("sp_UserReport", parameters, commandType: CommandType.StoredProcedure).ToList();
+                var reader = con.QueryMultiple("sp_UserReport", parameters, commandType: CommandType.StoredProcedure);
+                ExpectedReviewList = reader.Read<UserTrackingViewModel>().ToList();
+                var UseReviewList = reader.Read<UserTrackingViewModel>().ToList();
+                foreach (var item in ExpectedReviewList)
+                {
+                    var expected= UseReviewList.Where(x=>x.CreatedDate==item.CreatedDate).FirstOrDefault();
+                    if (expected != null)
+                    {
+                        item.UseReview = expected.UseReview;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                con.Close();
+                throw;
+            }
+            finally
+            {
+                con.Close();
+            }
+            return Json(ExpectedReviewList, JsonRequestBehavior.AllowGet);
+        }
     }
 }

@@ -26,17 +26,43 @@
     <div class="row">
         <a onclick="BindUser()">Report Generate</a>
     </div>
-    <div class="form-group">
-
-        <table id="tblUserReport" class="table table-bordered table-responsive">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Email Id</th>
-                    <th>Review</th>
-                </tr>
-            </thead>
-        </table>
+    <div id="tabs">
+        <ul>
+            <li><a href="#tabs-1" id="tab1">User Report</a></li>
+            <li><a href="#tabs-2" id="tab2">Review Per Day Report</a></li>
+        </ul>
+        <div id="tabs-1">
+            <div class="row">
+                <div>
+                    Review Count:
+                    <label id="lblCount"></label>
+                </div>
+            </div>
+            <div class="form-group">
+                <table id="tblUserReport" class="table table-bordered table-responsive">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email Id</th>
+                            <th>Review</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+        <div id="tabs-2">
+            <div class="form-group">
+                <table id="tblReviewPerDayReport" class="table table-bordered table-responsive">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Expected Review</th>
+                            <th>Posted Review</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -44,6 +70,18 @@
 <script type="text/javascript">
     $(document).ready(function () {
         BindDate();
+        $(function () {
+            var tabs = $("#tabs").tabs({
+                select: function (e, i) {
+                    selected_tab = i.index;
+                }
+            });
+           // selected_tab = $("#selectedTab").val() != "" ? parseInt($("#selectedTab").val()) : 0;
+            tabs.tabs('select', selected_tab);
+            //$("form").submit(function () {
+            //    $("#selectedTab").val(selected_tab);
+            //});
+        });
     });
 
     function BindDate(){
@@ -62,6 +100,10 @@
     function BindUser() {
         var fromDate = $("#txtFromDate").val();
         var toDate = $("#txtToDate").val();
+        if (fromDate == null || toDate == null) {
+            alert("Please select date");
+            return;
+        }
         $.ajax({
             url: "@Url.Action("GetUserReport","Admin")",
             type: "GET",
@@ -72,7 +114,7 @@
             },
             contentType: 'application/json; charset=utf-8',
             success: function (data) {
-               
+
                 $('#tblUserReport').dataTable({
                     destroy: true,
                     data: data,
@@ -82,8 +124,67 @@
                         { "data": "RecordCount" }
                     ]
                 });
+                var table = $('#tblUserReport').DataTable();
+                var column = table.column(2);
+                var reviewCount=column.data().reduce(function (a, b) {
+                    return parseInt(a) + parseInt(b);
+                })
+                $("#lblCount").text(reviewCount);
+
+            }
+        })
+        }
+
+    function BindReviewDayReport() {
+        var fromDate = $("#txtFromDate").val();
+        var toDate = $("#txtToDate").val();
+
+        if (fromDate == null || toDate == null) {
+            alert("Please select date");
+            return;
+        }
+
+        $.ajax({
+            url: "@Url.Action("GetUserReviewDayReport", "Admin")",
+            type: "GET",
+           /* dataType: "json",*/
+            data: {
+                FromDate: fromDate,
+                ToDate: toDate
+            },
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                $('#tblReviewPerDayReport').dataTable({
+                    destroy: true,
+                    data: data,
+                    "columns": [
+                        {
+                            "data": "CreatedDate",
+                            render: function (data, type, row) {
+                                var date = new Date(parseInt(data.substr(6)));
+                                var month = date.getMonth() + 1;
+                                return date.getDate() + "/" + month + "/" + date.getFullYear();
+                            }
+                        },
+                        { "data": "ExpectedReview" },
+                        { "data": "UseReview" }
+                    ]
+                });
+                //var table = $('#tblUserReport').DataTable();
+                //var column = table.column(2);
+                //var reviewCount=column.data().reduce(function (a, b) {
+                //    return parseInt(a) + parseInt(b);
+                //})
+                //$("#lblCount").text(reviewCount);
 
             }
         })
     }
+
+    $("#tabs").on('click', '#tab2', function () {
+        BindReviewDayReport();
+    })
+    $("#tabs").on('click', '#tab1', function () {
+        BindUser();
+    })
 </script>
