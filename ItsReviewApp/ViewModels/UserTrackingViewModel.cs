@@ -21,5 +21,8 @@ namespace ItsReviewApp.ViewModels
         public Int32 ExpectedReview { get; set; }
         public Int32 UseReview { get; set; }
         public DateTime CreatedDate { get; set; }
+        public string FirstName { get; set; }
+        public string CompanyName { get; set; }
+        public string ListingUrl { get; set; }
     }
 }

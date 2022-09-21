@@ -93,5 +93,43 @@ namespace ItsReviewApp.Controllers
             }
             return Json(ExpectedReviewList, JsonRequestBehavior.AllowGet);
         }
+
+        [HttpGet]
+        public ActionResult GetUserList()
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@Mode", 3, DbType.Int32, ParameterDirection.Input);
+
+            var empList = con.Query<RegisterViewModel>("sp_UserReport", parameters, commandType: CommandType.StoredProcedure);
+
+            return Json(empList, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult GetUserTrackReport(DateTime FromDate, DateTime ToDate,string RegisterId)
+        {
+            try
+            {
+                con.Open();
+                var parameters = new DynamicParameters();
+                parameters.Add("@FromDate", FromDate, DbType.DateTime, ParameterDirection.Input);
+                parameters.Add("@ToDate", ToDate, DbType.DateTime, ParameterDirection.Input);
+                parameters.Add("@RegisterId", RegisterId, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("@Mode", 4, DbType.Int32, ParameterDirection.Input);
+                var ReviewPerDayList = con.Query<UserTrackingViewModel>("sp_UserReport", parameters, commandType: CommandType.StoredProcedure);
+                con.Close();
+                return Json(ReviewPerDayList, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception)
+            {
+                con.Close();
+                throw;
+            }
+            finally
+            {
+                con.Close();
+            }
+           
+        }
     }
 }
