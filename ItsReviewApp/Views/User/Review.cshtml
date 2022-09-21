@@ -50,7 +50,7 @@
                 <button type="submit" class="btn btn-primary" id="showing" disabled onclick="storedata(this.id)">Next</button>
                 @*<button type="submit" class="btn btn-primary" id="notshowing" disabled onclick="storedata(this.id)">Not Showing</button>*@
                 <button type="submit" class="btn btn-primary" id="skip" disabled onclick="storedata(this.id)">Skip</button>
-                <button type="submit" class="btn btn-primary" id="Logout" onclick="storedata(this.id)">Log Out</button>
+                <button type="submit" class="btn btn-primary" id="Logout" onclick="LogOut()">Log Out</button>
             </div>
             <div>
                 Today Count: <label id="lblTodayCount"></label>
@@ -135,7 +135,6 @@
 
     function BindEmailId() {
         $("#startProcessId").css("display", "none");
-        $("#hdnDefaultPage").val('1');
         $("#hdnreview").val('');
         $("#hdnAddress").val('');
         $("#hdnListingUrl").val('');
@@ -306,12 +305,38 @@
                     }
                 }
                 else {
-                    var pageLodVal = $("#hdnDefaultPage").val();
-                    if (pageLodVal == 0) {
+                    //var pageLodVal = $("#hdnDefaultPage").val();
+                    //if (pageLodVal == 0) {
                         $("#startProcessId").css("dispaly", "block");
-                    }
+                    //}
                 }
             }
         })
+    }
+
+    function LogOut() {
+        $("#hdnreview").val('');
+        $("#hdnAddress").val('');
+        $("#hdnListingUrl").val('');
+        $("#hdnCompanyId").val('');
+        $("#hdnWriterId").val('');
+        $("#hdnUserId").val('');
+        $("#hdnTrackOrder").val('');
+        $("#suggestemailName").text('');
+        $('#suggestemail').text('')
+        $("#suggestemailName").text('');
+        $("#companyUrl").val('');
+        $("#companyId").text('');
+        $("#cityId").text('');
+        $.ajax({
+            url: "@Url.Action("Logout", "User")",
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+
+            }
+        })
+         var url = '@Url.Action("Login", "Login")';
+                  window.location.href = url;
     }
 </script>

@@ -56,6 +56,10 @@ namespace ItsReviewApp.Controllers
 
         public ActionResult Review()
         {
+            if (Session["RegisterId"] == null)
+            {
+                return RedirectToAction("Login", "Login", new { area = "" });
+            }
             return View();
         }
 
@@ -478,6 +482,11 @@ namespace ItsReviewApp.Controllers
             var reviewList = con.Query<TrackUserDataViewModel>("sp_TrackingData", parameters, commandType: CommandType.StoredProcedure).ToList();
             con.Close();
             return Json(reviewList, JsonRequestBehavior.AllowGet);
+        }
+        [HttpGet]
+        public void Logout()
+        {
+            Session["RegisterId"] = null;
         }
     }
 }
