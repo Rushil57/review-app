@@ -36,6 +36,7 @@
             <li><a href="#tabs-1" id="tab1">User Report</a></li>
             <li><a href="#tabs-2" id="tab2">Review Per Day Report</a></li>
             <li><a href="#tabs-3" id="tab3">User Work Report</a></li>
+            <li><a href="#tabs-4" id="tab4">Company Report</a></li>
         </ul>
         <div id="tabs-1">
             <div class="row">
@@ -90,6 +91,30 @@
                 </table>
             </div>
         </div>
+        <div id="tabs-4">
+
+            <div class="row col-md-12 form-group">
+                <div class="col-md-4">
+                    <select class="form-control select2" onchange="BindCompanyReport()" id="dropdownCompanyId" name="dropdownCompanyId"></select>
+                </div>
+                <div class="col-md-2">
+                    <a id="companyUrlId" style="color: #fff;" class="btn btn-primary" target="_blank">Company Url</a>
+                </div>
+            </div>
+            <div>
+                <table id="tblCompanyReport" class="table table-bordered table-responsive">
+                    <thead>
+                        <tr>
+                            <th>Review Date</th>
+                            <th>User Name</th>
+                            <th>User Email</th>
+                            <th>Company Name</th>
+                            <th>Register Name</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -103,6 +128,7 @@
            /* tags: true*/
         });
         BindUserList();
+        BindCompanyList();
         var selected_tab = 0;
         $(function () {
             var tabs = $("#tabs").tabs({
@@ -274,6 +300,79 @@
             }
         })
     }
+    function BindCompanyReport() {
+        var fromDate = $("#txtFromDate").val();
+        var toDate = $("#txtToDate").val();
+        var company = $("#dropdownCompanyId").val();
+        if (fromDate == null || toDate == null) {
+            alert("Please select date");
+            return;
+        }
+
+        $.ajax({
+            url: "@Url.Action("GetCompanyTrackReport", "Admin")",
+            type: "GET",
+           /* dataType: "json",*/
+            data: {
+                FromDate: fromDate,
+                ToDate: toDate,
+                CompanyId: company
+            },
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                debugger;
+                if (data.length > 0) {
+                    $("#companyUrlId").attr("href", data[0].ListingUrl);
+                }
+                else {
+                    $("#companyUrlId").attr("href", "#");
+                }
+                $('#tblCompanyReport').dataTable({
+                    destroy: true,
+                    data: data,
+                    "pageLength": 50,
+                    order: [[0, 'desc']],
+                    "columns": [
+                        {
+                            "data": "CreatedDate", "width": "12%",
+                            render: function (data, type, row) {
+                                var date = new Date(parseInt(data.substr(6)));
+                                return date.toISOString().split('T')[0] + " " + date.toISOString().split('T')[1].split('.')[0]
+                                //var month = date.getMonth() + 1;
+                                //return date.getDate() + "/" + month + "/" + date.getFullYear() +" "+ date.getHours() + ":" + date.getMinutes();
+                            }
+                        },
+                        { "data": "FirstName", "width": "12%" },
+                        { "data": "EmailId", "width": "12%" },
+                        { "data": "CompanyName", "width": "12%" },
+                        {
+                            "data": "FirstName", "width": "52%"
+                            //render: function (data, type, row) {
+                            //    var listingurl = (data.length > 30) ? data.substring(0, 30) + '...' : data;
+                            //    return '<a href=' + data + ' target="_blank">' + listingurl + '</a>'
+                            //}
+                        }
+                    ]
+                });
+            }
+        })
+    }
+
+    function BindCompanyList() {
+
+        $.ajax({
+            url: "@Url.Action("GetCompanyList", "Admin")",
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                $.each(data, function (index, item) {
+                    var opt = new Option(item.CompanyName, item.Id);
+                    $("#dropdownCompanyId").append(opt);
+                });
+                //$("#dropdownUser").chosen();
+            }
+        })
+    }
 
     $("#tabs").on('click', '#tab2', function () {
         BindReviewDayReport();
@@ -283,5 +382,8 @@
     })
     $("#tabs").on('click', '#tab3', function () {
         BindUserWorkReport();
+    })
+    $("#tabs").on('click', '#tab4', function () {
+        BindCompanyReport();
     })
 </script>

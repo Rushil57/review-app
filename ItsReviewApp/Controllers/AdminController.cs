@@ -99,14 +99,14 @@ namespace ItsReviewApp.Controllers
         {
             var parameters = new DynamicParameters();
             parameters.Add("@Mode", 3, DbType.Int32, ParameterDirection.Input);
-
+            con.Open();
             var empList = con.Query<RegisterViewModel>("sp_UserReport", parameters, commandType: CommandType.StoredProcedure);
-
+            con.Close();
             return Json(empList, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
-        public ActionResult GetUserTrackReport(DateTime FromDate, DateTime ToDate,string RegisterId)
+        public ActionResult GetUserTrackReport(DateTime FromDate, DateTime ToDate, string RegisterId)
         {
             try
             {
@@ -115,21 +115,50 @@ namespace ItsReviewApp.Controllers
                 parameters.Add("@FromDate", FromDate, DbType.DateTime, ParameterDirection.Input);
                 parameters.Add("@ToDate", ToDate, DbType.DateTime, ParameterDirection.Input);
                 parameters.Add("@RegisterId", RegisterId, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("@CompanyId", 0, DbType.Int32, ParameterDirection.Input);
                 parameters.Add("@Mode", 4, DbType.Int32, ParameterDirection.Input);
                 var ReviewPerDayList = con.Query<UserTrackingViewModel>("sp_UserReport", parameters, commandType: CommandType.StoredProcedure);
                 con.Close();
                 return Json(ReviewPerDayList, JsonRequestBehavior.AllowGet);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 con.Close();
                 throw;
             }
-            finally
+        }
+        [HttpGet]
+        public ActionResult GetCompanyTrackReport(DateTime FromDate, DateTime ToDate, string CompanyId)
+        {
+            try
+            {
+                con.Open();
+                var parameters = new DynamicParameters();
+                parameters.Add("@FromDate", FromDate, DbType.DateTime, ParameterDirection.Input);
+                parameters.Add("@ToDate", ToDate, DbType.DateTime, ParameterDirection.Input);
+                parameters.Add("@RegisterId", 0, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("@CompanyId", CompanyId, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("@Mode", 5, DbType.Int32, ParameterDirection.Input);
+                var ReviewPerDayList = con.Query<UserTrackingViewModel>("sp_UserReport", parameters, commandType: CommandType.StoredProcedure);
+                con.Close();
+                return Json(ReviewPerDayList, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
             {
                 con.Close();
+                throw;
             }
-           
+        }
+
+        [HttpGet]
+        public ActionResult GetCompanyList()
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@Mode", 6, DbType.Int32, ParameterDirection.Input);
+            con.Open();
+            var empList = con.Query<SalesDetailsViewModel>("sp_UserReport", parameters, commandType: CommandType.StoredProcedure);
+            con.Close();
+            return Json(empList, JsonRequestBehavior.AllowGet);
         }
     }
 }
