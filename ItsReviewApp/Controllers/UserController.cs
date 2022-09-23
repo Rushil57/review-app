@@ -379,7 +379,7 @@ namespace ItsReviewApp.Controllers
                             userTrackingViewModel.CompanyId = CompanyId;
                             userTrackingViewModel.Status = "Existing Record";
                             userTrackingViewModelList.Add(userTrackingViewModel);
-                            SaveTrackingData(userTrackingViewModel);
+                            SaveExcelTrackingData(userTrackingViewModel);
                         }
                         return Json(EmailList, JsonRequestBehavior.AllowGet);
 
@@ -395,6 +395,29 @@ namespace ItsReviewApp.Controllers
             }
         }
 
+        public void SaveExcelTrackingData(UserTrackingViewModel userTrackingViewModel)
+        {
+            //var trackdata = (dynamic)null;
+            var parameters = new DynamicParameters();
+            // int registerId = 0;
+            parameters.Add("@TrackOrder", userTrackingViewModel.TrackOrder, DbType.String, ParameterDirection.Input);
+            parameters.Add("@CompanyId", userTrackingViewModel.CompanyId, DbType.String, ParameterDirection.Input);
+            parameters.Add("@WriterId", userTrackingViewModel.WriterId, DbType.String, ParameterDirection.Input);
+            parameters.Add("@UserId", userTrackingViewModel.UserId, DbType.String, ParameterDirection.Input);
+            parameters.Add("@Status", userTrackingViewModel.Status, DbType.String, ParameterDirection.Input);
+            parameters.Add("@EmailId", userTrackingViewModel.EmailId, DbType.String, ParameterDirection.Input);
+            parameters.Add("@RegisterId", userTrackingViewModel.RegisterId, DbType.Int32, ParameterDirection.Input);
+            parameters.Add("@Mode", 1, DbType.Int32, ParameterDirection.Input);
+            using (IDbConnection connection = new SqlConnection(connectionString))
+            {
+                userTrackingViewModel = con.Query<UserTrackingViewModel>("sp_UserTracking", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
+
+            }
+
+            //return View();
+            // return RedirectToAction("Create", "Register");
+            //return Json(EmailList, JsonRequestBehavior.AllowGet);
+        }
 
         [HttpPost]
         public ActionResult SaveTrackingData(UserTrackingViewModel userTrackingViewModel)

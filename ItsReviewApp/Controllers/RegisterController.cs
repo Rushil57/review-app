@@ -23,6 +23,7 @@ namespace ItsReviewApp.Controllers
         int OrderTrackingId = 0;
         bool recursion = false;
         int emailUserCount = 0;
+        int emailflag = 0;
         public RegisterController()
         {
             con = new SqlConnection(connectionString);
@@ -108,6 +109,7 @@ namespace ItsReviewApp.Controllers
                         con.Close();
                         if (OrderTrackingId > 0 && status.ReviewsPerDay=="0")
                         {
+                            userId = Convert.ToInt32(userTrackingViewModel.UserId);
                             GetList();
                         }
                     }
@@ -144,14 +146,23 @@ namespace ItsReviewApp.Controllers
                                 }
                                 else
                                 {
-                                    userId = Convert.ToInt32(userID.Id);
+                                    userId = Convert.ToInt32(userlist.Id);
                                     con.Close();
                                     GetList();
                                 }
                                 if (recursion)
                                 {
-                                    emailresult = new { user = "emaillimitexceed", reviews = "", company = "" };
-                                    return Json(emailresult, JsonRequestBehavior.AllowGet);
+                                    if(emailflag == 1 && recursion)
+                                    {
+                                        return Json(emailresult, JsonRequestBehavior.AllowGet);
+                                    }
+                                    else
+                                    {
+                                        emailresult = new { user = "emaillimitexceed", reviews = "", company = "" };
+                                        return Json(emailresult, JsonRequestBehavior.AllowGet);
+                                    }
+                                    
+                                    
                                 };
                             }
                             else
@@ -177,6 +188,7 @@ namespace ItsReviewApp.Controllers
                                 recursion = true;
                                 userlist.RegisterId = Convert.ToString(registerId);
                                 emailresult = new { user = userlist, reviews = review, company = companylist, userTrack = objUserTrackingViewModel };
+                                emailflag = 1;
                             }
                             if (recursion)
                             {
