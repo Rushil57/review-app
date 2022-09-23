@@ -24,5 +24,6 @@ namespace ItsReviewApp.ViewModels
         public string FirstName { get; set; }
         public string CompanyName { get; set; }
         public string ListingUrl { get; set; }
+        public string RegisterName { get; set; }
     }
 }
