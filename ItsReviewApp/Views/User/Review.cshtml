@@ -165,6 +165,9 @@
                 else if (data.user == "usernotound") {
                     $("label[for='suggestedemail']").text("User not found");
                 }
+                else if (data.user == "emaillimitexceed") {
+                    $("label[for='suggestedemail']").text("Email limit exceed");
+                }
                 else {
                     $("label[for='suggestedemail']").text(data.user.EmailId);
                     $("#hdnreview").val(data.reviews.ReviewName);

@@ -20,8 +20,9 @@ namespace ItsReviewApp.Controllers
         object emailresult;
         int emailCount = 0;
         int userId = -1;
-        int OrderTrackingId=0;
+        int OrderTrackingId = 0;
         bool recursion = false;
+        int emailUserCount = 0;
         public RegisterController()
         {
             con = new SqlConnection(connectionString);
@@ -101,11 +102,11 @@ namespace ItsReviewApp.Controllers
                         emailCount++;
                         if (emailCount > status.CompanyCount)
                         {
+                            recursion = true;
                             emailresult = new { company = "WorkCompleted" };
-                            return Json(emailresult, JsonRequestBehavior.AllowGet);
                         }
                         con.Close();
-                        if (OrderTrackingId > 0)
+                        if (OrderTrackingId > 0 && status.ReviewsPerDay=="0")
                         {
                             GetList();
                         }
@@ -113,6 +114,10 @@ namespace ItsReviewApp.Controllers
                     else
                     {
                         emailCount = 0;
+                    }
+                    if (recursion)
+                    {
+                        return Json(emailresult, JsonRequestBehavior.AllowGet);
                     }
                     if (companylist != null)
                     {
@@ -124,6 +129,36 @@ namespace ItsReviewApp.Controllers
                         userlist = con.Query<UserViewModel>("sp_User", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
                         if (userlist != null)
                         {
+                            parameters = new DynamicParameters();
+                            parameters.Add("@CompanyId", companylist.Id, DbType.Int32, ParameterDirection.Input);
+                            parameters.Add("@RegisterId", registerId, DbType.Int32, ParameterDirection.Input);
+                            parameters.Add("@id", userTrackingViewModel.UserId, DbType.Int32, ParameterDirection.Input);
+                            parameters.Add("@Mode", 11, DbType.Int32, ParameterDirection.Input);
+                            var userID = con.Query<UserViewModel>("sp_User", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
+                            if (userID != null && userID.EmailCount > 0)
+                            {
+                                emailUserCount++;
+                                if (emailUserCount > userID.EmailTotalCount)
+                                {
+                                    recursion = true;
+                                }
+                                else
+                                {
+                                    userId = Convert.ToInt32(userID.Id);
+                                    con.Close();
+                                    GetList();
+                                }
+                                if (recursion)
+                                {
+                                    emailresult = new { user = "emaillimitexceed", reviews = "", company = "" };
+                                    return Json(emailresult, JsonRequestBehavior.AllowGet);
+                                };
+                            }
+                            else
+                            {
+                                emailUserCount = 0;
+                            }
+                            
                             parameters = new DynamicParameters();
                             parameters.Add("@Mode", 6, DbType.Int32, ParameterDirection.Input);
                             parameters.Add("@CompanyId", companylist.Id, DbType.Int32, ParameterDirection.Input);
@@ -143,46 +178,16 @@ namespace ItsReviewApp.Controllers
                                 userlist.RegisterId = Convert.ToString(registerId);
                                 emailresult = new { user = userlist, reviews = review, company = companylist, userTrack = objUserTrackingViewModel };
                             }
-                            else
+                            if (recursion)
                             {
-                                userlist = new UserViewModel();
-                                review = new WriterViewModel();
-                                review.ReviewName = "reviewnotfound";
-                                emailCount++;
-                                if (emailCount > 124)
-                                {
-                                    emailresult = new { user = userlist, reviews = "reviewnotound", company = companylist };
-                                    return Json(emailresult, JsonRequestBehavior.AllowGet);
-                                }
-                                //companyId = companylist.Id;
-                                OrderTrackingId = companylist.TrackOrder;
-                                con.Close();
-                                if (OrderTrackingId > 0)
-                                {
-                                    GetList();
-                                }
+                                return Json(emailresult, JsonRequestBehavior.AllowGet);
                             }
                         }
                         else
                         {
-                            parameters = new DynamicParameters();
-                            parameters.Add("@CompanyId", companylist.Id, DbType.Int32, ParameterDirection.Input);
-                            parameters.Add("@RegisterId", registerId, DbType.Int32, ParameterDirection.Input);
-                            parameters.Add("@id", userTrackingViewModel.UserId, DbType.Int32, ParameterDirection.Input);
-                            parameters.Add("@Mode", 11, DbType.Int32, ParameterDirection.Input);
-                            var userID = con.Query<UserViewModel>("sp_User", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
+                            OrderTrackingId = companylist.TrackOrder;
                             con.Close();
-                            if (userID == null)
-                            {
-                                OrderTrackingId = companylist.TrackOrder;
-                                GetList();
-                            }
-                            else
-                            {
-                                userId = Convert.ToInt32(userID.Id);
-                                GetList();
-                            }
-
+                            GetList();
                         }
 
                     }

@@ -17,8 +17,9 @@ namespace ItsReviewApp.ViewModels
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string EmailId { get; set; }
-        
+        public int EmailCount { get; set; }
 
+        public int EmailTotalCount { get; set; }
     }
 
     public class UserDetailsViewModel
