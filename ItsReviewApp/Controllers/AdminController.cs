@@ -34,7 +34,7 @@ namespace ItsReviewApp.Controllers
             return View();
         }
         [HttpGet]
-        public ActionResult GetUserReport(DateTime FromDate,DateTime ToDate)
+        public ActionResult GetUserReport(DateTime FromDate, DateTime ToDate)
         {
             List<RegisterViewModel> RoleList = new List<RegisterViewModel>();
             try
@@ -75,7 +75,7 @@ namespace ItsReviewApp.Controllers
                 var UseReviewList = reader.Read<UserTrackingViewModel>().ToList();
                 foreach (var item in ExpectedReviewList)
                 {
-                    var expected= UseReviewList.Where(x=>x.CreatedDate==item.CreatedDate).FirstOrDefault();
+                    var expected = UseReviewList.Where(x => x.CreatedDate == item.CreatedDate).FirstOrDefault();
                     if (expected != null)
                     {
                         item.UseReview = expected.UseReview;
@@ -115,7 +115,6 @@ namespace ItsReviewApp.Controllers
                 parameters.Add("@FromDate", FromDate, DbType.DateTime, ParameterDirection.Input);
                 parameters.Add("@ToDate", ToDate, DbType.DateTime, ParameterDirection.Input);
                 parameters.Add("@RegisterId", RegisterId, DbType.Int32, ParameterDirection.Input);
-                parameters.Add("@CompanyId", 0, DbType.Int32, ParameterDirection.Input);
                 parameters.Add("@Mode", 4, DbType.Int32, ParameterDirection.Input);
                 var ReviewPerDayList = con.Query<UserTrackingViewModel>("sp_UserReport", parameters, commandType: CommandType.StoredProcedure);
                 con.Close();
@@ -128,7 +127,7 @@ namespace ItsReviewApp.Controllers
             }
         }
         [HttpGet]
-        public ActionResult GetCompanyTrackReport(DateTime FromDate, DateTime ToDate, string CompanyId)
+        public ActionResult GetCompanyTrackReportList(DateTime FromDate, DateTime ToDate, string CompanyId)
         {
             try
             {
@@ -136,7 +135,6 @@ namespace ItsReviewApp.Controllers
                 var parameters = new DynamicParameters();
                 parameters.Add("@FromDate", FromDate, DbType.DateTime, ParameterDirection.Input);
                 parameters.Add("@ToDate", ToDate, DbType.DateTime, ParameterDirection.Input);
-                parameters.Add("@RegisterId", 0, DbType.Int32, ParameterDirection.Input);
                 parameters.Add("@CompanyId", CompanyId, DbType.Int32, ParameterDirection.Input);
                 parameters.Add("@Mode", 5, DbType.Int32, ParameterDirection.Input);
                 var ReviewPerDayList = con.Query<UserTrackingViewModel>("sp_UserReport", parameters, commandType: CommandType.StoredProcedure);
@@ -159,6 +157,30 @@ namespace ItsReviewApp.Controllers
             var empList = con.Query<SalesDetailsViewModel>("sp_UserReport", parameters, commandType: CommandType.StoredProcedure);
             con.Close();
             return Json(empList, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult GetUserEmailList(string registerId)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@RegisterId", registerId, DbType.Int32, ParameterDirection.Input);
+            parameters.Add("@Mode", 7, DbType.Int32, ParameterDirection.Input);
+            con.Open();
+            var userList = con.Query<UserViewModel>("sp_UserReport", parameters, commandType: CommandType.StoredProcedure);
+            con.Close();
+            return Json(userList, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult DeleteUserEmail(string Id)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@Id", Id, DbType.Int32, ParameterDirection.Input);
+            parameters.Add("@Mode", 8, DbType.Int32, ParameterDirection.Input);
+            con.Open();
+            var DeleteEmail = con.Query<UserViewModel>("sp_UserReport", parameters, commandType: CommandType.StoredProcedure);
+            con.Close();
+            return Json(DeleteEmail, JsonRequestBehavior.AllowGet);
         }
     }
 }
