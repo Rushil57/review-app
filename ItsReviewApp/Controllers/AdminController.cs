@@ -115,8 +115,8 @@ namespace ItsReviewApp.Controllers
                 parameters.Add("@FromDate", FromDate, DbType.DateTime, ParameterDirection.Input);
                 parameters.Add("@ToDate", ToDate, DbType.DateTime, ParameterDirection.Input);
                 parameters.Add("@RegisterId", RegisterId, DbType.Int32, ParameterDirection.Input);
-                parameters.Add("@Mode", 4, DbType.Int32, ParameterDirection.Input);
-                var ReviewPerDayList = con.Query<UserTrackingViewModel>("sp_UserReport", parameters, commandType: CommandType.StoredProcedure);
+                parameters.Add("@Mode", 3, DbType.Int32, ParameterDirection.Input);
+                var ReviewPerDayList = con.Query<UserTrackingViewModel>("sp_UserCompanyReport", parameters, commandType: CommandType.StoredProcedure);
                 con.Close();
                 return Json(ReviewPerDayList, JsonRequestBehavior.AllowGet);
             }
@@ -184,9 +184,9 @@ namespace ItsReviewApp.Controllers
         {
             var parameters = new DynamicParameters();
             parameters.Add("@RegisterId", registerId, DbType.Int32, ParameterDirection.Input);
-            parameters.Add("@Mode", 7, DbType.Int32, ParameterDirection.Input);
+            parameters.Add("@Mode", 4, DbType.Int32, ParameterDirection.Input);
             con.Open();
-            var userList = con.Query<UserViewModel>("sp_UserReport", parameters, commandType: CommandType.StoredProcedure);
+            var userList = con.Query<UserViewModel>("sp_UserCompanyReport", parameters, commandType: CommandType.StoredProcedure);
             con.Close();
             return Json(userList, JsonRequestBehavior.AllowGet);
         }
