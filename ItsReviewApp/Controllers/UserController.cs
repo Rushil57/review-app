@@ -453,7 +453,7 @@ namespace ItsReviewApp.Controllers
                 parameters.Add("@Mode", 5, DbType.Int32, ParameterDirection.Input);
                 trackdata = connection.ExecuteScalar("sp_UserTracking", parameters, commandType: CommandType.StoredProcedure);
 
-                parameters.Add("@RegisterId", userTrackingViewModel.RegisterId, DbType.String, ParameterDirection.Input);
+                parameters.Add("@CompanyId", userTrackingViewModel.CompanyId, DbType.String, ParameterDirection.Input);
                 parameters.Add("@Mode", 3, DbType.Int32, ParameterDirection.Input);
                 var reviewList = con.Query<TrackUserDataViewModel>("sp_TrackingData", parameters, commandType: CommandType.StoredProcedure).ToList();
 

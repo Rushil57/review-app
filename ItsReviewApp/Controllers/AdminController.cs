@@ -136,8 +136,28 @@ namespace ItsReviewApp.Controllers
                 parameters.Add("@FromDate", FromDate, DbType.DateTime, ParameterDirection.Input);
                 parameters.Add("@ToDate", ToDate, DbType.DateTime, ParameterDirection.Input);
                 parameters.Add("@CompanyId", CompanyId, DbType.Int32, ParameterDirection.Input);
-                parameters.Add("@Mode", 5, DbType.Int32, ParameterDirection.Input);
-                var ReviewPerDayList = con.Query<UserTrackingViewModel>("sp_UserReport", parameters, commandType: CommandType.StoredProcedure);
+                parameters.Add("@Mode", 1, DbType.Int32, ParameterDirection.Input);
+                var ReviewPerDayList = con.Query<UserTrackingViewModel>("sp_UserCompanyReport", parameters, commandType: CommandType.StoredProcedure);
+                con.Close();
+                return Json(ReviewPerDayList, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                con.Close();
+                throw;
+            }
+        }
+        [HttpGet]
+        public ActionResult GetUserTrackingReportList(DateTime FromDate, DateTime ToDate)
+        {
+            try
+            {
+                con.Open();
+                var parameters = new DynamicParameters();
+                parameters.Add("@FromDate", FromDate, DbType.DateTime, ParameterDirection.Input);
+                parameters.Add("@ToDate", ToDate, DbType.DateTime, ParameterDirection.Input);
+                parameters.Add("@Mode", 2, DbType.Int32, ParameterDirection.Input);
+                var ReviewPerDayList = con.Query<UserTrackingViewModel>("sp_UserCompanyReport", parameters, commandType: CommandType.StoredProcedure);
                 con.Close();
                 return Json(ReviewPerDayList, JsonRequestBehavior.AllowGet);
             }

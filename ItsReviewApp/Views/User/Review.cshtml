@@ -70,6 +70,7 @@
 
     $(document).ready(function () {
         BindPaltform(0);
+        //$("#startProcessId").css("dispaly", "block");
         GetTrackUserData();
         /*BindEmailId();*/
     })
@@ -159,11 +160,11 @@
                 else if (data.user == "nocontent") {
                     $("label[for='suggestedemail']").text("No content");
                 }
-                else if (data.reviews.ReviewName == "reviewnotfound") {
+                else if (data.reviews == "reviewnotfound") {
                     $("label[for='suggestedemail']").text("Review not found");
                 }
-                else if (data.user == "usernotound") {
-                    $("label[for='suggestedemail']").text("User not found");
+                else if (data.user == "emailnotfound") {
+                    $("label[for='suggestedemail']").text("Email not found");
                 }
                 else if (data.user == "emaillimitexceed") {
                     $("label[for='suggestedemail']").text("Email limit exceed");
