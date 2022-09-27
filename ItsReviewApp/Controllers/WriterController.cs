@@ -34,6 +34,10 @@ namespace ItsReviewApp.Controllers
         [HttpGet]
         public ActionResult Create()
         {
+            if (Session["RegisterId"] == null)
+            {
+                return RedirectToAction("Login", "Login", new { area = "" });
+            }
             List<SalesViewModel> empList = new List<SalesViewModel>();
 
             List<SelectListItem> MySkills = new List<SelectListItem>() {
@@ -219,6 +223,11 @@ namespace ItsReviewApp.Controllers
         {
             try
             {
+                var registerId=0;
+                if (Session["RegisterId"] != null)
+                {
+                    registerId = Convert.ToInt32(Session["RegisterId"]);
+                }
                 var count = 1.0;
                 var parameter = new DynamicParameters();
                 parameter.Add("@Mode", 2, DbType.Int32, ParameterDirection.Input);
@@ -242,6 +251,7 @@ namespace ItsReviewApp.Controllers
                     parameters.Add("@CompanyId", data.CompanyId, DbType.Int32, ParameterDirection.Input);
                     parameters.Add("@Mode", 1, DbType.Int32, ParameterDirection.Input);
                     parameters.Add("@Version", count.ToString(), DbType.String, ParameterDirection.Input);
+                    parameters.Add("@RegisterId", registerId, DbType.Int32, ParameterDirection.Input);
                     using (IDbConnection connection = new SqlConnection(connectionString))
                     {
                         var reviewSave = connection.ExecuteScalar("sp_Writer", parameters, commandType: CommandType.StoredProcedure);
@@ -335,7 +345,14 @@ namespace ItsReviewApp.Controllers
                         if (item.ReviewsPerDay != null && item.ReviewsPerDay != "")
                         {
                             var reviewPerDay = Convert.ToInt32(item.ReviewsPerDay);
-                            salesDetailsViewModel.Days = companyCount.CompanyCount / reviewPerDay;
+                            if (reviewPerDay > 0)
+                            {
+                                salesDetailsViewModel.Days = companyCount.CompanyCount / reviewPerDay;
+                            }
+                            else
+                            {
+                                salesDetailsViewModel.Days = 0;
+                            }
                         }
                         else
                         {

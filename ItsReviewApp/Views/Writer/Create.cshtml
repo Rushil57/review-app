@@ -132,8 +132,6 @@
             </div>
             <div id="tabs-4">
                 <div class="form-group">
-                    <label>Review Per Day:</label>
-                    <label id="lblCompanyDetail"></label>
                     <table id="companydetailtable" class="table table-bordered table-responsive" style="width: 100%">
                         <thead>
                             <tr>
@@ -491,13 +489,6 @@
                             },
                         ]
                     });
-                    var table = $('#companydetailtable').DataTable();
-                    var column = table.column(2);
-                    var reviewCount = column.data().reduce(function (a, b) {
-                        return parseInt(a) + parseInt(b);
-                    })
-                    $("#lblCompanyDetail").text(reviewCount);
-
                 }
             })
     }

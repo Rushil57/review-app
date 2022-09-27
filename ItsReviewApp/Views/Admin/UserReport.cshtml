@@ -6,150 +6,180 @@
         width: 100% !important;
     }
 </style>
-<div style="margin: 10px;">
-    <div class="row form-group">
-        <div class="col-md-2">
-            <label for="date">From Date:</label>
-            <div class='input-group date fromtodate'>
-                <input type='text' class="form-control" id="txtFromDate" />
-                <span class="input-group-addon">
-                    <span class="glyphicon glyphicon-calendar"></span>
-                </span>
+<div class="container-fluid">
+    <div class="header">
+        <h5 style="color:#fff;margin-right: 40px;">ItsReview App</h5>
+    </div>
+    <div class="" style="margin: 30px 20px;">
+        <div class="row form-group">
+            <div class="col-md-2">
+                <label for="date">From Date:</label>
+                <div class='input-group date fromtodate'>
+                    <input type='text' class="form-control" id="txtFromDate" />
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <label for="date">To Date:</label>
+                <div class='input-group date fromtodate'>
+                    <input type='text' class="form-control" id="txtToDate" />
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
             </div>
         </div>
-        <div class="col-md-2">
-            <label for="date">To Date:</label>
-            <div class='input-group date fromtodate'>
-                <input type='text' class="form-control" id="txtToDate" />
-                <span class="input-group-addon">
-                    <span class="glyphicon glyphicon-calendar"></span>
-                </span>
-            </div>
+        <div class="row form-group">
+            <button onclick="GetUserReport()" style="margin-left:15px;" class="btn btn-primary">Report Generate</button>
+            <a href="/Register/Create" style="float: right; margin-right: 20px;" class="forgot-pass fw-bold btn btn-primary">Sign Up</a>
         </div>
-    </div>
-    <div class="row form-group">
-        <button onclick="GetUserReport()" style="margin-left:15px;" class="btn btn-primary">Report Generate</button>
-        <a href="/Register/Create" style="float: right; margin-right: 20px;" class="forgot-pass fw-bold btn btn-primary">Sign Up</a>
-    </div>
-    <div id="tabs">
-        <ul>
-            <li><a href="#tabs-1" id="tab1">User Report</a></li>
-            <li><a href="#tabs-2" id="tab2">Review Per Day Report</a></li>
-            <li><a href="#tabs-3" id="tab3">User Work Report</a></li>
-            <li><a href="#tabs-4" id="tab4">Company Report</a></li>
-            <li><a href="#tabs-5" id="tab5">Email List</a></li>
-            <li><a href="#tabs-6" id="tab6">User Track List</a></li>
-        </ul>
-        <div id="tabs-1">
-            <div class="row">
+        <div id="tabs">
+            <ul>
+                <li><a href="#tabs-1" id="tab1">User Report</a></li>
+                <li><a href="#tabs-2" id="tab2">Review Per Day Report</a></li>
+                <li><a href="#tabs-3" id="tab3">User Work Report</a></li>
+                <li><a href="#tabs-4" id="tab4">Company Report</a></li>
+                <li><a href="#tabs-5" id="tab5">Email List</a></li>
+                <li><a href="#tabs-6" id="tab6">User Track List</a></li>
+                <li><a href="#tabs-7" id="tab7">Writer</a></li>
+            </ul>
+            <div id="tabs-1">
+                <div class="row">
+                    <div>
+                        Review Count:
+                        <label id="lblCount"></label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <table id="tblUserReport" class="table table-bordered table-responsive">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email Id</th>
+                                <th>Review</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+            <div id="tabs-2">
+                <div class="form-group">
+                    <table id="tblReviewPerDayReport" class="table table-bordered table-responsive">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Expected Review</th>
+                                <th>Posted Review</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+            <div id="tabs-3">
+
+                <div class="row col-md-12 form-group">
+                    <div class="col-md-3">
+                        <select class="form-control select2 cls-User-dropdown" onchange="BindUserWorkReport()" id="dropdownUser" name="dropdownUser"></select>
+                    </div>
+                </div>
                 <div>
-                    Review Count:
-                    <label id="lblCount"></label>
+                    <table id="tblUserWorkReport" class="table table-bordered table-responsive">
+                        <thead>
+                            <tr>
+                                <th>Review Date</th>
+                                <th>User Name</th>
+                                <th>User Email</th>
+                                <th>Company Name</th>
+                                <th>Company Url</th>
+                            </tr>
+                        </thead>
+                    </table>
                 </div>
             </div>
-            <div class="form-group">
-                <table id="tblUserReport" class="table table-bordered table-responsive">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Email Id</th>
-                            <th>Review</th>
-                        </tr>
-                    </thead>
-                </table>
-            </div>
-        </div>
-        <div id="tabs-2">
-            <div class="form-group">
-                <table id="tblReviewPerDayReport" class="table table-bordered table-responsive">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Expected Review</th>
-                            <th>Posted Review</th>
-                        </tr>
-                    </thead>
-                </table>
-            </div>
-        </div>
-        <div id="tabs-3">
+            <div id="tabs-4">
 
-            <div class="row col-md-12 form-group">
-                <div class="col-md-3">
-                    <select class="form-control select2 cls-User-dropdown" onchange="BindUserWorkReport()" id="dropdownUser" name="dropdownUser"></select>
+                <div class="row col-md-12 form-group">
+                    <div class="col-md-4">
+                        <select class="form-control select2" onchange="BindCompanyReport()" id="dropdownCompanyId" name="dropdownCompanyId"></select>
+                    </div>
+                    <div class="col-md-2">
+                        <a id="companyUrlId" style="color: #fff;" class="btn btn-primary" target="_blank">Company Url</a>
+                    </div>
+                </div>
+                <div>
+                    <table id="tblCompanyReport" class="table table-bordered table-responsive">
+                        <thead>
+                            <tr>
+                                <th>Review Date</th>
+                                <th>User Name</th>
+                                <th>User Email</th>
+                                <th>Company Name</th>
+                                <th>Register Name</th>
+                            </tr>
+                        </thead>
+                    </table>
                 </div>
             </div>
-            <div>
-                <table id="tblUserWorkReport" class="table table-bordered table-responsive">
-                    <thead>
-                        <tr>
-                            <th>Review Date</th>
-                            <th>User Name</th>
-                            <th>User Email</th>
-                            <th>Company Name</th>
-                            <th>Company Url</th>
-                        </tr>
-                    </thead>
-                </table>
-            </div>
-        </div>
-        <div id="tabs-4">
+            <div id="tabs-5">
 
-            <div class="row col-md-12 form-group">
-                <div class="col-md-4">
-                    <select class="form-control select2" onchange="BindCompanyReport()" id="dropdownCompanyId" name="dropdownCompanyId"></select>
+                <div class="row col-md-12 form-group">
+                    <div class="col-md-4">
+                        <select class="form-control select2 cls-User-dropdown" onchange="BindUserEmail()" id="dropdownUserEmailId" name="dropdownUserEmailName"></select>
+                    </div>
+
                 </div>
-                <div class="col-md-2">
-                    <a id="companyUrlId" style="color: #fff;" class="btn btn-primary" target="_blank">Company Url</a>
+                <div>
+                    <table id="tblUserEmail" class="table table-bordered table-responsive">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>EmailId</th>
+                                <th></th>
+                                <th></th>
+
+                            </tr>
+                        </thead>
+                    </table>
                 </div>
             </div>
-            <div>
-                <table id="tblCompanyReport" class="table table-bordered table-responsive">
-                    <thead>
-                        <tr>
-                            <th>Review Date</th>
-                            <th>User Name</th>
-                            <th>User Email</th>
-                            <th>Company Name</th>
-                            <th>Register Name</th>
-                        </tr>
-                    </thead>
-                </table>
-            </div>
-        </div>
-        <div id="tabs-5">
-
-            <div class="row col-md-12 form-group">
-                <div class="col-md-4">
-                    <select class="form-control select2 cls-User-dropdown" onchange="BindUserEmail()" id="dropdownUserEmailId" name="dropdownUserEmailName"></select>
+            <div id="tabs-6">
+                <div>
+                    <table id="tblUserTracking" class="table table-bordered table-responsive">
+                        <thead>
+                            <tr>
+                                <th>Created Date</th>
+                                <th>Company Name</th>
+                                <th>ReviewName</th>
+                                <th>Company URL</th>
+                                <th>Register Name</th>
+                            </tr>
+                        </thead>
+                    </table>
                 </div>
-
             </div>
-            <div>
-                <table id="tblUserEmail" class="table table-bordered table-responsive">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>EmailId</th>
-                            <th></th>
-                            <th></th>
+            <div id="tabs-7">
 
-                        </tr>
-                    </thead>
-                </table>
-            </div>
-        </div>
-        <div id="tabs-6">
-            <div>
-                <table id="tblUserTracking" class="table table-bordered table-responsive">
-                    <thead>
-                        <tr>
-                            <th>Created Date</th>
-                            <th>Company Name</th>
-                            <th>ReviewName</th>
-                        </tr>
-                    </thead>
-                </table>
+                <div class="row col-md-12 form-group">
+                    <div class="col-md-3">
+                        <select class="form-control select2" onchange="BindWriterUserTrackingReport()" id="dropdownWriterUser" name="dropdownWriterUser"></select>
+                    </div>
+                </div>
+                <div>
+                    <label>Review Count:</label>
+                    <label id="lblReviewCount"></label>
+                    <table id="tblWriterUserWorkReport" class="table table-bordered table-responsive">
+                        <thead>
+                            <tr>
+                                <th>Review Date</th>
+                                <th>Register Name</th>
+                                <th>Company Name</th>
+                                <th>Review Name</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -165,6 +195,7 @@
            /* tags: true*/
         });
         BindUserList();
+        BindWriterUserWorkReport();
         BindCompanyList();
         var selected_tab = 0;
         $(function () {
@@ -175,6 +206,7 @@
             });
             tabs.tabs('select', selected_tab);
         });
+        $('[href="#tabs-1"]').click();
     });
 
     function BindDate(){
@@ -337,6 +369,21 @@
             }
         })
     }
+    function BindWriterUserWorkReport() {
+
+        $.ajax({
+            url: "@Url.Action("GetWriterUserList", "Admin")",
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                $.each(data, function (index, item) {
+                    var opt = new Option(item.Name, item.Id);
+                    $("#dropdownWriterUser").append(opt);
+                });
+                //$("#dropdownUser").chosen();
+            }
+        })
+    }
     function BindCompanyReport() {
         var fromDate = $("#txtFromDate").val();
         var toDate = $("#txtToDate").val();
@@ -424,6 +471,9 @@
     })
     $("#tabs").on('click', '#tab6', function () {
         BindUserTrackingReport();
+    })
+    $("#tabs").on('click', '#tab7', function () {
+        BindWriterUserTrackingReport();
     })
 
     function BindUserEmail() {
@@ -524,12 +574,92 @@
                                 return date.toISOString().split('T')[0] + " " + date.toISOString().split('T')[1].split('.')[0];
                             }
                         },
-                        { "data": "CompanyName", "width": "15%" },
                         {
-                            "data": "ReviewName", "width": "70%",
+                            "data": "CompanyName", "width": "15%",
                             render: function (data, type, row) {
-                                var reviewName = (data.length > 100) ? data.substring(0, 100) + '...' : data;
-                                return '<span title='+data+'>' + reviewName+'</span>';
+                                var companyName = (data.length > 30) ? data.substring(0, 30) + '...' : data;
+                                return '<span title="' + data + '">' + companyName + '</span>';
+                            }
+                        },
+                        {
+                            "data": "ReviewName", "width": "30%",
+                            render: function (data, type, row) {
+                                var reviewName = (data.length > 30) ? data.substring(0, 30) + '...' : data;
+                                return '<span title="'+data+'">' + reviewName+'</span>';
+                            }
+                        },
+                        {
+                            "data": "ListingUrl", "width": "30%",
+                            render: function (data, type, row) {
+                                var reviewName = (data.length > 30) ? data.substring(0, 30) + '...' : data;
+                                return '<a href="' + data + '" target="_blank">' + reviewName + '</a>'
+                            }
+                        },
+                        {
+                            "data": "RegisterName", "width": "10%"
+                        }
+
+                    ]
+                });
+            }
+        })
+    }
+    function BindWriterUserTrackingReport() {
+         var fromDate = $("#txtFromDate").val();
+        var toDate = $("#txtToDate").val();
+        var RegisterId = $("#dropdownWriterUser").val();
+        if (RegisterId.length == 0) {
+            alert("Please select User");
+            return;
+        }
+        if (fromDate == null || toDate == null) {
+            alert("Please select date");
+            return;
+        }
+
+        $.ajax({
+            url: "@Url.Action("GetWriterUserTrackingReportList", "Admin")",
+            type: "GET",
+           /* dataType: "json",*/
+            data: {
+                FromDate: fromDate,
+                ToDate: toDate,
+                RegisterId: RegisterId
+            },
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                if (data.length > 0) {
+                    $("#lblReviewCount").text(data.length);
+                }
+                $('#tblWriterUserWorkReport').dataTable({
+                    destroy: true,
+                    data: data,
+                    "pageLength": 50,
+                    order: [[0, 'desc']],
+                    "columns": [
+                        {
+                            "data": "CreatedDate", "width": "15%",
+                            render: function (data, type, row) {
+                                var date = new Date(parseInt(data.substr(6)));
+                                var datetime = date.toLocaleTimeString();
+                                return date.toISOString().split('T')[0] + " " + date.toISOString().split('T')[1].split('.')[0];
+                            }
+                        },
+                        {
+                            "data": "RegisterName", "width": "10%"
+                        },
+                        {
+                            "data": "CompanyName", "width": "15%",
+                            render: function (data, type, row) {
+                                var companyName = (data.length > 60) ? data.substring(0, 60) + '...' : data;
+                                return '<span title="' + data + '">' + companyName + '</span>';
+                            }
+                        },
+                        {
+                            "data": "ReviewName", "width": "30%",
+                            render: function (data, type, row) {
+                                var reviewName = (data.length > 50) ? data.substring(0, 50) + '...' : data;
+                                return '<span title="' + data + '">' + reviewName + '</span>';
                             }
                         }
                     ]

@@ -104,6 +104,16 @@ namespace ItsReviewApp.Controllers
             con.Close();
             return Json(empList, JsonRequestBehavior.AllowGet);
         }
+        [HttpGet]
+        public ActionResult GetWriterUserList()
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@Mode", 4, DbType.Int32, ParameterDirection.Input);
+            con.Open();
+            var empList = con.Query<RegisterViewModel>("sp_UserReport", parameters, commandType: CommandType.StoredProcedure);
+            con.Close();
+            return Json(empList, JsonRequestBehavior.AllowGet);
+        }
 
         [HttpGet]
         public ActionResult GetUserTrackReport(DateTime FromDate, DateTime ToDate, string RegisterId)
@@ -157,6 +167,28 @@ namespace ItsReviewApp.Controllers
                 parameters.Add("@FromDate", FromDate, DbType.DateTime, ParameterDirection.Input);
                 parameters.Add("@ToDate", ToDate, DbType.DateTime, ParameterDirection.Input);
                 parameters.Add("@Mode", 2, DbType.Int32, ParameterDirection.Input);
+                var ReviewPerDayList = con.Query<UserTrackingViewModel>("sp_UserCompanyReport", parameters, commandType: CommandType.StoredProcedure);
+                con.Close();
+                return Json(ReviewPerDayList, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                con.Close();
+                throw;
+            }
+        }
+        [HttpGet]
+        public ActionResult GetWriterUserTrackingReportList(DateTime FromDate, DateTime ToDate,string RegisterId)
+        {
+            try
+            {
+                con.Open();
+                var parameters = new DynamicParameters();
+                var registerId = Convert.ToInt32(RegisterId);
+                parameters.Add("@FromDate", FromDate, DbType.DateTime, ParameterDirection.Input);
+                parameters.Add("@ToDate", ToDate, DbType.DateTime, ParameterDirection.Input);
+                parameters.Add("@RegisterId", registerId, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("@Mode", 5, DbType.Int32, ParameterDirection.Input);
                 var ReviewPerDayList = con.Query<UserTrackingViewModel>("sp_UserCompanyReport", parameters, commandType: CommandType.StoredProcedure);
                 con.Close();
                 return Json(ReviewPerDayList, JsonRequestBehavior.AllowGet);
