@@ -70,9 +70,7 @@
 
     $(document).ready(function () {
         BindPaltform(0);
-        //$("#startProcessId").css("dispaly", "block");
         GetTrackUserData();
-        /*BindEmailId();*/
     })
 
     function incTimer() {
@@ -152,6 +150,7 @@
             success: function (data) {
                 if (data.company == "WorkCompleted") {
                     $("label[for='suggestedemail']").text("work completed");
+                    ResetData('WorkCompleted');
                 }
                 else if (data.user == "usernotlogin") {
                         var url = '@Url.Action("Login", "Login")';
@@ -159,15 +158,19 @@
                 }
                 else if (data.user == "nocontent") {
                     $("label[for='suggestedemail']").text("No content");
+                    ResetData('nocontent');
                 }
                 else if (data.reviews == "reviewnotfound") {
                     $("label[for='suggestedemail']").text("Review not found");
+                    ResetData('reviewnotfound');
                 }
                 else if (data.user == "emailnotfound") {
                     $("label[for='suggestedemail']").text("Email not found");
+                    ResetData('emailnotfound');
                 }
                 else if (data.user == "emaillimitexceed") {
                     $("label[for='suggestedemail']").text("Email limit exceed");
+                    ResetData('emaillimitexceed');
                 }
                 else {
                     $("label[for='suggestedemail']").text(data.user.EmailId);
@@ -319,19 +322,7 @@
     }
 
     function LogOut() {
-        $("#hdnreview").val('');
-        $("#hdnAddress").val('');
-        $("#hdnListingUrl").val('');
-        $("#hdnCompanyId").val('');
-        $("#hdnWriterId").val('');
-        $("#hdnUserId").val('');
-        $("#hdnTrackOrder").val('');
-        $("#suggestemailName").text('');
-        $('#suggestemail').text('')
-        $("#suggestemailName").text('');
-        $("#companyUrl").val('');
-        $("#companyId").text('');
-        $("#cityId").text('');
+        ResetData('logout');
         $.ajax({
             url: "@Url.Action("Logout", "User")",
             type: "GET",
@@ -342,5 +333,21 @@
         })
          var url = '@Url.Action("Login", "Login")';
                   window.location.href = url;
+    }
+    function ResetData(name) {
+        $("#hdnreview").val('');
+        $("#hdnAddress").val('');
+        $("#hdnListingUrl").val('');
+        $("#hdnCompanyId").val('');
+        $("#hdnWriterId").val('');
+        $("#hdnUserId").val('');
+        $("#hdnTrackOrder").val('');
+        if (name == "logout") {
+            $('#suggestemail').text('')
+        }
+        $("#suggestemailName").text('');
+        $("#companyUrl").val('');
+        $("#companyId").text('');
+        $("#cityId").text('');
     }
 </script>

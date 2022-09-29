@@ -18,7 +18,7 @@ namespace ItsReviewApp.Controllers
     {
         string connectionString = ConfigurationManager.ConnectionStrings["DbEntities"].ToString();
         SqlConnection con;
-       
+
 
         public SalesController()
         {
@@ -461,20 +461,33 @@ namespace ItsReviewApp.Controllers
 
 
         [HttpGet]
-        public bool GetPhoneNumber(string phoneNumber)
+        public bool GetPhoneNumber(string phoneNumber, int id)
         {
             var result = false;
-            var parameters = new DynamicParameters();
-            parameters.Add("@Mode", 6, DbType.Int32, ParameterDirection.Input);
-            parameters.Add("@PhoneNumber", phoneNumber, DbType.String, ParameterDirection.Input);
-
-            using (IDbConnection connection = new SqlConnection(connectionString))
+            try
             {
-                var phoneNumberValidation = connection.ExecuteScalar("sp_Sales", parameters, commandType: CommandType.StoredProcedure);
-                if (phoneNumberValidation != null)
+                var parameters = new DynamicParameters();
+                parameters.Add("@Mode", 6, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("@id", id, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("@PhoneNumber", phoneNumber, DbType.String, ParameterDirection.Input);
+
+                using (IDbConnection connection = new SqlConnection(connectionString))
                 {
-                    result = true;
+                    var phoneNumberValidation = connection.ExecuteScalar("sp_Sales", parameters, commandType: CommandType.StoredProcedure);
+                    if (phoneNumberValidation.ToString()=="1")
+                    {
+                        result = true;
+                    }
+                    else
+                    {
+                        result = false;
+                    }
                 }
+            }
+            catch (Exception)
+            {
+
+                throw;
             }
             return result;
         }

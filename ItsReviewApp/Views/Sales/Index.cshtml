@@ -18,18 +18,12 @@
         <table id="datatableid" class="table table-bordered table-responsive" style="width: 100%">
             <thead>
                 <tr>
-                    <th>Customer Name</th>
-                    <th>Phone Number</th>
-                    <th>Remarks</th>
-                    @*<th>Niche Name</th>
-                    <th>Company Name</th>*@
-                    @*<th>Country Name</th>*@
-                    @*<th>Review Per Day</th>*@
-                    @*<th>Listing Url</th>*@
-                    @*<th>Review Date</th>*@
-
-                    <th></th>
-                    @*<th>Current review</th>*@
+                    <th style="Width:15%;">Phone Number</th>
+                    <th style="Width:40%;">Company Name</th>
+                    <th style="Width:15%;">CIty Name</th>
+                    <th style="Width:15%;">Listing Url</th>
+                    <th style="Width:10%;">Rev/Day</th>
+                    <th style="Width:5%;"></th>
                 </tr>
             </thead>
         </table>
@@ -71,24 +65,20 @@
                     destroy: true,
                     data: data,
                     "columns": [
-                        { "data": "ClientName" },
                         { "data": "PhoneNumber" },
-                        { "data": "Remarks" },
-                        //{ "data": "NicheName" },
-                        //{ "data": "CompanyName" },
-                        //{ "data": "ReviewsPerDay" },
-                        //{
-                        //    "data": "ReviewDate",
-                        //    "render": function (data) {
-                        //        const dateValue = new Date(parseInt(data.substr(6)));
-                        //        return dateValue.toLocaleDateString();
-                        //    }
-                        //},
-                       
+                        { "data": "CompanyName"},
+                        { "data": "CityName" },
+                        {
+                            "data": "ListingUrl",
+                            "render": function (data) {
+                                return '<a class="btn btn-primary" target="_blank" href="'+data+'">Company URL</a>';
+                            }
+                        },
+                    { "data": "ReviewsPerDay" },
                         {
                             "data": "Id",
                             "render": function (data, type, row) {
-                                return '<a href="Create/Id?=' + data + '";>Edit</a>';
+                                return '<a class="btn btn-primary" href="Create/Id?=' + data + '";>Edit</a>';
                             }
                         }
                     ]

@@ -8,8 +8,10 @@
 <head>
     <link href="~/Content/Site.css" rel="stylesheet" />
     <style>
-        .error {
-            display: none;
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
 
         .chosen-container {
@@ -75,8 +77,8 @@
                 <div class="col-md-4">
                     <div class="form-group">
                         <label for="phoneNumber">Phone Number</label>
-                        <span class="error" style="color:red;">Required</span>
-                        <input type="text" class="form-control" placeholder="Enter Number" id="phonenumber" name="phonenumber" onchange='PhoneNumberValidation(this)' maxlength="10" />
+                        <span class="error" style="color:red;float:right;">Required</span>
+                        <input type="number" class="form-control" placeholder="Enter Number" id="phonenumber" name="phonenumber" onfocusout='PhoneNumberValidation(this)' maxlength="10" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" />
 
                     </div>
                 </div>
@@ -99,7 +101,6 @@
                 </div>
                 <div class="form-group">
                     <label for="remarks">Remarks</label>
-                    <span class="error" style="color:red;">Required</span>
                     <textarea rows="5" cols="3" id="remarkid" class="form-control" onfocusout="CheckRequiredField(this)"></textarea>
 
                 </div>
@@ -222,11 +223,12 @@
             GetDataById(url);
         }
         else {
+            $(".error").css("display", "block");
             BindCountry(5);
             categoryList = new Array();
             SetDefaultCategory();
-            for (i = 0; i < 2; i++) {
-                tblBind("1", "", "", "", "", "", "", "", "1", null, "", "", "0", "" , categoryList,"0","");
+            for (i = 0; i < 1; i++) {
+                tblBind("1", "", "", "", "", "", "", "", "1", null, "", "", "0", "" , categoryList,"0","","");
             }
         }
 
@@ -235,9 +237,9 @@
     $("#newrows").click(function () {
         categoryList = new Array();
         SetDefaultCategory();
-        tblBind("1", "", "", "", "", "", "", "", "1", null, "", "", "0", "", categoryList,"0","");
+        tblBind("1", "", "", "", "", "", "", "", "1", null, "", "", "0", "", categoryList,"0","","");
     });
-    function tblBind(NicheName, CompanyName, CityName, ListingURL, CurrentReview, EmailType, ReviewPerDay, RatePerReview, Platform, ReviewDate, OldBalance, CurrentBalance, Status, CategoryId,CategoryList,SalesDetailId,Address) {
+    function tblBind(NicheName, CompanyName, CityName, ListingURL, CurrentReview, EmailType, ReviewPerDay, RatePerReview, Platform, ReviewDate, OldBalance, CurrentBalance, Status, CategoryId, CategoryList, SalesDetailId, Address, item) {
         var addcontrols = "<tr id=\"RowId_" + count + "\">" + count + ">"
         addcontrols += '<td>' +
             '<div class="top_row">' +
@@ -246,11 +248,10 @@
             '<div><input type="text" placeholder="Company Name" class="form-control companyname" title="' + CompanyName + '" value="' + CompanyName +'" style="width: 370px;" onkeyup="CompanyToolTip(this)" onfocusout="CheckRequiredField(this)"/><span class="error" style="color:red;">Required</span></div>' +
         /*'<div><select class="dropdownclass form-control dropdownCity" name="dropdownCity" id="citydropdown"></select></div>' +*/
             '<div><input type="text" placeholder="City Name" class="form-control cityname" value="' + CityName + '" id="cityname" onfocusout="CheckRequiredField(this)"/><span class="error" style="color:red;">Required</span></div>' +
-
-            '<div style="display:flex;">' +
-            '<input type="text" class="form-control listingurls" placeholder="Url Listing" value="' + ListingURL +'"/>' +
+            '<div>' +
+            '<span style="display:flex;"><input type="text" class="form-control listingurls" placeholder="Url Listing" onfocusout="CheckRequiredField(this)" value="' + ListingURL +'"/>' +
             '<a class="btn btn-primary btn-sm listingbutton" target="_blank" href="' + ListingURL +'" style="margin-left:7px;">GO</a>' +
-            '</div><span class="error" style = "color:red;"> Required</span>' +
+            '</span><span class="error" style = "color:red;"> Required</span></div>' +
             '<div><input type="text" placeholder="Cur/Rev" class="form-control currentreview" value="' + CurrentReview +'" style="width: 70px;" Id="currentreview" onfocusout="CheckRequiredField(this)"/><span class="error" style="color:red;">Required</span></div>' +
            /* '<div><input type="text" placeholder="Email Type" class="form-control emailtype" value="' + EmailType +'" /></div>' +*/
             '<div><input type="text" placeholder="Rev/day" class="form-control reviewperrday" id="reviewperrday" value="' + ReviewPerDay +'" style="width: 70px;" onfocusout="CheckRequiredField(this)"/><span class="error" style="color:red;">Required</span></div>' +
@@ -258,13 +259,13 @@
             '</div>' +
             '<div class="top_row">' +
             '<div><select class="form-control dropdownPaltform chzn-select" name="dropdownPaltform"></select></div>' +
-            '<div class="datepicker">' +
-            '<div class="input-group date example1">' +
-            '<input type="text" class="input-group date form-control reviewdate" value="' + ReviewDate +'" />' +
+            '<div>' +
+            '<span class="input-group date example1">' +
+            '<input type="text" class="input-group date form-control reviewdate" onfocusout="CheckRequiredField(this)" value="' + ReviewDate +'" />' +
                 '<span class="input-group-addon">' +
                 '<span class="glyphicon glyphicon-calendar"></span>' +
                 '</span>' +
-            '</div>' +
+            '</span>' +
             '<span class="error" style="color:red;">Required</span></div>' +
             '<div><input type="text" placeholder="Old Balance" class="form-control oldbalance" value="' + OldBalance +'" /></div>' +
             '<div><input type="text" placeholder="Current Balance" class="form-control currentbalance" value="' + CurrentBalance +'" /></div>' +
@@ -283,7 +284,7 @@
        /* GetSelectedValues("RowId_" + count, SalesdetailList);*/
         datetime();
         MultiSelectChckBox();
-
+        if (getid != 0) {            $.each(item, function (index, item) {                if (item == "" || item == null) {                }                else {                    EditRequiredFiled("RowId_" + count, item);                }            })        }
         count++;
     }
     function GetDataById(id) {
@@ -296,7 +297,7 @@
                     getid = id;
                     var sales = data.saleslist[0];
                     $('#clientname').val(sales.ClientName);
-                    $('#phonenumber').val(sales.PhoneNumber);
+                    $('#phonenumber').val(sales.PhoneNumber);                    if (sales.PhoneNumber != null || sales.PhoneNumber != "") {                        $("#phonenumber").parent().closest("div").find(".error").css("display", "none");                    }
                     $('#remarkid').val(sales.Remarks);
 
                      BindCountry(sales.CountryName);
@@ -319,7 +320,7 @@
                                       item[key] = "";
                                   }
                               });
-                             tblBind(item.NicheName, item.CompanyName, item.CityName, item.ListingUrl, item.CurrentReview, item.EmailType, item.ReviewsPerDay, item.RatePerReview, item.Platform, item.ReviewDate, item.OldBalance, item.CurrentBalance, item.Status, item.CategoryId, categoryList, item.Id, item.Address);
+                             tblBind(item.NicheName, item.CompanyName, item.CityName, item.ListingUrl, item.CurrentReview, item.EmailType, item.ReviewsPerDay, item.RatePerReview, item.Platform, item.ReviewDate, item.OldBalance, item.CurrentBalance, item.Status, item.CategoryId, categoryList, item.Id, item.Address,item);
                       });
                   }
 
@@ -435,7 +436,6 @@
         })
     }
     $('#btnsave').click(function () {
-        $('#btnsave').prop("disabled", true);
         var getvalue = getid;
         var clientname = $("#clientname").val();
         var phoneNumber = $("#phonenumber").val();
@@ -449,7 +449,7 @@
                 return;
             }
         }
-        if (phoneNumber.length == 0 || Remarks.length == 0) {
+        if (phoneNumber.length == 0) {
             return;
         }
         var Reviews = new Array();
@@ -487,6 +487,7 @@
         if (exit) {
             return;
         }
+        $('#btnsave').prop("disabled", true);
         var writeobject = new Object();
         writeobject.Id = getvalue,
         writeobject.ClientName = clientname,
@@ -503,11 +504,15 @@
           /*  dataType: "json",*/
             type: "POST",
             success: function (result) {
+                $('#btnsave').prop("disabled", false);
                 if (result != 0) {
                     alert("Company Already Exists : \n" + result.toString().replaceAll(",", "\n"));
                 }
                 else {
                     alert('success');
+                    var url = '@Url.Action("Index", "Sales")';
+                    window.location.href = url;
+
                 }
                 ResetSalesData();
 
@@ -703,12 +708,12 @@
         categoryList = new Array();
         SetDefaultCategory();
         $("#tblSales tbody").html('');
-        tblBind(nichename, companyname, city, url, "", "", numberofreview, rating, "1", null, "", "", "0", "", categoryList, "", "");
+        tblBind(nichename, companyname, city, url, "", "", numberofreview, rating, "1", null, "", "", "0", "", categoryList, "", "","");
     }
 
-    $("#clientname").on("keyup", function () {
-        $('#btnsave').prop("disabled", false);
-    });
+    //$("#clientname").on("keyup", function () {
+    //    $('#btnsave').prop("disabled", false);
+    //});
     function SetDefaultCategory() {
         var obj1 = { CategoryId: '1' }
         categoryList.push(obj1);
@@ -728,7 +733,7 @@
         $("#tblSales tbody").html('');
         SetDefaultCategory();
         for (i = 0; i < 2; i++) {
-            tblBind("1", "", "", "", "", "", "", "", "1", null, "", "", "0", "", categoryList, "0", "");
+            tblBind("1", "", "", "", "", "", "", "", "1", null, "", "", "0", "", categoryList, "0", "","");
         }
     }
 
@@ -749,12 +754,12 @@
 
     function PhoneNumberValidation(number) {
         var phoneNumber = number.value;
-        var id = getid;
+        var id = 0;
+        id = getid;
 
         if (phoneNumber == null || phoneNumber == "") {
             return;
         }
-        if (id == 0) {
             $.ajax({
                 url: "@Url.Action("GetPhoneNumber", "Sales")",
                 contentType: 'application/json',
@@ -775,28 +780,6 @@
                     alert('failure');
                 }
             });
-        }
-        else {
-             $.ajax({
-                url: "@Url.Action("GetPhoneNumber", "Sales")",
-                contentType: 'application/json',
-                data: { "phoneNumber": phoneNumber , "id" : id},
-                type: "GET",
-                    success: function (data) {
-                    if (data.toUpperCase() == "TRUE") {
-                       return
-                    }
-                    else {
-                        number.value = "";
-                        alert('Phone Number already exists');
-                        }
-
-                },
-                error: function (data) {
-                    alert('failure');
-                }
-             });
-        }
     }
 
     function CheckRequiredField(name) {
@@ -809,13 +792,8 @@
         }
     }
 
-    $(document).on("focusout", ".reviewdate", function (name) {
-        if (name.target.value == null || name.target.value == "") {
-            $(name.target).parent().closest("div.datepicker").find(".error").css("display", "block");
-        }
-        else {
-            $(name.target).parent().closest("div.datepicker").find(".error").css("display", "none");
-        }
-    })
+    function EditRequiredFiled(rowcount, name) {
+        $("#tblSales").find("tr#" + rowcount).find("input[value='" + name + "']").parent().closest("div").find(".error").css("display", "none");
+    }
 
 </script>

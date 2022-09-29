@@ -160,7 +160,10 @@
                 </div>
             </div>
             <div id="tabs-7">
-
+                <div class="row">
+                    <label>Review Per Day Count:</label>
+                    <label id="lblReviewPerDayCount"></label>
+                </div>
                 <div class="row col-md-12 form-group">
                     <div class="col-md-3">
                         <select class="form-control select2" onchange="BindWriterUserTrackingReport()" id="dropdownWriterUser" name="dropdownWriterUser"></select>
@@ -629,6 +632,7 @@
             contentType: 'application/json; charset=utf-8',
             success: function (data) {
                 if (data.length > 0) {
+                    $("#lblReviewPerDayCount").text(data[0].ReviewsPerDay);
                     $("#lblReviewCount").text(data.length);
                 }
                 $('#tblWriterUserWorkReport').dataTable({
