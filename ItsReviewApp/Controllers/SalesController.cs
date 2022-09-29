@@ -28,13 +28,20 @@ namespace ItsReviewApp.Controllers
         // GET: Sales
         public ActionResult Index()
         {
+            if (Session["RegisterId"] == null)
+            {
+                return RedirectToAction("Login", "Login", new { area = "" });
+            }
             return View();
         }
 
         public ActionResult Create()
         {
             List<SalesViewModel> salesViewModels = new List<SalesViewModel>();
-
+            if (Session["RegisterId"] == null)
+            {
+                return RedirectToAction("Login", "Login", new { area = "" });
+            }
 
             con.Open();
             List<SelectListItem> Listing = new List<SelectListItem>() {
@@ -80,10 +87,6 @@ namespace ItsReviewApp.Controllers
                 if (Session["RegisterId"] != null)
                 {
                     salesId = Convert.ToInt32(Session["RegisterId"]);
-                }
-                else
-                {
-                    new HttpStatusCodeResult(HttpStatusCode.OK);
                 }
                 var mode = 0;
                 if (salesViewModel.Id == 0)
@@ -329,7 +332,7 @@ namespace ItsReviewApp.Controllers
         public JsonResult Status()
         {
             List<SelectListItem> category = new List<SelectListItem>() {
-            new SelectListItem {Text = "Select Status", Value = "0"},
+            new SelectListItem {Text = "Status", Value = "0"},
             new SelectListItem {Text = "Start", Value = "1"},
             new SelectListItem {Text = "Stop", Value = "2"},
             new SelectListItem {Text = "Suspended", Value = "3"},
@@ -454,6 +457,26 @@ namespace ItsReviewApp.Controllers
                 }
                 connection.Close();
             }
+        }
+
+
+        [HttpGet]
+        public bool GetPhoneNumber(string phoneNumber)
+        {
+            var result = false;
+            var parameters = new DynamicParameters();
+            parameters.Add("@Mode", 6, DbType.Int32, ParameterDirection.Input);
+            parameters.Add("@PhoneNumber", phoneNumber, DbType.String, ParameterDirection.Input);
+
+            using (IDbConnection connection = new SqlConnection(connectionString))
+            {
+                var phoneNumberValidation = connection.ExecuteScalar("sp_Sales", parameters, commandType: CommandType.StoredProcedure);
+                if (phoneNumberValidation != null)
+                {
+                    result = true;
+                }
+            }
+            return result;
         }
     }
 }

@@ -3,14 +3,15 @@
 @{
     ViewBag.Title = "Create";
 }
-
-
 <!DOCTYPE html>
 <html>
 <head>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <link href="~/Content/Site.css" rel="stylesheet" />
     <style>
+        .error {
+            display: none;
+        }
+
         .chosen-container {
             width: 100% !important;
         }
@@ -42,27 +43,49 @@
                 display: inline-block;
                 padding-left: 3px;
             }
+
+        .ui-widget-header {
+            border: 0px !important;
+            background: #f9f9f9 !important;
+            color: #251f1f;
+        }
+
+            ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default, .ui-button, html .ui-button.ui-state-disabled:hover, html .ui-button.ui-state-disabled:active {
+                font-weight: bold !important;
+            }
+
+        /*     #ui-datepicker-div {
+            top: 778.137px !important;
+        }*/
     </style>
 </head>
 <body>
-
     <div class="container-fluid">
         <div class="header">
             <h5 style="color:#fff;margin-right: 40px;">ItsReview App</h5>
         </div>
-
         <div class="container" style="padding-top:30px;">
-            <div class="form-group">
-                <label for="clientName">Client Name</label>
-                <input type="text" class="form-control" placeholder="Enter Name" id="clientname">
-            </div>
-            <div class="form-group">
-                <label for="phoneNumber">Phone Number</label>
-                <input type="text" class="form-control" placeholder="Enter Number" id="phonenumber">
-            </div>
-            <div class="form-group">
-                <label for="country">Select Country</label>
-                <select name="dropdowncountry" id="country" class="form-control dropdowncountry"></select>
+            <div class="row col-md-12" style="margin-left:-30px!important">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="clientName">Client Name</label>
+                        <input type="text" class="form-control" placeholder="Enter Name" id="clientname">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="phoneNumber">Phone Number</label>
+                        <span class="error" style="color:red;">Required</span>
+                        <input type="text" class="form-control" placeholder="Enter Number" id="phonenumber" name="phonenumber" onchange='PhoneNumberValidation(this)' maxlength="10" />
+
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="country">Select Country</label>
+                        <select name="dropdowncountry" id="country" class="form-control dropdowncountry"></select>
+                    </div>
+                </div>
             </div>
             <div class="form-group">
                 <button type="button" class="btn btn-dark" id="newrows"><b>Add More Url Listing</b></button>
@@ -76,17 +99,20 @@
                 </div>
                 <div class="form-group">
                     <label for="remarks">Remarks</label>
-                    <textarea rows="5" cols="3" id="remarkid" class="form-control"></textarea>
+                    <span class="error" style="color:red;">Required</span>
+                    <textarea rows="5" cols="3" id="remarkid" class="form-control" onfocusout="CheckRequiredField(this)"></textarea>
+
                 </div>
                 <div class="form-group">
                     <label for="date">FollowUp Date</label>
-                    <div class='input-group date example1'>
+                    <div class='input-group date followupDate'>
                         <input type='text' class="form-control" id="followupdate" />
                         <span class="input-group-addon">
                             <span class="glyphicon glyphicon-calendar"></span>
                         </span>
                     </div>
                 </div>
+
                 <div class="form-group">
                     <input type="checkbox" class="form-check-input" id="followupcheck" checked>
                     <label class="form-check-label" for="followupcheck">Save to FollowUp List</label>
@@ -175,13 +201,18 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </body>
 </html>
 
+
 <script type="text/javascript">
 
+    //$('#followupdate').datepicker({
+    //    minDate: 0,
+    //});
     var getid = 0;
     var categoryList = new Array();
     $(document).ready(function () {
@@ -198,6 +229,7 @@
                 tblBind("1", "", "", "", "", "", "", "", "1", null, "", "", "0", "" , categoryList,"0","");
             }
         }
+
     })
     var count = 0;
     $("#newrows").click(function () {
@@ -211,33 +243,34 @@
             '<div class="top_row">' +
             '<div><input type="hidden" class="form-control hiddensalesdetailid" value="' + SalesDetailId + '" /></div>' +
             '<div><select class="dropdownclass form-control dropdownNiche" name="dropdownNiche"></select></div>' +
-            '<div><input type="text" placeholder="Company Name" class="form-control companyname" value="' + CompanyName +'" /></div>' +
+            '<div><input type="text" placeholder="Company Name" class="form-control companyname" title="' + CompanyName + '" value="' + CompanyName +'" style="width: 370px;" onkeyup="CompanyToolTip(this)" onfocusout="CheckRequiredField(this)"/><span class="error" style="color:red;">Required</span></div>' +
         /*'<div><select class="dropdownclass form-control dropdownCity" name="dropdownCity" id="citydropdown"></select></div>' +*/
-            '<div><input type="text" placeholder="City Name" class="form-control cityname" value="' + CityName + '"/></div>' +
+            '<div><input type="text" placeholder="City Name" class="form-control cityname" value="' + CityName + '" id="cityname" onfocusout="CheckRequiredField(this)"/><span class="error" style="color:red;">Required</span></div>' +
+
             '<div style="display:flex;">' +
-            '<input type="text" class="form-control listingurls" placeholder="Url Listing" value="' + ListingURL +'" />' +
+            '<input type="text" class="form-control listingurls" placeholder="Url Listing" value="' + ListingURL +'"/>' +
             '<a class="btn btn-primary btn-sm listingbutton" target="_blank" href="' + ListingURL +'" style="margin-left:7px;">GO</a>' +
-            '</div>' +
-            '<div><input type="text" placeholder="Current Review" class="form-control currentreview" value="' + CurrentReview +'" /></div>' +
-            '<div><input type="text" placeholder="Email Type" class="form-control emailtype" value="' + EmailType +'" /></div>' +
-            '<div><input type="text" placeholder="Rev/day" class="form-control reviewperrday" value="' + ReviewPerDay +'" /></div>' +
-            '<div><input type="text" placeholder="Rate/Rev" class="form-control rateperreview" value="' + RatePerReview +'" /></div>' +
+            '</div><span class="error" style = "color:red;"> Required</span>' +
+            '<div><input type="text" placeholder="Cur/Rev" class="form-control currentreview" value="' + CurrentReview +'" style="width: 70px;" Id="currentreview" onfocusout="CheckRequiredField(this)"/><span class="error" style="color:red;">Required</span></div>' +
+           /* '<div><input type="text" placeholder="Email Type" class="form-control emailtype" value="' + EmailType +'" /></div>' +*/
+            '<div><input type="text" placeholder="Rev/day" class="form-control reviewperrday" id="reviewperrday" value="' + ReviewPerDay +'" style="width: 70px;" onfocusout="CheckRequiredField(this)"/><span class="error" style="color:red;">Required</span></div>' +
+            '<div><input type="text" placeholder="Rate/Rev" class="form-control rateperreview" id="rateperreview" value="' + RatePerReview +'" style="width: 70px;" onfocusout="CheckRequiredField(this)"/><span class="error" style="color:red;">Required</span></div>' +
             '</div>' +
             '<div class="top_row">' +
             '<div><select class="form-control dropdownPaltform chzn-select" name="dropdownPaltform"></select></div>' +
-            '<div>' +
+            '<div class="datepicker">' +
             '<div class="input-group date example1">' +
             '<input type="text" class="input-group date form-control reviewdate" value="' + ReviewDate +'" />' +
-            '<span class="input-group-addon">' +
-            '<span class="glyphicon glyphicon-calendar"></span>' +
-            '</span>' +
+                '<span class="input-group-addon">' +
+                '<span class="glyphicon glyphicon-calendar"></span>' +
+                '</span>' +
             '</div>' +
-            '</div>' +
+            '<span class="error" style="color:red;">Required</span></div>' +
             '<div><input type="text" placeholder="Old Balance" class="form-control oldbalance" value="' + OldBalance +'" /></div>' +
             '<div><input type="text" placeholder="Current Balance" class="form-control currentbalance" value="' + CurrentBalance +'" /></div>' +
             '<div><select class="form-control dropdownStatus" name="dropdownStatus"></select></div>' +
-            '<div><select data-placeholder="Select Category" class="form-control dropdownCategory" name="dropdownCategory" multiple="multiple"></select></div>' +
-            '<div><input type="text" placeholder="Address" class="form-control cls-Address" value="' + Address + '" /></div>' +
+            '<div><select data-placeholder="Select Category" class="form-control dropdownCategory" id="dropdownCategory" name="dropdownCategory" multiple="multiple"></select></div>' +
+            '<div><input type="text" placeholder="Address" class="form-control cls-Address" id="address" value="' + Address + '" onfocusout="CheckRequiredField(this)"/><span class="error" style="color:red;">Required</span></div>' +
             '</div>' +
             '</td>';
         addcontrols += "</tr>";
@@ -250,41 +283,43 @@
        /* GetSelectedValues("RowId_" + count, SalesdetailList);*/
         datetime();
         MultiSelectChckBox();
+
         count++;
     }
     function GetDataById(id) {
-
-          $.ajax({
+        $.ajax({
             url: '@Url.Action("GetDataById", "Sales")?Id=' + id,
             type: "GET",
             dataType: "json",
-              success: function (data) {
+            success: function (data) {
+                if (data != null) {
+                    getid = id;
+                    var sales = data.saleslist[0];
+                    $('#clientname').val(sales.ClientName);
+                    $('#phonenumber').val(sales.PhoneNumber);
+                    $('#remarkid').val(sales.Remarks);
 
-                  if (data != null) {
-
-                      getid = id;
-                      var sales = data.saleslist[0];
-                      $('#clientname').val(sales.ClientName);
-                      $('#phonenumber').val(sales.PhoneNumber);
-                      $('#remarkid').val(sales.Remarks);
-                      /*$('#citydropdown').val(sales.CityName);*/
-                      BindCountry(sales.CountryName);
-                      /*var followUpDate = new Date(parseInt(data.saleslist[0].FollowUpDate.substr(6)));*/
+                     BindCountry(sales.CountryName);
                       if (sales.FollowUpDate != null) {
                           var followUpDate = new Date(parseInt(sales.FollowUpDate.substr(6)));
                           var followDate = formatDate(followUpDate)
                           $('#followupdate').val(followDate);
                       }
                       $("#tblSales tbody").html('');
-                      $.each(data.detailslist, function (index, item) {
-                          /* var reviewDate = new Date(parseInt(item.ReviewDate.substr(6)));*/
-                          if (item.ReviewDate != null) {
-                              var reviewDate = new Date(parseInt(item.ReviewDate.substr(6)));
-                              item.ReviewDate = formatDate(reviewDate);
-                          }
-                          var categoryList = data.categorylist.filter(function (e)
-                          { return e.SalesdetailId == item.Id })
-                          tblBind(item.NicheName, item.CompanyName, item.CityName, item.ListingUrl, item.CurrentReview, item.EmailType, item.ReviewsPerDay, item.RatePerReview, item.Platform, item.ReviewDate, item.OldBalance, item.CurrentBalance, item.Status, item.CategoryId, categoryList, item.Id, item.Address);
+                    $.each(data.detailslist, function (index, item) {
+                              if (item.ReviewDate != null) {
+                                  var reviewDate = new Date(parseInt(item.ReviewDate.substr(6)));
+                                  item.ReviewDate = formatDate(reviewDate);
+                              }
+                              var categoryList = data.categorylist.filter(function (e)
+                              { return e.SalesdetailId == item.Id })
+
+                              Object.keys(item).map(function (key, index) {
+                                  if (item[key] == null || item[key] == "null") {
+                                      item[key] = "";
+                                  }
+                              });
+                             tblBind(item.NicheName, item.CompanyName, item.CityName, item.ListingUrl, item.CurrentReview, item.EmailType, item.ReviewsPerDay, item.RatePerReview, item.Platform, item.ReviewDate, item.OldBalance, item.CurrentBalance, item.Status, item.CategoryId, categoryList, item.Id, item.Address);
                       });
                   }
 
@@ -408,12 +443,20 @@
         var followup = $("#followupdate").val();
         var country = $("#country").val();
         var followupcheck = $('#followupcheck').is(':checked');
-
+        if (followupcheck == true) {
+            if (followup.length == 0) {
+                alert("please select follow up date");
+                return;
+            }
+        }
+        if (phoneNumber.length == 0 || Remarks.length == 0) {
+            return;
+        }
         var Reviews = new Array();
+        var exit = false;
         $("#tblSales tbody tr").each(function () {
             var row = $(this);
             var Review = {};
-
             Review.NicheName = row.find(".dropdownNiche").val();
             Review.CompanyName = row.find(".companyname").val();
             Review.CityName = row.find(".cityname").val();
@@ -430,23 +473,29 @@
             Review.CategoryViewModel = row.find(".dropdownCategory").val();
             Review.Id = row.find(".hiddensalesdetailid").val();
             Review.Address = row.find(".cls-Address").val();
-
             if (row.find(".companyname").val() != "") {
                 Reviews.push(Review);
+
+                if (Review.CompanyName.length == 0 || Review.CityName.length == 0 || Review.ListingUrl.length == 0 || Review.CurrentReview.length == 0 || Review.ReviewsPerDay.length == 0 || Review.RatePerReview.length == 0 || Review.CategoryViewModel.length == 0 || Review.Address.length == 0 || Review.ReviewDate == null) {
+                    exit = true;
+                    return
+                }
             }
+
+
         });
-
-
+        if (exit) {
+            return;
+        }
         var writeobject = new Object();
         writeobject.Id = getvalue,
         writeobject.ClientName = clientname,
         writeobject.PhoneNumber = phoneNumber,
         writeobject.FollowUpDate = followup,
         writeobject.CountryName = country,
-            writeobject.SalesDetailsViewModel = Reviews;
+        writeobject.SalesDetailsViewModel = Reviews;
         writeobject.Remarks = Remarks;
         writeobject.FollowUpCheck = followupcheck;
-
         $.ajax({
             url: "@Url.Action("Create", "Sales")",
             contentType: 'application/json',
@@ -461,7 +510,7 @@
                     alert('success');
                 }
                 ResetSalesData();
-               
+
             },
             error: function (result) {
                 alert('failure');
@@ -469,8 +518,22 @@
         });
     });
     function datetime() {
-
         $('.example1').datepicker({
+            autoclose: true,
+            format: "yyyy/mm/dd",
+            orientation: 'bottom',
+            icons: {
+                time: "fa fa-clock-o",
+                date: "fa fa-calendar",
+                up: "fa fa-arrow-up",
+                down: "fa fa-arrow-down"
+            }
+        });
+
+        var dateToday = new Date();
+        $('.followupDate').datepicker({
+            /*startDate: dateToday,*/
+            startDate: dateToday,
             autoclose: true,
             format: "yyyy/mm/dd",
             orientation: 'bottom',
@@ -492,7 +555,6 @@
             month = '0' + month;
         if (day.length < 2)
             day = '0' + day;
-
         return [year, month, day].join('-');
     }
 
@@ -535,7 +597,6 @@
     }
 
     $('#btnsavemodel').click(function () {
-
         var clientname = $(".clientname option:selected").val();
         var companyname = $("#companyname").val();
         var noofreview = $("#noofreview").val();
@@ -681,5 +742,80 @@
         $("#City").val('');
         $("#listing").val('')
     }
+
+    function CompanyToolTip(companyName){
+        $(companyName).attr('title', $(companyName).val())
+    }
+
+    function PhoneNumberValidation(number) {
+        var phoneNumber = number.value;
+        var id = getid;
+
+        if (phoneNumber == null || phoneNumber == "") {
+            return;
+        }
+        if (id == 0) {
+            $.ajax({
+                url: "@Url.Action("GetPhoneNumber", "Sales")",
+                contentType: 'application/json',
+                data: { "phoneNumber": phoneNumber, "id": id },
+                type: "GET",
+                success: function (data) {
+                    if (data.toUpperCase() == "TRUE") {
+                        number.value = "";
+                        alert('Phone Number already exists');
+                        $("#phonenumber").closest("div").find(".error").show();
+                    }
+                    else {
+                        $("#phonenumber").closest("div").find(".error").css("display", "none")
+                    }
+
+                },
+                error: function (data) {
+                    alert('failure');
+                }
+            });
+        }
+        else {
+             $.ajax({
+                url: "@Url.Action("GetPhoneNumber", "Sales")",
+                contentType: 'application/json',
+                data: { "phoneNumber": phoneNumber , "id" : id},
+                type: "GET",
+                    success: function (data) {
+                    if (data.toUpperCase() == "TRUE") {
+                       return
+                    }
+                    else {
+                        number.value = "";
+                        alert('Phone Number already exists');
+                        }
+
+                },
+                error: function (data) {
+                    alert('failure');
+                }
+             });
+        }
+    }
+
+    function CheckRequiredField(name) {
+        var detail = name.value;
+        if (detail == null || detail == "") {
+            $(name).parent().closest("div").find(".error").css("display", "block");
+        }
+        else {
+            $(name).parent().closest("div").find(".error").css("display", "none");
+        }
+    }
+
+    $(document).on("focusout", ".reviewdate", function (name) {
+        if (name.target.value == null || name.target.value == "") {
+            $(name.target).parent().closest("div.datepicker").find(".error").css("display", "block");
+        }
+        else {
+            $(name.target).parent().closest("div.datepicker").find(".error").css("display", "none");
+        }
+    })
 
 </script>

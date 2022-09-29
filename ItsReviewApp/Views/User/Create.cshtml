@@ -216,6 +216,7 @@
             dataType: "json",
             contentType: 'application/json; charset=utf-8',
             success: function (data) {
+                $('#datatableid').dataTable().fnDestroy();
                 $('#datatableid').dataTable({
                    /* destroy: true,*/
                     data: data,
@@ -326,6 +327,7 @@
                     alert("Cannot Store Email : \n" + EmailList.toString().replaceAll(",", "\n"));
                 }
                 else {
+                    BindUsers();
                     alert('Success');
                 }
             },
