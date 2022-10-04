@@ -1,4 +1,4 @@
-﻿
+﻿@model ItsReviewApp.ViewModels.LeadViewModel
 @{
     ViewBag.Title = "Index";
 }
@@ -9,12 +9,12 @@
         <a class="btn btn-primary btn-sm" href="/Sales/Create" type="button">Create New</a>
         <button class="btn btn-primary btn-sm" type="button" id="checksaleslist">SalesList</button>
         <button class="btn btn-primary btn-sm" type="button" id="checkfollowup">FollowUpdateList</button>
+        <button class="btn btn-primary btn-sm" type="button" id="LeadExcelUpload">Excel Upload</button>
     </p>
 </div>
 
 <div class="container" style="margin-top: 30px;" id="saleslist">
     <div class="form-group">
-
         <table id="datatableid" class="table table-bordered table-responsive" style="width: 100%">
             <thead>
                 <tr>
@@ -46,6 +46,19 @@
                 </tr>
             </thead>
         </table>
+    </div>
+</div>
+
+<div class="container" style="margin-top: 30px; display: none; background-color: rgb(47 79 79 / 5%); " id="LeadDataUpload">
+    <div class="form-group">
+        <label for="Name">Select Client Name</label>
+        @Html.DropDownList("Name", (IEnumerable<SelectListItem>)ViewBag.Client, "-- Select Client --", new { @class = "form-control clientname", onchange = "EnableExcel(this)" })
+    </div>
+
+    <div class="form-group">
+        <label for="ExcelUpload">Upload File</label>
+        <input type="file" id="files" name="files" /><br />
+        <input type="button" id="excelupload" value="Upload" class="btn btn-primary btn-md btn-sm" disabled/>
     </div>
 </div>
 
@@ -126,11 +139,55 @@
     $("#checkfollowup").click(function () {
         $("#saleslist").hide();
         $("#followuplist").show(BindFollwUp());
+        $("#LeadDataUpload").hide();
     });
 
 
     $("#checksaleslist").click(function () {
         $("#followuplist").hide();
         $("#saleslist").show();
+        $("#LeadDataUpload").hide();
     });
+
+    $("#LeadExcelUpload").click(function () {
+        $("#followuplist").hide();
+        $("#saleslist").hide();
+        $("#LeadDataUpload").show();
+    });
+
+     $('#excelupload').click(function () {
+         var registerId = $(".clientname").val();
+        var fileUpload = $("#files").get(0);
+        var files = fileUpload.files;
+         var fileData = new FormData();
+         fileData.append('RegisterId', registerId);
+        for (var i = 0; i < files.length; i++) {
+            fileData.append(files[i].name, files[i]);
+        }
+
+        
+        $.ajax({
+            url: "@Url.Action("Upload", "Sales")",
+           type: "POST",
+           processData: false,
+           contentType: false,
+             data: fileData,
+            success: function (result) {
+                $("#files").val('');
+                $(".clientname").val('');
+                alert(result);
+                $('#excelupload').prop("disabled", true);
+            },
+            error: function (result) {
+                alert('failure');
+            }
+        });
+     })
+
+    function EnableExcel(name) {
+        if (name.value != 0 || name.value != "") {
+            $('#excelupload').prop("disabled", false);
+        }
+
+    }
 </script>

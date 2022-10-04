@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using ExcelDataReader;
 using ItsReviewApp.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -28,50 +29,56 @@ namespace ItsReviewApp.Controllers
         // GET: Sales
         public ActionResult Index()
         {
+            List<RegisterViewModel> registerViewModels = new List<RegisterViewModel>();
             if (Session["RegisterId"] == null)
             {
                 return RedirectToAction("Login", "Login", new { area = "" });
             }
+            var parameters = new DynamicParameters();
+            parameters.Add("@Mode", 2, DbType.Int32, ParameterDirection.Input);
+            registerViewModels = con.Query<RegisterViewModel>("sp_Lead", parameters, commandType: CommandType.StoredProcedure).ToList();
+            List<SelectListItem> selectListItems = new List<SelectListItem>();
+            foreach (var emp in registerViewModels)
+            {
+                var item = new SelectListItem { Text = emp.Name, Value = emp.Id.ToString() };
+                selectListItems.Add(item);
+            }
+            ViewBag.Client = selectListItems;
             return View();
         }
 
         public ActionResult Create()
         {
-            List<SalesViewModel> salesViewModels = new List<SalesViewModel>();
+            List<RegisterViewModel> registerViewModels = new List<RegisterViewModel>();
             if (Session["RegisterId"] == null)
             {
                 return RedirectToAction("Login", "Login", new { area = "" });
             }
 
             con.Open();
-            List<SelectListItem> Listing = new List<SelectListItem>() {
-            new SelectListItem {Text = "Type 1", Value = "1"},
-            new SelectListItem {Text = "Type 2", Value = "2"},
-            new SelectListItem {Text = "Type 3", Value = "3"},
-            new SelectListItem {Text = "Type 4", Value = "4"},
-            new SelectListItem {Text = "General", Value = "5"},};
-            ViewBag.Listing = Listing;
+
+            List<SelectListItem> Niche = new List<SelectListItem>() {
+            new SelectListItem {Text = "Select Niche", Value = "0"},
+            new SelectListItem {Text = "Packers Movers", Value = "1"},
+            new SelectListItem {Text = "Niche 1", Value = "2"},
+            new SelectListItem {Text = "Niche 2", Value = "3"},
+            new SelectListItem {Text = "Niche 3", Value = "4"},
+            new SelectListItem {Text = "Niche 4", Value = "5"},
+            new SelectListItem {Text = "Niche 5", Value = "6"},};
+            ViewBag.Niche = Niche;
 
             var parameters = new DynamicParameters();
             parameters.Add("@Mode", 2, DbType.Int32, ParameterDirection.Input);
-            salesViewModels = con.Query<SalesViewModel>("sp_Lead", parameters, commandType: CommandType.StoredProcedure).ToList();
+            registerViewModels = con.Query<RegisterViewModel>("sp_Lead", parameters, commandType: CommandType.StoredProcedure).ToList();
             List<SelectListItem> selectListItems = new List<SelectListItem>();
-            foreach (var emp in salesViewModels)
+            foreach (var emp in registerViewModels)
             {
-                var item = new SelectListItem { Text = emp.ClientName, Value = emp.Id.ToString() };
+                var item = new SelectListItem { Text = emp.Name, Value = emp.Id.ToString() };
                 selectListItems.Add(item);
             }
             ViewBag.Client = selectListItems;
 
 
-            //var mail = Session["EmailId"];
-            //parameters = new DynamicParameters();
-            //parameters.Add("@EmailId", mail, DbType.String, ParameterDirection.Input);
-            //parameters.Add("@Mode", 3, DbType.Int32, ParameterDirection.Input);
-            //using (IDbConnection connection = new SqlConnection(connectionString))
-            //{
-            //    var getdata = connection.ExecuteScalar("sp_Lead", parameters, commandType: CommandType.StoredProcedure);
-            //}
             con.Close();
             return View();
 
@@ -378,16 +385,13 @@ namespace ItsReviewApp.Controllers
 
         public JsonResult BindLeadData()
         {
-            //var mail = Session["EmailId"];
-            //var getdata = (dynamic)null;
             List<LeadViewModel> getdata = new List<LeadViewModel>();
             var parameters = new DynamicParameters();
             parameters = new DynamicParameters();
-            //parameters.Add("@EmailId", mail, DbType.String, ParameterDirection.Input);
-            parameters.Add("@Mode", 3, DbType.Int32, ParameterDirection.Input);
+            parameters.Add("@Mode", 2, DbType.Int32, ParameterDirection.Input);
             using (IDbConnection connection = new SqlConnection(connectionString))
             {
-                getdata = con.Query<LeadViewModel>("sp_Lead", parameters, commandType: CommandType.StoredProcedure).ToList();
+                getdata = con.Query<LeadViewModel>("sp_tblLead", parameters, commandType: CommandType.StoredProcedure).ToList();
 
             }
             return Json(getdata, JsonRequestBehavior.AllowGet);
@@ -398,9 +402,6 @@ namespace ItsReviewApp.Controllers
             var parameters = new DynamicParameters();
             parameters.Add("@Id", id, DbType.Int32, ParameterDirection.Input);
             parameters.Add("@Mode", 3, DbType.Int32, ParameterDirection.Input);
-            //var empList = con.Query<SalesViewModel>("sales", parameters, commandType: CommandType.StoredProcedure).ToList();
-            //return Json(empList, JsonRequestBehavior.AllowGet);
-
             var reader = con.QueryMultiple("sp_Sales", parameters, commandType: CommandType.StoredProcedure);
             var saleslist = reader.Read<SalesViewModel>().ToList();
             var salesdetailslist = reader.Read<SalesDetailsViewModel>().ToList();
@@ -490,6 +491,114 @@ namespace ItsReviewApp.Controllers
                 throw;
             }
             return result;
+        }
+
+        [HttpPost]
+        public ActionResult Upload()
+        {
+             string RegisterId = Request.Form["RegisterId"];
+            if (Request.Files.Count > 0)
+            {
+                //string id = Request.Files.(x => x.Key == "id").FirstOrDefault().Value;
+                var files = Request.Files;
+                foreach (string str in files)
+                {
+                    HttpPostedFileBase file = Request.Files[str] as HttpPostedFileBase;
+                    if (file != null)
+                    {
+                        Stream stream = file.InputStream;
+                        IExcelDataReader reader = null;
+                        if (file.FileName.EndsWith(".xls"))
+                        {
+                            reader = ExcelReaderFactory.CreateBinaryReader(stream);
+                        }
+                        else if (file.FileName.EndsWith(".xlsx"))
+                        {
+                            reader = ExcelReaderFactory.CreateOpenXmlReader(stream);
+                        }
+                        else
+                        {
+                            return Json("This file format is not supported");
+                        }
+                        int fieldcount = reader.FieldCount;
+                        int rowcount = reader.RowCount;
+                        DataTable dt = new DataTable();
+                        DataRow row;
+                        DataTable dt_ = new DataTable();
+
+                        try
+                        {
+                            dt_ = reader.AsDataSet().Tables[0];
+                            for (int i = 0; i < dt_.Columns.Count; i++)
+                            {
+                                dt.Columns.Add(dt_.Rows[0][i].ToString());
+                            }
+                            int rowcounter = 0;
+                            for (int row_ = 1; row_ < dt_.Rows.Count; row_++)
+                            {
+                                row = dt.NewRow();
+
+                                for (int col = 0; col < dt_.Columns.Count; col++)
+                                {
+                                    var test = row[col] = dt_.Rows[row_][col].ToString();
+                                    rowcounter++;
+                                }
+                                dt.Rows.Add(row);
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            return Json("Unable to Upload file!");
+                        }
+
+                        DataSet result = new DataSet();
+                        result.Tables.Add(dt);
+                        reader.Close();
+                        reader.Dispose();
+                        DataTable tmp = result.Tables[0];
+                        for (int i = 0; i < tmp.Rows.Count; i++)
+                        {
+                            LeadViewModel leadViewModel = new LeadViewModel();
+                            leadViewModel.NicheName = tmp.Rows[i][0].ToString().Trim();
+                            leadViewModel.CompanyName = tmp.Rows[i][1].ToString().Trim();
+                            leadViewModel.City = tmp.Rows[i][2].ToString().Trim();
+                            leadViewModel.PhoneNumber = tmp.Rows[i][3].ToString().Trim();
+                            leadViewModel.RegisterId = RegisterId;
+                            LeadSave(leadViewModel);
+                        }
+                        return Json("Upload Successfully");
+                        // return Json(EmailList, JsonRequestBehavior.AllowGet);
+                    }
+
+                }
+                return View();
+            }
+            else
+            {
+                return Json("Please Upload Your file");
+            }
+        }
+
+        [HttpPost]
+        public ActionResult LeadSave(LeadViewModel leadViewModel)
+        {
+            if(leadViewModel.RegisterId == null || leadViewModel.RegisterId == "")
+            {
+                leadViewModel.RegisterId = "All";
+            }
+            var parameters = new DynamicParameters();
+            parameters.Add("@NicheName", leadViewModel.NicheName, DbType.String, ParameterDirection.Input);
+            parameters.Add("@CompanyName", leadViewModel.CompanyName, DbType.String, ParameterDirection.Input);
+            parameters.Add("@City", leadViewModel.City, DbType.String, ParameterDirection.Input);
+            parameters.Add("@PhoneNumber", leadViewModel.PhoneNumber, DbType.String, ParameterDirection.Input);
+            parameters.Add("@RegisterId", leadViewModel.RegisterId, DbType.String, ParameterDirection.Input);
+            parameters.Add("@Mode", 1, DbType.Int32, ParameterDirection.Input);
+            using (IDbConnection connection = new SqlConnection(connectionString))
+            {
+                var leadsave = connection.ExecuteScalar("sp_tblLead", parameters, commandType: CommandType.StoredProcedure);
+                connection.Close();
+            }
+            return RedirectToAction("Create", "Sales");
         }
     }
 }

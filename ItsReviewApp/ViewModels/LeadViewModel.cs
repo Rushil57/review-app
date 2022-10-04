@@ -18,7 +18,9 @@ namespace ItsReviewApp.ViewModels
         public string Url { get; set; }
         public string City { get; set; }
         public string Listing { get; set; }
+        public string PhoneNumber { get; set; }
 
         public string EmailId { get; set; }
+        public string RegisterId { get; set; }
     }
 }

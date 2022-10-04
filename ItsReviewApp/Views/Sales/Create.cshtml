@@ -8,6 +8,9 @@
 <head>
     <link href="~/Content/Site.css" rel="stylesheet" />
     <style>
+        #LeadModalDataId {
+            width: 550px !important;
+        }
         input::-webkit-outer-spin-button,
         input::-webkit-inner-spin-button {
             -webkit-appearance: none;
@@ -122,7 +125,7 @@
                 <button type="submit" class="btn btn-primary" id="btnsave">Save</button>
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#LeadModal">Create Lead</button>
                 <button type="button" class="btn btn-primary" data-toggle="modal" onclick="BindLead();" data-target="#LeadModalId">Lead Data</button>
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#LeadModalId">Lead</button>
+                @*<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#LeadModalId">Lead</button>*@
             </div>
 
             <!-- Create Lead -->
@@ -131,42 +134,30 @@
                     <div class="modal-content">
                         <div class="modal-body">
                             <div class="form-group">
-                                <label for="clientname">Sales Name</label>
-                                @Html.DropDownList("ClientName", (IEnumerable<SelectListItem>)ViewBag.Client, "-- Select Client --", new { @class = "form-control clientname" })
+                                <label for="Name">Name</label>
+                                @Html.DropDownList("Name", (IEnumerable<SelectListItem>)ViewBag.Client, "-- Select Client --", new { @class = "form-control clientname" })
+                            </div>
+                            <div class="form-group">
+                                <label for="nicheName">NicheName</label>
+                                @Html.DropDownList("NicheName", (IEnumerable<SelectListItem>)ViewBag.Niche, new { @class = "form-control leadNiche" })
                             </div>
                             <div class="form-group">
                                 <label for="companyname">Company Name</label>
-                                @*<input type="text" class="form-control" placeholder="Enter Compnay Name" id="companyname">*@
-                                @Html.TextBoxFor(m => m.CompanyName, new { @class = "form-control", @id = "companyname" })
-                            </div>
-                            <div class="form-group">
-                                <label for="noofreview">No. Of Review</label>
-                                @Html.TextBoxFor(m => m.NumberOfReview, new { @class = "form-control", @id = "noofreview" })
-                            </div>
-                            <div class="form-group">
-                                <label for="rating">Rating</label>
-                                @Html.TextBoxFor(m => m.Rating, new { @class = "form-control", @id = "rating" })
-                            </div>
-                            <div class="form-group">
-                                <label for="niche">Niche</label>
-                                @Html.TextBoxFor(m => m.NicheName, new { @class = "form-control", @id = "niche" })
-                            </div>
-                            <div class="form-group">
-                                <label for="url">URL</label>
-                                @Html.TextBoxFor(m => m.Url, new { @class = "form-control", @id = "url" })
+                                <span class="error" style="color:red;float:right;">Required</span>
+                                @Html.TextBoxFor(m => m.CompanyName, new { @class = "form-control", @id = "companyname" , onfocusout = "CheckRequiredField(this)" })
                             </div>
                             <div class="form-group">
                                 <label for="City">City</label>
                                 @Html.TextBoxFor(m => m.City, new { @class = "form-control", @id = "City" })
                             </div>
                             <div class="form-group">
-                                <label for="listing">Select Listing</label>
-                                @*<select name="dropdownlisting" id="listing" class="form-control dropdownlisting"></select>*@
-                                @Html.DropDownList("Listing", (IEnumerable<SelectListItem>)ViewBag.Listing, "-- Select List --", new { @class = "form-control", @id = "listing" })
+                                <label for="PhoneNumber">PhoneNumber</label>
+                                <span class="error" style="color:red;float:right;">Required</span>
+                                <input type="number" class="form-control" placeholder="Enter Number" id="PhoneNumber" name="phonenumber" maxlength="10" onfocusout="CheckRequiredField(this)" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" />
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="ResetLeadData();">Close</button>
                             <button type="button" class="btn btn-primary" id="btnsavemodel" data-dismiss="modal">Save</button>
                         </div>
                     </div>
@@ -181,10 +172,10 @@
                             <div class="container" style="margin-top: 30px; max-width:585px;">
                                 <div class="form-group">
                                     <table id="LeadModalDataId" class="table table-bordered table-responsive">
+                                
                                         <thead>
                                             <tr>
                                                 <th>CompanyName</th>
-                                                <th>NumberOfReview</th>
                                                 <th>NicheName</th>
                                                 <th>City</th>
                                                 <th></th>
@@ -277,14 +268,14 @@
         addcontrols += "</tr>";
         $("table .ReviewTableClass").append(addcontrols);
         BindNiche("RowId_" + count,NicheName);
-        /*BindCity("RowId_" + count, CityName);*/
         BindPaltform("RowId_" + count, Platform);
         BindStatus("RowId_" + count, Status);
         Bindcategory("RowId_" + count, CategoryId, CategoryList);
-       /* GetSelectedValues("RowId_" + count, SalesdetailList);*/
         datetime();
         MultiSelectChckBox();
-        if (getid != 0) {            $.each(item, function (index, item) {                if (item == "" || item == null) {                }                else {                    EditRequiredFiled("RowId_" + count, item);                }            })        }
+        if (getid != 0) {
+            RequiredFieldvalidation(item);
+        }
         count++;
     }
     function GetDataById(id) {
@@ -297,7 +288,10 @@
                     getid = id;
                     var sales = data.saleslist[0];
                     $('#clientname').val(sales.ClientName);
-                    $('#phonenumber').val(sales.PhoneNumber);                    if (sales.PhoneNumber != null || sales.PhoneNumber != "") {                        $("#phonenumber").parent().closest("div").find(".error").css("display", "none");                    }
+                    $('#phonenumber').val(sales.PhoneNumber);
+                    if (sales.PhoneNumber != null || sales.PhoneNumber != "") {
+                        $("#phonenumber").parent().closest("div").find(".error").css("display", "none");
+                    }
                     $('#remarkid').val(sales.Remarks);
 
                      BindCountry(sales.CountryName);
@@ -501,7 +495,6 @@
             url: "@Url.Action("Create", "Sales")",
             contentType: 'application/json',
             data: JSON.stringify(writeobject),
-          /*  dataType: "json",*/
             type: "POST",
             success: function (result) {
                 $('#btnsave').prop("disabled", false);
@@ -602,29 +595,26 @@
     }
 
     $('#btnsavemodel').click(function () {
-        var clientname = $(".clientname option:selected").val();
+        var name = $(".clientname").val();
+        var nichename = $(".leadNiche").val();
         var companyname = $("#companyname").val();
-        var noofreview = $("#noofreview").val();
-        var rating = $("#rating").val();
-        var niche = $("#niche").val();
-        var url = $("#url").val();
         var City = $("#City").val();
-        var dropdownlisting = $("#listing option:selected").val();
-
+        var phonenumber = $("#PhoneNumber").val();
+        if (phonenumber.length == 0 || companyname.length == 0) {
+            return
+        }
         var writeobject = new Object();
-        writeobject.SalesId = clientname,
-        writeobject.CompanyName = companyname,
-        writeobject.NumberOfReview = noofreview,
-        writeobject.Rating = rating,
-        writeobject.NicheName = niche,
-        writeobject.Url = url;
-        writeobject.City = City;
-        writeobject.Listing = dropdownlisting;
+        writeobject.RegisterId = name,
+            writeobject.CompanyName = companyname,
+            writeobject.NicheName = nichename,
+            writeobject.City = City,
+            writeobject.PhoneNumber = phonenumber;
+
+        
         $.ajax({
-            url: "@Url.Action("LeadCreate", "Sales")",
+            url: "@Url.Action("LeadSave", "Sales")",
             contentType: 'application/json',
             data: JSON.stringify(writeobject),
-          /*  dataType: "json",*/
             type: "POST",
             success: function (result) {
                 ResetLeadData();
@@ -638,7 +628,6 @@
     })
 
     function BindLead() {
-
         $.ajax({
             url: "BindLeadData/Sales",
             type: "GET",
@@ -649,24 +638,18 @@
                     $('#LeadModalDataId').DataTable().destroy();
                 }
 
-               // $('#LeadModalDataId tbody').empty();
-
                 $('#LeadModalDataId').dataTable({
-                    /* destroy: true,*/
                     data: data,
                     "columns": [
                         { "data": "CompanyName" },
-                        { "data": "NumberOfReview" },
                         { "data": "NicheName" },
                         { "data": "City" },
                         {
                             render: function (data, type, row) {
-
-                                return '<button class="btn btn-primary" data-city="' + row.City + '" data-CompanyName="' + row.CompanyName + '" data-Listing="' + row.Listing + '" data-NicheName="' + row.NicheName + '" data-NumberOfReview="' + row.NumberOfReview + '" data-Rating="' + row.Rating + '" data-SalesId="' + row.SalesId + '" data-Url="' + row.Url +'" onClick="BindCompany(this);" type="submit" data-dismiss="modal">OPEN</button>';
+                                /*return '<button class="btn btn-primary" data-city="' + row.City + '" data-CompanyName="' + row.CompanyName + '" data-Listing="' + row.Listing + '" data-NicheName="' + row.NicheName + '" data-NumberOfReview="' + row.NumberOfReview + '" data-Rating="' + row.Rating + '" data-SalesId="' + row.SalesId + '" data-Url="' + row.Url +'" onClick="BindCompany(this);" type="submit" data-dismiss="modal">OPEN</button>';*/
+                                return '<button class="btn btn-primary" data-city="' + row.City + '" data-CompanyName="' + row.CompanyName + '" data-NicheName="' + row.NicheName + '" data-PhoneNumber="' + row.PhoneNumber + '"  onClick="BindCompany(this);" type="submit" data-dismiss="modal">OPEN</button>';
                             }
                         },
-                        /*{ "defaultContent": '<button class="btn-view" type="submit" data-dismiss="modal">OPEN</button>' }*/
-
                     ],
                 });
 
@@ -674,46 +657,25 @@
         })
     }
 
-    $('#LeadModalDataId tbody').on('click', '.btn-view', function (e) {
-        //$("#LeadModalId").modal("hide");
-
-        var currentRow = $(this).closest("tr");
-        var col1 = currentRow.find("td:eq(0)").text();
-        var col2 = currentRow.find("td:eq(1)").text();
-        var col3 = currentRow.find("td:eq(2)").text();
-        var col4 = currentRow.find("td:eq(3)").text();
-
-
-        var NicheName = $("#tblSales tbody tr td:eq(0)").find(".dropdownNiche option:selected").text(col3);
-        $("#tblSales tbody tr td:eq(0)").find(".dropdownNiche option:selected").trigger('chosen:updated');
-
-        //$("#tblSales tbody tr td:eq(0)").find(".dropdownNiche").val(col3); // Select the option with a value of '1'
-        //$("#tblSales tbody tr td:eq(0)").find(".dropdownNiche").trigger('change');
-
-        var city = $("#tblSales tbody tr td:eq(0)").find(".dropdownCity option:selected").text(col4);
-        $("#tblSales tbody tr td:eq(0)").find(".dropdownCity option:selected").trigger('chosen:updated');
-
-        var CompanyName = $("#tblSales tbody tr td:eq(0)").find(".companyname").val(col1);
-    });
-
     function BindCompany(row) {
         var city = $(row).attr("data-city");
         var companyname = $(row).attr("data-companyname");
-        var listing = $(row).attr("data-listing");
         var nichename = $(row).attr("data-nichename");
-        var numberofreview = $(row).attr("data-numberofreview");
-        var rating = $(row).attr("data-rating");
-        var salesid = $(row).attr("data-salesid");
-        var url = $(row).attr("data-url");
+        var phoneNumber = $(row).attr("data-PhoneNumber");
+        if (phoneNumber != null || phoneNumber != "") {
+            $("#phonenumber").parent().closest("div").find(".error").css("display", "none");
+        }
+
         categoryList = new Array();
         SetDefaultCategory();
+        $("#phonenumber").val(phoneNumber);
         $("#tblSales tbody").html('');
-        tblBind(nichename, companyname, city, url, "", "", numberofreview, rating, "1", null, "", "", "0", "", categoryList, "", "","");
+        /*tblBind("1", companyname, city, "", "", "", "", "", "", null, "", "", "0", "", categoryList, "", "", "");*/
+        tblBind(nichename, companyname, city, "", "", "", "", "", "", null, "", "", "0", "", categoryList, "", "", "");
+        count = 1;
+        RequiredFieldvalidation(row.dataset);
+       // count = 0;
     }
-
-    //$("#clientname").on("keyup", function () {
-    //    $('#btnsave').prop("disabled", false);
-    //});
     function SetDefaultCategory() {
         var obj1 = { CategoryId: '1' }
         categoryList.push(obj1);
@@ -740,12 +702,9 @@
     function ResetLeadData() {
         $(".clientname").val('');
         $("#companyname").val('');
-        $("#noofreview").val('');
-        $("#rating").val('');
-        $("#niche").val('');
-        $("#url").val('');
+        $("#PhoneNumber").val('');
         $("#City").val('');
-        $("#listing").val('')
+        $(".leadNiche").val('');
     }
 
     function CompanyToolTip(companyName){
@@ -792,7 +751,17 @@
         }
     }
 
-    function EditRequiredFiled(rowcount, name) {
+    function RequiredFieldvalidation(item) {
+        $.each(item, function (index, item) {
+            if (item == "" || item == null) {
+
+            }
+            else {
+                EditRequiredField("RowId_" + count, item);
+            }
+        })
+    }
+    function EditRequiredField(rowcount, name) {
         $("#tblSales").find("tr#" + rowcount).find("input[value='" + name + "']").parent().closest("div").find(".error").css("display", "none");
     }
 
