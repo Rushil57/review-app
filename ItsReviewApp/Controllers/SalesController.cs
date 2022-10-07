@@ -29,34 +29,22 @@ namespace ItsReviewApp.Controllers
         // GET: Sales
         public ActionResult Index()
         {
-            List<RegisterViewModel> registerViewModels = new List<RegisterViewModel>();
             if (Session["RegisterId"] == null)
             {
                 return RedirectToAction("Login", "Login", new { area = "" });
             }
-            var parameters = new DynamicParameters();
-            parameters.Add("@Mode", 2, DbType.Int32, ParameterDirection.Input);
-            registerViewModels = con.Query<RegisterViewModel>("sp_Lead", parameters, commandType: CommandType.StoredProcedure).ToList();
-            List<SelectListItem> selectListItems = new List<SelectListItem>();
-            foreach (var emp in registerViewModels)
-            {
-                var item = new SelectListItem { Text = emp.Name, Value = emp.Id.ToString() };
-                selectListItems.Add(item);
-            }
-            ViewBag.Client = selectListItems;
+            BindSalesUserName();
             return View();
         }
 
         public ActionResult Create()
         {
-            List<RegisterViewModel> registerViewModels = new List<RegisterViewModel>();
             if (Session["RegisterId"] == null)
             {
                 return RedirectToAction("Login", "Login", new { area = "" });
             }
 
             con.Open();
-
             List<SelectListItem> Niche = new List<SelectListItem>() {
             new SelectListItem {Text = "Select Niche", Value = "0"},
             new SelectListItem {Text = "Packers Movers", Value = "1"},
@@ -67,18 +55,7 @@ namespace ItsReviewApp.Controllers
             new SelectListItem {Text = "Niche 5", Value = "6"},};
             ViewBag.Niche = Niche;
 
-            var parameters = new DynamicParameters();
-            parameters.Add("@Mode", 2, DbType.Int32, ParameterDirection.Input);
-            registerViewModels = con.Query<RegisterViewModel>("sp_Lead", parameters, commandType: CommandType.StoredProcedure).ToList();
-            List<SelectListItem> selectListItems = new List<SelectListItem>();
-            foreach (var emp in registerViewModels)
-            {
-                var item = new SelectListItem { Text = emp.Name, Value = emp.Id.ToString() };
-                selectListItems.Add(item);
-            }
-            ViewBag.Client = selectListItems;
-
-
+            BindSalesUserName();
             con.Close();
             return View();
 
@@ -91,9 +68,11 @@ namespace ItsReviewApp.Controllers
             try
             {
                 var salesId = 0;
+                var registerId = 0;
                 if (Session["RegisterId"] != null)
                 {
                     salesId = Convert.ToInt32(Session["RegisterId"]);
+                    registerId = Convert.ToInt32(Session["RegisterId"]);
                 }
                 var mode = 0;
                 if (salesViewModel.Id == 0)
@@ -113,6 +92,7 @@ namespace ItsReviewApp.Controllers
                 parameters.Add("@Remarks", salesViewModel.Remarks, DbType.String, ParameterDirection.Input);
                 parameters.Add("@FollowUpCheck", salesViewModel.FollowUpCheck, DbType.Boolean, ParameterDirection.Input);
                 parameters.Add("@SalesId", salesId, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("@RegisterId", registerId, DbType.Int32, ParameterDirection.Input);
                 parameters.Add("@Mode", mode, DbType.Int32, ParameterDirection.Input);
                 using (IDbConnection connection = new SqlConnection(connectionString))
                 {
@@ -248,10 +228,12 @@ namespace ItsReviewApp.Controllers
             List<SalesViewModel> empList = new List<SalesViewModel>();
             try
             {
-                var salesId = 0;
+              //  var salesId = 0;
+                var registerId = 0;
                 if (Session["RegisterId"] != null)
                 {
-                    salesId = Convert.ToInt32(Session["RegisterId"]);
+                    //salesId = Convert.ToInt32(Session["RegisterId"]);
+                    registerId = Convert.ToInt32(Session["RegisterId"]);
                 }
                 else
                 {
@@ -259,7 +241,8 @@ namespace ItsReviewApp.Controllers
                 }
                 con.Open();
                 var parameters = new DynamicParameters();
-                parameters.Add("@SalesId", salesId, DbType.Int32, ParameterDirection.Input);
+                //parameters.Add("@SalesId", salesId, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("@RegisterId", registerId, DbType.String, ParameterDirection.Input);
                 parameters.Add("@Mode", 2, DbType.Int32, ParameterDirection.Input);
                 empList = con.Query<SalesViewModel>("sp_Sales", parameters, commandType: CommandType.StoredProcedure).ToList();
             }
@@ -278,11 +261,21 @@ namespace ItsReviewApp.Controllers
         [HttpGet]
         public JsonResult GetFollowUpList()
         {
+            var registerId = 0;
+            if (Session["RegisterId"] != null)
+            {
+                registerId = Convert.ToInt32(Session["RegisterId"]);
+            }
+            else
+            {
+                new HttpStatusCodeResult(HttpStatusCode.OK);
+            }
             List<SalesViewModel> empList = new List<SalesViewModel>();
             try
             {
                 con.Open();
                 var parameters = new DynamicParameters();
+                parameters.Add("@RegisterId", registerId, DbType.String, ParameterDirection.Input);
                 parameters.Add("@Mode", 5, DbType.Int32, ParameterDirection.Input);
                 empList = con.Query<SalesViewModel>("sp_Sales", parameters, commandType: CommandType.StoredProcedure).ToList();
             }
@@ -386,8 +379,16 @@ namespace ItsReviewApp.Controllers
         public JsonResult BindLeadData()
         {
             List<LeadViewModel> getdata = new List<LeadViewModel>();
+
+            var registerId = 0;
+            if (Session["RegisterId"] != null)
+            {
+                registerId = Convert.ToInt32(Session["RegisterId"]);
+            }
+
             var parameters = new DynamicParameters();
             parameters = new DynamicParameters();
+            parameters.Add("@RegisterId", registerId, DbType.String, ParameterDirection.Input);
             parameters.Add("@Mode", 2, DbType.Int32, ParameterDirection.Input);
             using (IDbConnection connection = new SqlConnection(connectionString))
             {
@@ -496,7 +497,7 @@ namespace ItsReviewApp.Controllers
         [HttpPost]
         public ActionResult Upload()
         {
-             string RegisterId = Request.Form["RegisterId"];
+            string RegisterId = Request.Form["RegisterId"];
             if (Request.Files.Count > 0)
             {
                 //string id = Request.Files.(x => x.Key == "id").FirstOrDefault().Value;
@@ -567,16 +568,16 @@ namespace ItsReviewApp.Controllers
                             LeadSave(leadViewModel);
                         }
                         return Json("Upload Successfully");
-                        // return Json(EmailList, JsonRequestBehavior.AllowGet);
                     }
 
                 }
-                return View();
+                //return View();
             }
-            else
-            {
-                return Json("Please Upload Your file");
-            }
+            //else
+            //{
+            //    return Json("Please Upload Your file");
+            //}
+            return View();
         }
 
         [HttpPost]
@@ -599,6 +600,21 @@ namespace ItsReviewApp.Controllers
                 connection.Close();
             }
             return RedirectToAction("Create", "Sales");
+        }
+
+        public void BindSalesUserName()
+        {
+            List<RegisterViewModel> registerViewModels = new List<RegisterViewModel>();
+            var parameters = new DynamicParameters();
+            parameters.Add("@Mode", 2, DbType.Int32, ParameterDirection.Input);
+            registerViewModels = con.Query<RegisterViewModel>("sp_Lead", parameters, commandType: CommandType.StoredProcedure).ToList();
+            List<SelectListItem> selectListItems = new List<SelectListItem>();
+            foreach (var emp in registerViewModels)
+            {
+                var item = new SelectListItem { Text = emp.Name, Value = emp.Id.ToString() };
+                selectListItems.Add(item);
+            }
+            ViewBag.Client = selectListItems;
         }
     }
 }

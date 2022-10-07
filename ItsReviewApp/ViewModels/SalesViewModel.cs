@@ -39,6 +39,8 @@ namespace ItsReviewApp.ViewModels
         public string Status { get; set; }
         public string CategoryId { get; set; }
         public bool FollowUpCheck { get; set; }
+
+        public string RegisterId { get; set; }
         //public string City { get; set; }
         //public string Keywords { get; set; }
         //public string FoodName { get; set; }

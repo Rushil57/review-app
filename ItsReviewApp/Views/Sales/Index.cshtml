@@ -158,13 +158,18 @@
      $('#excelupload').click(function () {
          var registerId = $(".clientname").val();
         var fileUpload = $("#files").get(0);
-        var files = fileUpload.files;
+         var files = fileUpload.files;
+         if (files.length == 0) {
+             alert("Please Upload a file");
+             return
+         }
          var fileData = new FormData();
          fileData.append('RegisterId', registerId);
         for (var i = 0; i < files.length; i++) {
             fileData.append(files[i].name, files[i]);
         }
 
+         
         
         $.ajax({
             url: "@Url.Action("Upload", "Sales")",
@@ -187,6 +192,9 @@
     function EnableExcel(name) {
         if (name.value != 0 || name.value != "") {
             $('#excelupload').prop("disabled", false);
+        }
+        else {
+            $('#excelupload').prop("disabled", true);
         }
 
     }

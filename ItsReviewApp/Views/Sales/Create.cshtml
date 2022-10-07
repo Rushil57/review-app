@@ -619,6 +619,7 @@
             success: function (result) {
                 ResetLeadData();
                 alert('success');
+                $(".error").css("display", "block");
             },
             error: function (result) {
                 alert('failure');
@@ -704,7 +705,7 @@
         $("#companyname").val('');
         $("#PhoneNumber").val('');
         $("#City").val('');
-        $(".leadNiche").val('');
+        $(".leadNiche").val(0);
     }
 
     function CompanyToolTip(companyName){
@@ -717,6 +718,7 @@
         id = getid;
 
         if (phoneNumber == null || phoneNumber == "") {
+            $("#phonenumber").closest("div").find(".error").css("display", "block");
             return;
         }
             $.ajax({
