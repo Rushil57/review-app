@@ -2,103 +2,401 @@
 @{
     ViewBag.Title = "Index";
 }
+<head>
+    <style>
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    </style>
+</head>
+<div class="container" style="width:95%">
+    <a class="btn btn-primary" id="CreateNewLead" type="button">Create Lead</a>
+    <div id="tabs" style="margin-top:10px;">
+        <ul>
+            <li><a href="#tabs-2" id="tab2">Create Lead</a></li>
+            <li><a href="#tabs-3" id="tab3">New Lead List</a></li>
+            <li><a href="#tabs-4" id="tab4">Customer List</a></li>
+            <li><a href="#tabs-5" id="tab5">Follow Up List</a></li>
+            <li><a href="#tabs-6">Excel Upload</a></li>
+        </ul>
+        <div id="tabs-2">
+            <div style="padding-top:30px;">
+                <input type="hidden" class="form-control" value="0" id="LeadId" />
+                <div class="form-group">
+                    <label for="clientName">Client Name</label>
+                    <input type="text" class="form-control" placeholder="Please Enter Client Name" id="ClientName">
+                </div>
+                <div class="form-group">
+                    <label for="phoneNumber">Phone Number</label>
+                    <input type="number" class="form-control" placeholder="Please Enter Phone Number" id="PhoneNumber"  maxlength="10" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" />
+                </div>
+                <div class="form-group">
+                    <label for="bussinessType">Bussiness Type</label>
+                    <input type="text" class="form-control" placeholder="Please Enter Bussiness Type" id="BussinessType">
+                </div>
+                <div class="form-group">
+                    <label for="city">City</label>
+                    <input type="text" class="form-control" placeholder="Please Enter City" id="City">
+                </div>
+                <div class="form-group">
+                    <label for="date">FollowUp Date</label>
+                    <div class='input-group date followupDate'>
+                        <input type='text' class="form-control" id="followupdate" placeholder="Please Select Date" />
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="remarks">Remarks</label>
+                    <textarea rows="5" cols="3" id="Remarks" class="form-control" placeholder="Please Enter Remarks"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" id="btnsaveLead">Save</button>
+                <a class="btn btn-primary" id="CreateLeaddataId" style="color: white;">Open</a>
+            </div>
+        </div>
+        <div id="tabs-3">
+            <table id="Leadlist" class="table table-bordered table-responsive" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th style="Width:20%;">ClientName</th>
+                        <th style="Width:15%;">Phone Number</th>
+                        <th style="Width:16%;">Bussiness Type</th>
+                        <th style="Width:30%;">Remarks</th>
+                        <th style="Width:14%;">City</th>
+                        <th style="Width:5%;">Action</th>
+                        @*<th></th>*@
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        <div id="tabs-4">
+            <table id="SalesActiveList" class="table table-bordered table-responsive" style="width: 100%">
+                <thead>
+                    <tr>
+                        <th style="Width:20%;">Phone Number</th>
+                        <th style="Width:40%;">Company Name</th>
+                        <th style="Width:15%;">City Name</th>
+                        <th style="Width:15%;">Listing Url</th>
+                        <th style="Width:5%;">Rev/Day</th>
+                        <th style="Width:5%;">Action</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        <div id="tabs-5">
+            <table id="followup" class="table table-bordered table-responsive" style="width: 100%">
+                <thead>
+                    <tr>
+                        <th style="Width:20%;">Client Name</th>
+                        <th style="Width: 18%;">Phone Number</th>
+                        <th style="Width:17%;">FollowUp Date</th>
+                        <th style="Width:40%;">Remarks</th>
+                        <th style="Width:5%;">Action</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+        <div id="tabs-6">
+            <div class="form-group">
+                <label for="Name">Select Client Name</label>
+                @Html.DropDownList("Name", (IEnumerable<SelectListItem>)ViewBag.Client, "-- Select Client --", new { @class = "form-control clientname" })
+            </div>
 
-
-<div class="container">
-    <p>
-        <a class="btn btn-primary btn-sm" href="/Sales/Create" type="button">Create New</a>
-        <button class="btn btn-primary btn-sm" type="button" id="checksaleslist">SalesList</button>
-        <button class="btn btn-primary btn-sm" type="button" id="checkfollowup">FollowUpdateList</button>
-        <button class="btn btn-primary btn-sm" type="button" id="LeadExcelUpload">Excel Upload</button>
-    </p>
-</div>
-
-<div class="container" style="margin-top: 30px;" id="saleslist">
-    <div class="form-group">
-        <table id="datatableid" class="table table-bordered table-responsive" style="width: 100%">
-            <thead>
-                <tr>
-                    <th style="Width:15%;">Phone Number</th>
-                    <th style="Width:40%;">Company Name</th>
-                    <th style="Width:15%;">CIty Name</th>
-                    <th style="Width:15%;">Listing Url</th>
-                    <th style="Width:10%;">Rev/Day</th>
-                    <th style="Width:5%;"></th>
-                </tr>
-            </thead>
-        </table>
+            <div class="form-group">
+                <label for="ExcelUpload">Upload File</label>
+                <input type="file" id="files" name="files" /><br />
+                <input type="button" id="excelupload" value="Upload" class="btn btn-primary btn-md btn-sm" />
+            </div>
+        </div>
     </div>
 </div>
 
-
-
-<div class="container" style="margin-top: 30px;display:none" id="followuplist">
-    <div class="form-group">
-
-        <table id="followup" class="table table-bordered table-responsive" style="width: 100%">
-            <thead>
-                <tr>
-                    <th>Customer Name</th>
-                    <th>Phone Number</th>
-                    <th>FollowUp Date</th>
-                    <th>Remarks</th>
-                    <th></th>
-                </tr>
-            </thead>
-        </table>
-    </div>
-</div>
-
-<div class="container" style="margin-top: 30px; display: none; background-color: rgb(47 79 79 / 5%); " id="LeadDataUpload">
-    <div class="form-group">
-        <label for="Name">Select Client Name</label>
-        @Html.DropDownList("Name", (IEnumerable<SelectListItem>)ViewBag.Client, "-- Select Client --", new { @class = "form-control clientname", onchange = "EnableExcel(this)" })
-    </div>
-
-    <div class="form-group">
-        <label for="ExcelUpload">Upload File</label>
-        <input type="file" id="files" name="files" /><br />
-        <input type="button" id="excelupload" value="Upload" class="btn btn-primary btn-md btn-sm" disabled/>
-    </div>
-</div>
 
 <script type="text/javascript">
-    $(document).ready(function () {
-        BindSales();
-    });
-
-    function BindSales() {
-        $.ajax({
-            url: "GetList/Sales",
-            type: "GET",
-            dataType: "json",
-            contentType: 'application/json; charset=utf-8',
-            success: function (data) {
-                $('#datatableid').dataTable({
-                    destroy: true,
-                    data: data,
-                    "columns": [
-                        { "data": "PhoneNumber" },
-                        { "data": "CompanyName"},
-                        { "data": "CityName" },
-                        {
-                            "data": "ListingUrl",
-                            "render": function (data) {
-                                return '<a class="btn btn-primary" target="_blank" href="'+data+'">Company URL</a>';
-                            }
-                        },
-                    { "data": "ReviewsPerDay" },
-                        {
-                            "data": "Id",
-                            "render": function (data, type, row) {
-                                return '<a class="btn btn-primary" href="Create/Id?=' + data + '";>Edit</a>';
-                            }
-                        }
-                    ]
-                });
-
+    var selected_tab = 0;
+    $(function () {
+        var tabs = $("#tabs").tabs({
+            select: function (e, i) {
+                selected_tab = i.index;
             }
-        })
+        });
+        selected_tab = $("#selectedTab").val() != "" ? parseInt($("#selectedTab").val()) : 0;
+        tabs.tabs('select', selected_tab);
+        $("form").submit(function () {
+            $("#selectedTab").val(selected_tab);
+        });
+        datetime();
+    });
+    $("#tabs").on('click', '#tab2', function () {
+        ResetLeadData();
+    })
+    $("#tabs").on('click', '#tab4', function () {
+        BindSalesActiveList();
+    })
+    $("#tabs").on('click', '#tab5', function () {
+        BindFollwUp();
+    })
+    $("#tabs").on('click', '#tab3', function () {
+        BindLead();
+    })
+
+     $('#excelupload').click(function () {
+         var registerId = $(".clientname").val();
+        var fileUpload = $("#files").get(0);
+         var files = fileUpload.files;
+         if (files.length == 0) {
+             alert("Please Upload a file");
+             return
+         }
+         var fileData = new FormData();
+         fileData.append('RegisterId', registerId);
+        for (var i = 0; i < files.length; i++) {
+            fileData.append(files[i].name, files[i]);
+        }
+
+
+
+        $.ajax({
+            url: "@Url.Action("Upload", "Sales")",
+           type: "POST",
+           processData: false,
+           contentType: false,
+             data: fileData,
+            success: function (result) {
+                $("#files").val('');
+                $(".clientname").val('');
+                alert(result);
+            },
+            error: function (result) {
+                alert('failure');
+            }
+        });
+     })
+
+    function datetime() {
+        $('.followupDate').datetimepicker({
+            format: 'YYYY-MM-DD HH:mm:ss',
+            minDate: new Date()
+        });
+    }
+
+
+    $('#btnsaveLead').click(function () {
+        var Id = $("#LeadId").val();
+        var clientname = $("#ClientName").val();
+        var phonenumber = $("#PhoneNumber").val();
+        var BussinessType = $("#BussinessType").val();
+        var City = $("#City").val();
+        var Remarks = $("#Remarks").val();
+        var followup = $("#followupdate").val();
+
+        var writeobject = new Object();
+        writeobject.id = Id,
+            writeobject.ClientName = clientname,
+            writeobject.City = City,
+            writeobject.PhoneNumber = phonenumber,
+            writeobject.BussinessType = BussinessType,
+            writeobject.Remarks = Remarks,
+            writeobject.FollowUpDate = followup;
+
+
+        $.ajax({
+            url: "@Url.Action("LeadSave", "Sales")",
+            contentType: 'application/json',
+            data: JSON.stringify(writeobject),
+            type: "POST",
+            success: function (result) {
+                alert('success');
+                ResetLeadData();
+
+            },
+            error: function (result) {
+                alert('failure');
+            }
+        });
+
+    })
+
+    //function EditLeadData(row) {
+    //    var Lead = $(row)[0];
+    //    var LeadId = $(Lead).attr("data-id");
+    //    var clientName = $(Lead).attr("data-ClientName");
+    //    var phoneNumber = $(Lead).attr("data-PhoneNumber");
+    //    var bussinessType = $(Lead).attr("data-BussinessType");
+    //    var remarks = $(Lead).attr("data-Remarks");
+    //    var city = $(Lead).attr("data-City");
+    //    var followup = $(Lead).attr("data-FollowUpDate");
+    //    if (followup != null) {
+    //        var followUpDate = new Date(parseInt(followup.substr(6)));
+    //        var followDate = formatDate(followUpDate)
+    //        $('#followupdate').val(followDate);
+    //    }
+
+    //    $("#LeadId").val(LeadId);
+    //    $("#ClientName").val(clientName);
+    //    $("#PhoneNumber").val(phoneNumber);
+    //    $("#BussinessType").val(bussinessType);
+    //    $("#City").val(city);
+    //    $("#Remarks").val(remarks);
+    //    $('[href="#tabs-2"]').click();
+    //}
+
+    function ResetLeadData() {
+        $("#LeadId").val(0);
+        $("#ClientName").val('');
+        $("#PhoneNumber").val('');
+        $("#BussinessType").val('');
+        $("#City").val('');
+        $("#Remarks").val('');
+        $("#followupdate").val('');
+    }
+
+    function DeleteLeadData(id) {
+        if (confirm('Are you sure want to delete?')) {
+            $.ajax({
+                url: "@Url.Action("IsActiveFalse", "Sales")",
+                contentType: 'application/json',
+                data: { id: id},
+                type: "GET",
+                success: function (result) {
+                    alert('Delete Successully!');
+                    BindLead();
+                },
+                error: function () {
+                    alert('failure');
+                }
+            });
+        }
+        else {
+            return;
+        }
+    }
+
+    function BindSalesActiveList() {
+        $('#SalesActiveList').DataTable({
+            destroy: true,
+            "processing": true,
+            "serverSide": true,
+            "filter": true,
+            "pageLength": 50,
+            "orderMulti": false,
+            "ajax": {
+                "url": "GetSalesActiveList/Sales",
+                "type": "POST",
+                "datatype": "json"
+            },
+            "columns": [
+                {
+                    "data": "PhoneNumber",
+                    "autoWidth": true,
+                    "searchable": true
+                },
+                {
+                    "data": "CompanyName",
+                    "autoWidth": true,
+                    "searchable": true
+                },
+                {
+                    "data": "CityName",
+                    "autoWidth": true,
+                    "searchable": true
+                },
+                {
+                    "data": "ListingUrl",
+                    "autoWidth": true,
+                    "searchable": true,
+                    "render": function (data) {
+                        return '<a class="btn btn-primary" target="_blank" href="' + data + '"style="color: white;">Company URL</a>';
+                    }
+                }, {
+                    "data": "ReviewsPerDay",
+                    "autoWidth": true,
+                    "searchable": true
+                }, {
+                    "data": "Id",
+                    "autoWidth": true,
+                    "render": function (data, type, row) {
+                        return '<a class="btn btn-primary" style="color: white;" href="Create/Id?=' + data + '";>Edit</a>';
+                    }
+                },
+            ],
+        });
+    }
+
+
+    function BindLead() {
+        $('#Leadlist').DataTable({
+            destroy: true,
+            "processing": true,
+            "serverSide": true,
+            "filter": true,
+            "pageLength": 50,
+            "orderMulti": false,
+            "ajax": {
+                "url": "GetLeadList/Sales",
+                "type": "POST",
+                "datatype": "json"
+            },
+            "columns": [
+                {
+                    "data": "ClientName",
+                    "autoWidth": true,
+                    "searchable": true
+                },
+                {
+                    "data": "PhoneNumber",
+                    "autoWidth": true,
+                    "searchable": true
+                },
+                {
+                    "data": "BussinessType",
+                    "autoWidth": true,
+                    "searchable": true
+                },
+                {
+                    "data": "Remarks",
+                    "autoWidth": true,
+                    "searchable": true,
+                    "render": function (data, type, row) {
+                        if (data != null) {
+                            var Remarks = data.length > 35 ? data.substring(0, 35) + "..." : data;
+                            return "<span title='" + data + "'>" + Remarks + "</span>";
+                        }
+                        else {
+                            return "<span></span>";
+                        }
+                    }
+
+                },
+                {
+                    "data": "City",
+                    "autoWidth": true,
+                    "searchable": true
+                },
+                {
+                    "data": "id",
+                    "autoWidth": true,
+                    "render": function (data, type, row) {
+                        return '<a class="btn btn-primary" style="color: white;" onclick="Openleaddata(' + data +')">Open</a>';
+                    }
+                },
+                //{
+                //      data: { id: "id", clientname: "clientname", phonenumber: "phonenumber", bussinesstype: "bussinesstype", remarks: "remarks", city: "city", followupdate:"followupdate"},
+                //      mrender: function (data, type, row) {
+                //          return '<button type="button" class="btn btn-primary" onclick="editleaddata(this)" data-id="' + data.id + '" data-clientname="' + data.clientname + '" data-bussinesstype="' + data.bussinesstype + '" data-remarks="' + data.remarks + '" data-followupdate="' + data.followupdate + '" data-city="' + data.city + '" data-phonenumber="' + data.phonenumber + '">edit</button>'
+                //     }
+                //},
+                //{
+                //    "data": "id",
+                //    mRender: function (data, type, full) {
+               //        return '<button type="button" class="btn btn-danger" onclick="DeleteLeadData(' + data + ')">Delete</button>'
+                    // }
+                  //}
+            ],
+        });
     }
 
 
@@ -119,14 +417,26 @@
                             "data": "FollowUpDate",
                             "render": function (data) {
                                 const dateValue = new Date(parseInt(data.substr(6)));
-                                return dateValue.toLocaleDateString();
+                                return moment(dateValue).format('DD/MM/YYYY HH:mm');
                             }
                         },
-                        { "data": "Remarks" },
                         {
-                            "data": "Id",
+                            "data": "Remarks",
                             "render": function (data, type, row) {
-                                return '<a href="Create/Id?=' + data + '";>Edit</a>';
+                                if (data != null) {
+                                    var Remarks = data.length > 95 ? data.substring(0, 90) + "..." : data;
+                                    return "<span title='" + data + "'>" + Remarks + "</span>";
+                                }
+                                else {
+                                    return "<span></span>";
+                                }
+                            }
+                        },
+                        {
+                            "data": "id",
+                            "autoWidth": true,
+                            "render": function (data, type, row) {
+                                return '<a class="btn btn-primary" style="color: white;" onclick="Openleaddata(' + data + ')">Open</a>';
                             }
                         }
                     ]
@@ -136,66 +446,36 @@
         })
     }
 
-    $("#checkfollowup").click(function () {
-        $("#saleslist").hide();
-        $("#followuplist").show(BindFollwUp());
-        $("#LeadDataUpload").hide();
+    $("#CreateNewLead").on("click", function () {
+        $('[href="#tabs-2"]').click();
     });
+    function Openleaddata(id){
+         $.ajax({
+            url: "@Url.Action("GetLeadDataById", "Sales")",
+            contentType: 'application/json',
+            data: { id: id },
+            type: "GET",
+             success: function (data) {
+                 if (data != null) {
+                    $("#ClientName").val(data.ClientName);
+                    $("#PhoneNumber").val(data.PhoneNumber);
+                    $("#BussinessType").val(data.BussinessType);
+                     $("#City").val(data.City);
+                     if (data.FollowUpDate != null) {
+                         var followUpDate = new Date(parseInt(data.FollowUpDate.substr(6)));
+                         var followDate = moment(followUpDate).format('YYYY-MM-DD HH:mm:ss');
+                         $('#followupdate').val(followDate);
+                     }
+                     $("#Remarks").val(data.Remarks);
+                     $("#LeadId").val(data.id);
+                     $("#CreateLeaddataId").attr("href", "/Sales/Create/Id?=" + data.id + "&m=l");
+                     $('[href="#tabs-2"]').click();
+                }
 
-
-    $("#checksaleslist").click(function () {
-        $("#followuplist").hide();
-        $("#saleslist").show();
-        $("#LeadDataUpload").hide();
-    });
-
-    $("#LeadExcelUpload").click(function () {
-        $("#followuplist").hide();
-        $("#saleslist").hide();
-        $("#LeadDataUpload").show();
-    });
-
-     $('#excelupload').click(function () {
-         var registerId = $(".clientname").val();
-        var fileUpload = $("#files").get(0);
-         var files = fileUpload.files;
-         if (files.length == 0) {
-             alert("Please Upload a file");
-             return
-         }
-         var fileData = new FormData();
-         fileData.append('RegisterId', registerId);
-        for (var i = 0; i < files.length; i++) {
-            fileData.append(files[i].name, files[i]);
-        }
-
-         
-        
-        $.ajax({
-            url: "@Url.Action("Upload", "Sales")",
-           type: "POST",
-           processData: false,
-           contentType: false,
-             data: fileData,
-            success: function (result) {
-                $("#files").val('');
-                $(".clientname").val('');
-                alert(result);
-                $('#excelupload').prop("disabled", true);
             },
-            error: function (result) {
+            error: function () {
                 alert('failure');
             }
         });
-     })
-
-    function EnableExcel(name) {
-        if (name.value != 0 || name.value != "") {
-            $('#excelupload').prop("disabled", false);
-        }
-        else {
-            $('#excelupload').prop("disabled", true);
-        }
-
     }
 </script>

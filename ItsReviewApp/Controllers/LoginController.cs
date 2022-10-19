@@ -46,6 +46,7 @@ namespace ItsReviewApp.Controllers
                 if (logindata != null)
                 {
                     Session["RegisterId"] = logindata.RegisterId;
+                    Session["RoleId"] = logindata.Id;
                 }
                 connection.Close();
             }

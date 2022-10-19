@@ -23,7 +23,7 @@ namespace ItsReviewApp.ViewModels
 
         public string CompanyName { get; set; }
         public int Mode { get; set; }
-        public int CompanyCount { get; set; }
+        public int CompanyCount { get; set; }        
     }
 
     public class ReviewModel

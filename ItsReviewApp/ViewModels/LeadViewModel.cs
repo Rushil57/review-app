@@ -22,5 +22,15 @@ namespace ItsReviewApp.ViewModels
 
         public string EmailId { get; set; }
         public string RegisterId { get; set; }
+        public string ClientName { get; set; }
+        public string BussinessType { get; set; }
+        public string Remarks { get; set; }
+        public DateTime? FollowUpDate { get; set; }
+        public bool IsActive { get; set; }
+
+        public string Type { get; set; }
+
+        public int leadcount { get; set; }
+
     }
 }

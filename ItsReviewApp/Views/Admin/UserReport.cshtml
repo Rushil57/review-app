@@ -307,57 +307,6 @@
         })
     }
 
-    function BindUserWorkReport() {
-        var fromDate = $("#txtFromDate").val();
-        var toDate = $("#txtToDate").val();
-        var user = $("#dropdownUser").val();
-        if (fromDate == null || toDate == null) {
-            alert("Please select date");
-            return;
-        }
-
-        $.ajax({
-            url: "@Url.Action("GetUserTrackReport", "Admin")",
-            type: "GET",
-           /* dataType: "json",*/
-            data: {
-                FromDate: fromDate,
-                ToDate: toDate,
-                RegisterId: user
-            },
-            contentType: 'application/json; charset=utf-8',
-            success: function (data) {
-                $('#tblUserWorkReport').dataTable({
-                    destroy: true,
-                    data: data,
-                    "pageLength": 50,
-                    order: [[0, 'desc']],
-                    "columns": [
-                        {
-                            "data": "CreatedDate", "width": "12%",
-                            render: function (data, type, row) {
-                                var date = new Date(parseInt(data.substr(6)));
-                                return date.toISOString().split('T')[0] + " " + date.toISOString().split('T')[1].split('.')[0]
-                                //var month = date.getMonth() + 1;
-                                //return date.getDate() + "/" + month + "/" + date.getFullYear() +" "+ date.getHours() + ":" + date.getMinutes();
-                            }
-                        },
-                        { "data": "FirstName", "width": "12%" },
-                        { "data": "EmailId", "width": "12%" },
-                        { "data": "CompanyName", "width": "12%" },
-                        {
-                            "data": "ListingUrl", "width": "52%",
-                            render: function (data, type, row) {
-                                var listingurl = (data.length > 30) ? data.substring(0, 30) + '...' : data;
-                                return '<a href=' + data + ' target="_blank">' + listingurl + '</a>'
-                            }
-                        }
-                    ]
-                });
-            }
-        })
-    }
-
      function BindUserList() {
 
         $.ajax({
@@ -400,7 +349,6 @@
         $.ajax({
             url: "@Url.Action("GetCompanyTrackReportList", "Admin")",
             type: "GET",
-           /* dataType: "json",*/
             data: {
                 FromDate: fromDate,
                 ToDate: toDate,
@@ -425,8 +373,6 @@
                             render: function (data, type, row) {
                                 var date = new Date(parseInt(data.substr(6)));
                                 return date.toISOString().split('T')[0] + " " + date.toISOString().split('T')[1].split('.')[0]
-                                //var month = date.getMonth() + 1;
-                                //return date.getDate() + "/" + month + "/" + date.getFullYear() +" "+ date.getHours() + ":" + date.getMinutes();
                             }
                         },
                         { "data": "FirstName", "width": "12%" },
@@ -434,10 +380,6 @@
                         { "data": "CompanyName", "width": "12%" },
                         {
                             "data": "RegisterName", "width": "52%"
-                            //render: function (data, type, row) {
-                            //    var listingurl = (data.length > 30) ? data.substring(0, 30) + '...' : data;
-                            //    return '<a href=' + data + ' target="_blank">' + listingurl + '</a>'
-                            //}
                         }
                     ]
                 });
@@ -546,7 +488,70 @@
     function UpdateUserEmail(id) {
 
     }
-    function BindUserTrackingReport() {
+
+    function BindUserWorkReport() {
+        var fromDate = $("#txtFromDate").val();
+        var toDate = $("#txtToDate").val();
+        var user = $("#dropdownUser").val();
+        if (fromDate == null || toDate == null) {
+            alert("Please select date");
+            return;
+        }
+
+        $('#tblUserWorkReport').DataTable({
+            destroy: true,
+            "processing": true,
+            "serverSide": true,
+            "filter": true,
+            "pageLength": 50,
+            "orderMulti": false,
+            "ajax": {
+                "url": "GetUserTrackReport/Admin",
+                "type": "POST",
+                /* "datatype": "json"*/
+                "data": {
+                    FromDate: fromDate,
+                    ToDate: toDate,
+                    RegisterId: user
+                }
+            },
+            "columns": [
+                {
+                    "data": "CreatedDate", "width": "12%",
+                     "render": function (data, type, row) {
+                        var date = new Date(parseInt(data.substr(6)));
+                        return date.toISOString().split('T')[0] + " " + date.toISOString().split('T')[1].split('.')[0]
+                    },
+                    "autoWidth": true,
+                    "searchable": true
+                },
+                {
+                    "data": "FirstName", "width": "12%",
+                    "autoWidth": true,
+                    "searchable": true
+                },
+                {
+                    "data": "EmailId","width": "12%",
+                    "autoWidth": true,
+                    "searchable": true
+                },
+                {
+                    "data": "CompanyName", "width": "12%",
+                    "autoWidth": true,
+                    "searchable": true
+                },
+                {
+                    "data": "ListingUrl", "width": "52%",
+                    "render": function (data, type, row) {
+                        var listingurl = (data.length > 30) ? data.substring(0, 30) + '...' : data;
+                        return '<a href=' + data + ' target="_blank">' + listingurl + '</a>'
+                    }
+                },
+            ],
+        });
+    }
+
+     function BindUserTrackingReport() {
          var fromDate = $("#txtFromDate").val();
         var toDate = $("#txtToDate").val();
         if (fromDate == null || toDate == null) {
@@ -554,63 +559,74 @@
             return;
         }
 
-        $.ajax({
-            url: "@Url.Action("GetUserTrackingReportList", "Admin")",
-            type: "GET",
-           /* dataType: "json",*/
-            data: {
-                FromDate: fromDate,
-                ToDate: toDate
+         $('#tblUserTracking').DataTable({
+            destroy: true,
+            "processing": true,
+            "serverSide": true,
+            "filter": true,
+            "pageLength": 50,
+            "orderMulti": false,
+            "ajax": {
+                "url": "GetUserTrackingReportList/Admin",
+                "type": "POST",
+                "data": {
+                    FromDate: fromDate,
+                    ToDate: toDate
+                }
             },
-            contentType: 'application/json; charset=utf-8',
-            success: function (data) {
-                $('#tblUserTracking').dataTable({
-                    destroy: true,
-                    data: data,
-                    "pageLength": 50,
-                    order: [[0, 'desc']],
-                    "columns": [
-                        {
-                            "data": "CreatedDate", "width": "15%",
-                            render: function (data, type, row) {
-                                var date = new Date(parseInt(data.substr(6)));
-                                var datetime = date.toLocaleTimeString();
-                                return date.toISOString().split('T')[0] + " " + date.toISOString().split('T')[1].split('.')[0];
-                            }
-                        },
-                        {
-                            "data": "CompanyName", "width": "15%",
-                            render: function (data, type, row) {
-                                var companyName = (data.length > 30) ? data.substring(0, 30) + '...' : data;
-                                return '<span title="' + data + '">' + companyName + '</span>';
-                            }
-                        },
-                        {
-                            "data": "ReviewName", "width": "30%",
-                            render: function (data, type, row) {
-                                var reviewName = (data.length > 30) ? data.substring(0, 30) + '...' : data;
-                                return '<span title="'+data+'">' + reviewName+'</span>';
-                            }
-                        },
-                        {
-                            "data": "ListingUrl", "width": "30%",
-                            render: function (data, type, row) {
-                                var reviewName = (data.length > 30) ? data.substring(0, 30) + '...' : data;
-                                return '<a href="' + data + '" target="_blank">' + reviewName + '</a>'
-                            }
-                        },
-                        {
-                            "data": "RegisterName", "width": "5%"
-                        },
-                        {
-                            "data": "FirstName", "width": "5%"
-                        }
+            "columns": [
+                {
+                    "data": "CreatedDate", "width": "15%",
+                    "autoWidth": true,
+                    "searchable": true,
+                    "render": function (data, type, row) {
+                        var date = new Date(parseInt(data.substr(6)));
+                        var datetime = date.toLocaleTimeString();
+                        return date.toISOString().split('T')[0] + " " + date.toISOString().split('T')[1].split('.')[0];
+                    }
+                },
+                {
+                    "data": "CompanyName", "width": "15%",
+                    "autoWidth": true,
+                    "searchable": true,
+                    "render": function (data, type, row) {
+                        var companyName = (data.length > 30) ? data.substring(0, 30) + '...' : data;
+                        return '<span title="' + data + '">' + companyName + '</span>';
+                    }
+                },
+                {
+                    "data": "ReviewName", "width": "30%",
+                    "autoWidth": true,
+                    "searchable": true,
+                    "render": function (data, type, row) {
+                        var reviewName = (data.length > 30) ? data.substring(0, 30) + '...' : data;
+                        return '<span title="' + data + '">' + reviewName + '</span>';
+                    }
+                },
+                {
+                    "data": "ListingUrl", "width": "30%",
+                    "autoWidth": true,
+                    "searchable": true,
+                    "render": function (data, type, row) {
+                        var reviewName = (data.length > 30) ? data.substring(0, 30) + '...' : data;
+                        return '<a href="' + data + '" target="_blank">' + reviewName + '</a>'
+                    }
+                },
+                {
+                    "data": "RegisterName", "width": "5%",
+                    "autoWidth": true,
+                    "searchable": true,
+                },
+                {
+                    "data": "FirstName", "width": "5%",
+                    "autoWidth": true,
+                    "searchable": true,
+                }
 
-                    ]
-                });
-            }
-        })
+            ],
+        });
     }
+
     function BindWriterUserTrackingReport() {
          var fromDate = $("#txtFromDate").val();
         var toDate = $("#txtToDate").val();
@@ -623,56 +639,65 @@
             alert("Please select date");
             return;
         }
-
-        $.ajax({
-            url: "@Url.Action("GetWriterUserTrackingReportList", "Admin")",
-            type: "GET",
-           /* dataType: "json",*/
-            data: {
-                FromDate: fromDate,
-                ToDate: toDate,
-                RegisterId: RegisterId
+         
+         $('#tblWriterUserWorkReport').DataTable({
+             destroy: true,
+             "processing": true,
+             "serverSide": true,
+             "filter": true,
+             "pageLength": 50,
+             "orderMulti": false,
+             "ajax": {
+                 "url": "GetWriterUserTrackingReportList/Admin",
+                 "type": "POST",
+                 "data": {
+                     FromDate: fromDate,
+                     ToDate: toDate,
+                     RegisterId: RegisterId
+                 }
             },
-            contentType: 'application/json; charset=utf-8',
-            success: function (data) {
-                if (data.length > 0) {
-                    $("#lblReviewPerDayCount").text(data[0].ReviewsPerDay);
-                    $("#lblReviewCount").text(data.length);
+            "columns": [
+                {
+                    "data": "CreatedDate", "width": "15%",
+                    "autoWidth": true,
+                    "searchable": true,
+                    render: function (data, type, row) {
+                        $("#lblReviewPerDayCount").text(row.ReviewsPerDay);
+                        $("#lblReviewCount").text(row.usercount);
+                        var date = new Date(parseInt(data.substr(6)));
+                        var datetime = date.toLocaleTimeString();
+                        return date.toISOString().split('T')[0] + " " + date.toISOString().split('T')[1].split('.')[0];
+                    }
+                },
+                {
+                    "data": "RegisterName", "width": "10%",
+                    "autoWidth": true,
+                    "searchable": true,
+                },
+                {
+                    "data": "CompanyName", "width": "15%",
+                    "autoWidth": true,
+                    "searchable": true,
+                    render: function (data, type, row) {
+                        var companyName = (data.length > 60) ? data.substring(0, 60) + '...' : data;
+                        return '<span title="' + data + '">' + companyName + '</span>';
+                    }
+                },
+                {
+                    "data": "ReviewName", "width": "30%",
+                    "autoWidth": true,
+                    "searchable": true,
+                    render: function (data, type, row) {
+                        var reviewName = (data.length > 50) ? data.substring(0, 50) + '...' : data;
+                        return '<span title="' + data + '">' + reviewName + '</span>';
+                    }
                 }
-                $('#tblWriterUserWorkReport').dataTable({
-                    destroy: true,
-                    data: data,
-                    "pageLength": 50,
-                    order: [[0, 'desc']],
-                    "columns": [
-                        {
-                            "data": "CreatedDate", "width": "15%",
-                            render: function (data, type, row) {
-                                var date = new Date(parseInt(data.substr(6)));
-                                var datetime = date.toLocaleTimeString();
-                                return date.toISOString().split('T')[0] + " " + date.toISOString().split('T')[1].split('.')[0];
-                            }
-                        },
-                        {
-                            "data": "RegisterName", "width": "10%"
-                        },
-                        {
-                            "data": "CompanyName", "width": "15%",
-                            render: function (data, type, row) {
-                                var companyName = (data.length > 60) ? data.substring(0, 60) + '...' : data;
-                                return '<span title="' + data + '">' + companyName + '</span>';
-                            }
-                        },
-                        {
-                            "data": "ReviewName", "width": "30%",
-                            render: function (data, type, row) {
-                                var reviewName = (data.length > 50) ? data.substring(0, 50) + '...' : data;
-                                return '<span title="' + data + '">' + reviewName + '</span>';
-                            }
-                        }
-                    ]
-                });
-            }
-        })
+            ]
+         });
+
+        var count = $("#tblWriterUserWorkReport").dataTable().fnSettings().aoData.length;
+        if (count == 0) {
+            $("#lblReviewCount").text(0);
+        }
     }
 </script>

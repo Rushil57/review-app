@@ -27,5 +27,7 @@ namespace ItsReviewApp.ViewModels
         public string RegisterName { get; set; }
         public string ReviewName { get; set; }
         public int ReviewsPerDay { get; set; }
+
+        public int usercount { get; set; }
     }
 }

@@ -15,6 +15,7 @@ using System.Web.Mvc;
 
 namespace ItsReviewApp.Controllers
 {
+  //  [UserRoleProvider]
     public class SalesController : Controller
     {
         string connectionString = ConfigurationManager.ConnectionStrings["DbEntities"].ToString();
@@ -27,6 +28,8 @@ namespace ItsReviewApp.Controllers
         }
 
         // GET: Sales
+        //[Authorize(Roles = "Sales")]
+        [UserRoleProvider]
         public ActionResult Index()
         {
             if (Session["RegisterId"] == null)
@@ -37,6 +40,8 @@ namespace ItsReviewApp.Controllers
             return View();
         }
 
+
+        [UserRoleProvider]
         public ActionResult Create()
         {
             if (Session["RegisterId"] == null)
@@ -223,42 +228,6 @@ namespace ItsReviewApp.Controllers
         }
 
         [HttpGet]
-        public JsonResult GetList()
-        {
-            List<SalesViewModel> empList = new List<SalesViewModel>();
-            try
-            {
-              //  var salesId = 0;
-                var registerId = 0;
-                if (Session["RegisterId"] != null)
-                {
-                    //salesId = Convert.ToInt32(Session["RegisterId"]);
-                    registerId = Convert.ToInt32(Session["RegisterId"]);
-                }
-                else
-                {
-                    new HttpStatusCodeResult(HttpStatusCode.OK);
-                }
-                con.Open();
-                var parameters = new DynamicParameters();
-                //parameters.Add("@SalesId", salesId, DbType.Int32, ParameterDirection.Input);
-                parameters.Add("@RegisterId", registerId, DbType.String, ParameterDirection.Input);
-                parameters.Add("@Mode", 2, DbType.Int32, ParameterDirection.Input);
-                empList = con.Query<SalesViewModel>("sp_Sales", parameters, commandType: CommandType.StoredProcedure).ToList();
-            }
-            catch (Exception)
-            {
-                con.Close();
-                throw;
-            }
-            finally
-            {
-                con.Close();
-            }
-            return Json(empList, JsonRequestBehavior.AllowGet);
-        }
-
-        [HttpGet]
         public JsonResult GetFollowUpList()
         {
             var registerId = 0;
@@ -270,14 +239,14 @@ namespace ItsReviewApp.Controllers
             {
                 new HttpStatusCodeResult(HttpStatusCode.OK);
             }
-            List<SalesViewModel> empList = new List<SalesViewModel>();
+            List<LeadViewModel> followupList = new List<LeadViewModel>();
             try
             {
                 con.Open();
                 var parameters = new DynamicParameters();
                 parameters.Add("@RegisterId", registerId, DbType.String, ParameterDirection.Input);
-                parameters.Add("@Mode", 5, DbType.Int32, ParameterDirection.Input);
-                empList = con.Query<SalesViewModel>("sp_Sales", parameters, commandType: CommandType.StoredProcedure).ToList();
+                parameters.Add("@Mode", 7, DbType.Int32, ParameterDirection.Input);
+                followupList = con.Query<LeadViewModel>("sp_tblLead", parameters, commandType: CommandType.StoredProcedure).ToList();
             }
             catch (Exception)
             {
@@ -288,7 +257,7 @@ namespace ItsReviewApp.Controllers
             {
                 con.Close();
             }
-            return Json(empList, JsonRequestBehavior.AllowGet);
+            return Json(followupList, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
@@ -498,6 +467,10 @@ namespace ItsReviewApp.Controllers
         public ActionResult Upload()
         {
             string RegisterId = Request.Form["RegisterId"];
+            if (RegisterId == null || RegisterId == "")
+            {
+                RegisterId = "All";
+            }
             if (Request.Files.Count > 0)
             {
                 //string id = Request.Files.(x => x.Key == "id").FirstOrDefault().Value;
@@ -560,11 +533,13 @@ namespace ItsReviewApp.Controllers
                         for (int i = 0; i < tmp.Rows.Count; i++)
                         {
                             LeadViewModel leadViewModel = new LeadViewModel();
-                            leadViewModel.NicheName = tmp.Rows[i][0].ToString().Trim();
-                            leadViewModel.CompanyName = tmp.Rows[i][1].ToString().Trim();
-                            leadViewModel.City = tmp.Rows[i][2].ToString().Trim();
-                            leadViewModel.PhoneNumber = tmp.Rows[i][3].ToString().Trim();
+                            leadViewModel.City = tmp.Rows[i][0].ToString().Trim();
+                            leadViewModel.PhoneNumber = tmp.Rows[i][1].ToString().Trim();
+                            leadViewModel.ClientName = tmp.Rows[i][2].ToString().Trim();
+                            leadViewModel.BussinessType = tmp.Rows[i][3].ToString().Trim();
+                            leadViewModel.Remarks = tmp.Rows[i][4].ToString().Trim();
                             leadViewModel.RegisterId = RegisterId;
+                            leadViewModel.Type = "Excel";
                             LeadSave(leadViewModel);
                         }
                         return Json("Upload Successfully");
@@ -583,23 +558,44 @@ namespace ItsReviewApp.Controllers
         [HttpPost]
         public ActionResult LeadSave(LeadViewModel leadViewModel)
         {
-            if(leadViewModel.RegisterId == null || leadViewModel.RegisterId == "")
+            if (leadViewModel.Type != "Excel")
             {
-                leadViewModel.RegisterId = "All";
+                if (Session["RegisterId"] != null)
+                {
+                    leadViewModel.RegisterId = Session["RegisterId"].ToString();
+                }
+                else
+                {
+                    return RedirectToAction("Login", "Login", new { area = "" });
+                }
+            }
+
+            var mode = 0;
+            if (leadViewModel.id == 0)
+            {
+                mode = 1;
+            }
+            else
+            {
+                mode = 4;
             }
             var parameters = new DynamicParameters();
-            parameters.Add("@NicheName", leadViewModel.NicheName, DbType.String, ParameterDirection.Input);
-            parameters.Add("@CompanyName", leadViewModel.CompanyName, DbType.String, ParameterDirection.Input);
+            parameters.Add("@id", leadViewModel.id, DbType.Int32, ParameterDirection.Input);
             parameters.Add("@City", leadViewModel.City, DbType.String, ParameterDirection.Input);
             parameters.Add("@PhoneNumber", leadViewModel.PhoneNumber, DbType.String, ParameterDirection.Input);
             parameters.Add("@RegisterId", leadViewModel.RegisterId, DbType.String, ParameterDirection.Input);
-            parameters.Add("@Mode", 1, DbType.Int32, ParameterDirection.Input);
+            parameters.Add("@ClientName", leadViewModel.ClientName, DbType.String, ParameterDirection.Input);
+            parameters.Add("@BussinessType", leadViewModel.BussinessType, DbType.String, ParameterDirection.Input);
+            parameters.Add("@Remarks", leadViewModel.Remarks, DbType.String, ParameterDirection.Input);
+            parameters.Add("@FollowUpDate", leadViewModel.FollowUpDate, DbType.DateTime, ParameterDirection.Input);
+            parameters.Add("@Mode", mode, DbType.Int32, ParameterDirection.Input);
             using (IDbConnection connection = new SqlConnection(connectionString))
             {
                 var leadsave = connection.ExecuteScalar("sp_tblLead", parameters, commandType: CommandType.StoredProcedure);
                 connection.Close();
             }
-            return RedirectToAction("Create", "Sales");
+            return RedirectToAction("Index", "Sales");
+
         }
 
         public void BindSalesUserName()
@@ -616,5 +612,105 @@ namespace ItsReviewApp.Controllers
             }
             ViewBag.Client = selectListItems;
         }
+
+        [HttpPost]
+        public JsonResult GetLeadList()
+        {
+            var registerId = 0;
+            if (Session["RegisterId"] != null)
+            {
+                registerId = Convert.ToInt32(Session["RegisterId"]);
+            }
+            else
+            {
+                new HttpStatusCodeResult(HttpStatusCode.OK);
+            }
+            var draw = Request.Form.GetValues("draw").FirstOrDefault();
+            var search = Request.Form.GetValues("search[value]").FirstOrDefault();
+            var start = Request.Form.GetValues("start").FirstOrDefault();
+            var length = Request.Form.GetValues("length").FirstOrDefault();
+
+
+            int pageSize = length != null ? Convert.ToInt32(length) : 0;
+            int skip = start != null ? Convert.ToInt32(start) : 0;
+            int recordsTotal = 0;
+            con.Open();
+            var parameters = new DynamicParameters();
+            parameters.Add("@skip", skip, DbType.String, ParameterDirection.Input);
+            parameters.Add("@search", search, DbType.String, ParameterDirection.Input);
+            parameters.Add("@PageSize", pageSize, DbType.String, ParameterDirection.Input);
+            parameters.Add("@RegisterId", registerId, DbType.String, ParameterDirection.Input);
+            parameters.Add("@Mode", 2, DbType.Int32, ParameterDirection.Input);
+            var leadList = con.Query<LeadViewModel>("sp_tblLead", parameters, commandType: CommandType.StoredProcedure).ToList();
+            if (leadList.Count > 0)
+            {
+                recordsTotal = leadList[0].leadcount;
+            }
+            return Json(new { draw = draw, recordsFiltered = recordsTotal, recordsTotal = recordsTotal, data = leadList }, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult IsActiveFalse(int id)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@id", id, DbType.String, ParameterDirection.Input);
+            parameters.Add("@Mode", 5, DbType.Int32, ParameterDirection.Input);
+            using (IDbConnection connection = new SqlConnection(connectionString))
+            {
+                var leadsave = connection.ExecuteScalar("sp_tblLead", parameters, commandType: CommandType.StoredProcedure);
+                connection.Close();
+            }
+            return RedirectToAction("Create", "Sales");
+        }
+
+        public ActionResult GetLeadDataById(int id)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@Id", id, DbType.Int32, ParameterDirection.Input);
+            parameters.Add("@Mode", 6, DbType.Int32, ParameterDirection.Input);
+            var leadDate = con.Query<LeadViewModel>("sp_tblLead", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
+            return Json(leadDate, JsonRequestBehavior.AllowGet);
+        }
+
+
+        [HttpPost]
+        public JsonResult GetSalesActiveList()
+        {
+            var registerId = 0;
+            if (Session["RegisterId"] != null)
+            {
+                registerId = Convert.ToInt32(Session["RegisterId"]);
+            }
+            else
+            {
+                new HttpStatusCodeResult(HttpStatusCode.OK);
+            }
+            var draw = Request.Form.GetValues("draw").FirstOrDefault();
+            var search = Request.Form.GetValues("search[value]").FirstOrDefault();
+            var start = Request.Form.GetValues("start").FirstOrDefault();
+            var length = Request.Form.GetValues("length").FirstOrDefault();
+            //Find Order Column
+            var sortColumn = Request.Form.GetValues("columns[" + Request.Form.GetValues("order[0][column]").FirstOrDefault() + "][name]").FirstOrDefault();
+            var sortColumnDir = Request.Form.GetValues("order[0][dir]").FirstOrDefault();
+
+
+            int pageSize = length != null ? Convert.ToInt32(length) : 0;
+            int skip = start != null ? Convert.ToInt32(start) : 0;
+            int recordsTotal = 0;
+            con.Open();
+            var parameters = new DynamicParameters();
+            parameters.Add("@skip", skip, DbType.String, ParameterDirection.Input);
+            parameters.Add("@search", search, DbType.String, ParameterDirection.Input);
+            parameters.Add("@PageSize", pageSize, DbType.String, ParameterDirection.Input);
+            parameters.Add("@RegisterId", registerId, DbType.String, ParameterDirection.Input);
+            parameters.Add("@Mode", 2, DbType.Int32, ParameterDirection.Input);
+            var salesList = con.Query<SalesViewModel>("sp_Sales", parameters, commandType: CommandType.StoredProcedure).ToList();
+            if (salesList.Count > 0)
+            {
+                recordsTotal = salesList[0].salescount;
+            }
+            return Json(new { draw = draw, recordsFiltered = recordsTotal, recordsTotal = recordsTotal, data = salesList }, JsonRequestBehavior.AllowGet);
+        }
+
     }
 }

@@ -14,6 +14,7 @@ using System.Web.Mvc;
 
 namespace ItsReviewApp.Controllers
 {
+   // [UserRoleProvider]
     public class WriterController : Controller
     {
         string connectionString = ConfigurationManager.ConnectionStrings["DbEntities"].ToString();
@@ -31,6 +32,7 @@ namespace ItsReviewApp.Controllers
             return View();
         }
 
+        [UserRoleProvider]
         [HttpGet]
         public ActionResult Create()
         {
@@ -320,60 +322,6 @@ namespace ItsReviewApp.Controllers
             return RedirectToAction("Create", "Writer");
         }
 
-        public ActionResult GetSalesDetails()
-        {
-            List<SalesDetailsViewModel> salesDetailsViewModelList = new List<SalesDetailsViewModel>();
-            con.Open();
-            var parameters = new DynamicParameters();
-            parameters.Add("@Mode", 6, DbType.Int32, ParameterDirection.Input);
-            using (IDbConnection connection = new SqlConnection(connectionString))
-            {
-                var reader = con.QueryMultiple("sp_Salesdetails", parameters, commandType: CommandType.StoredProcedure);
-                var reviewPerDayList = reader.Read<SalesDetailsViewModel>().ToList();
-                var companyList = reader.Read<WriterViewModel>().ToList();
-
-                foreach (var item in reviewPerDayList)
-                {
-                    SalesDetailsViewModel salesDetailsViewModel = new SalesDetailsViewModel();
-                    salesDetailsViewModel.Id = item.Id;
-                    salesDetailsViewModel.CompanyName = item.CompanyName;
-                    salesDetailsViewModel.CityName = item.CityName;
-                    salesDetailsViewModel.ReviewsPerDay = item.ReviewsPerDay;
-                    var companyCount = companyList.Where(x => x.CompanyId == item.Id.ToString()).FirstOrDefault();
-                    if (companyCount != null && companyCount.CompanyCount > 0)
-                    {
-                        if (item.ReviewsPerDay != null && item.ReviewsPerDay != "")
-                        {
-                            var reviewPerDay = Convert.ToInt32(item.ReviewsPerDay);
-                            if (reviewPerDay > 0)
-                            {
-                                salesDetailsViewModel.Days = companyCount.CompanyCount / reviewPerDay;
-                            }
-                            else
-                            {
-                                salesDetailsViewModel.Days = 0;
-                            }
-                        }
-                        else
-                        {
-                            salesDetailsViewModel.Days = 0;
-                        }
-                        salesDetailsViewModel.CompanyCount = companyCount.CompanyCount;
-                    }
-                    else
-                    {
-                        salesDetailsViewModel.CompanyCount = 0;
-                        salesDetailsViewModel.Days = 0;
-                    }
-                    
-                    salesDetailsViewModelList.Add(salesDetailsViewModel);
-                }
-            }
-            con.Close();
-            //salesDetailsViewModelList = salesDetailsViewModelList.OrderBy(x => x.Days).ToList();
-            return Json(salesDetailsViewModelList, JsonRequestBehavior.AllowGet);
-        }
-
         public ActionResult GetReviewsPerDay(string CompanyId)
         {
             var totalreview = 0;
@@ -419,6 +367,60 @@ namespace ItsReviewApp.Controllers
 
             con.Close();
             return Json(totalreview, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult GetSalesDetails()
+        {
+            List<SalesDetailsViewModel> salesDetailsViewModelList = new List<SalesDetailsViewModel>();
+            con.Open();
+            var parameters = new DynamicParameters();
+            parameters.Add("@Mode", 6, DbType.Int32, ParameterDirection.Input);
+            using (IDbConnection connection = new SqlConnection(connectionString))
+            {
+                var reader = con.QueryMultiple("sp_Salesdetails", parameters, commandType: CommandType.StoredProcedure);
+                var reviewPerDayList = reader.Read<SalesDetailsViewModel>().ToList();
+                var companyList = reader.Read<WriterViewModel>().ToList();
+
+                foreach (var item in reviewPerDayList)
+                {
+                    SalesDetailsViewModel salesDetailsViewModel = new SalesDetailsViewModel();
+                    salesDetailsViewModel.Id = item.Id;
+                    salesDetailsViewModel.CompanyName = item.CompanyName;
+                    salesDetailsViewModel.CityName = item.CityName;
+                    salesDetailsViewModel.ReviewsPerDay = item.ReviewsPerDay;
+                    var companyCount = companyList.Where(x => x.CompanyId == item.Id.ToString()).FirstOrDefault();
+                    if (companyCount != null && companyCount.CompanyCount > 0)
+                    {
+                        if (item.ReviewsPerDay != null && item.ReviewsPerDay != "")
+                        {
+                            var reviewPerDay = Convert.ToInt32(item.ReviewsPerDay);
+                            if (reviewPerDay > 0)
+                            {
+                                salesDetailsViewModel.Days = companyCount.CompanyCount / reviewPerDay;
+                            }
+                            else
+                            {
+                                salesDetailsViewModel.Days = 0;
+                            }
+                        }
+                        else
+                        {
+                            salesDetailsViewModel.Days = 0;
+                        }
+                        salesDetailsViewModel.CompanyCount = companyCount.CompanyCount;
+                    }
+                    else
+                    {
+                        salesDetailsViewModel.CompanyCount = 0;
+                        salesDetailsViewModel.Days = 0;
+                    }
+
+                    salesDetailsViewModelList.Add(salesDetailsViewModel);
+                }
+            }
+            con.Close();
+            //salesDetailsViewModelList = salesDetailsViewModelList.OrderBy(x => x.Days).ToList();
+            return Json(salesDetailsViewModelList, JsonRequestBehavior.AllowGet);
         }
     }
 }

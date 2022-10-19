@@ -188,6 +188,7 @@ C:\Users\HP\Desktop\ItsReviewNewApp\ItsReviewApp\bin\EntityFramework.dll
 C:\Users\HP\Desktop\ItsReviewNewApp\ItsReviewApp\bin\EntityFramework.SqlServer.dll
 C:\Users\HP\Desktop\ItsReviewNewApp\ItsReviewApp\bin\ExcelDataReader.DataSet.dll
 C:\Users\HP\Desktop\ItsReviewNewApp\ItsReviewApp\bin\ExcelDataReader.dll
+C:\Users\HP\Desktop\ItsReviewNewApp\ItsReviewApp\bin\Microsoft.Configuration.ConfigurationBuilders.Base.dll
 C:\Users\HP\Desktop\ItsReviewNewApp\ItsReviewApp\bin\Microsoft.Web.Infrastructure.dll
 C:\Users\HP\Desktop\ItsReviewNewApp\ItsReviewApp\bin\Newtonsoft.Json.dll
 C:\Users\HP\Desktop\ItsReviewNewApp\ItsReviewApp\bin\Razorpay.dll
@@ -207,6 +208,7 @@ C:\Users\HP\Desktop\ItsReviewNewApp\ItsReviewApp\bin\ExcelDataReader.pdb
 C:\Users\HP\Desktop\ItsReviewNewApp\ItsReviewApp\bin\ExcelDataReader.xml
 C:\Users\HP\Desktop\ItsReviewNewApp\ItsReviewApp\bin\ExcelDataReader.DataSet.pdb
 C:\Users\HP\Desktop\ItsReviewNewApp\ItsReviewApp\bin\ExcelDataReader.DataSet.xml
+C:\Users\HP\Desktop\ItsReviewNewApp\ItsReviewApp\bin\Microsoft.Configuration.ConfigurationBuilders.Base.xml
 C:\Users\HP\Desktop\ItsReviewNewApp\ItsReviewApp\bin\System.Data.SqlClient.xml
 C:\Users\HP\Desktop\ItsReviewNewApp\ItsReviewApp\bin\System.Web.Helpers.xml
 C:\Users\HP\Desktop\ItsReviewNewApp\ItsReviewApp\bin\System.Web.Mvc.xml

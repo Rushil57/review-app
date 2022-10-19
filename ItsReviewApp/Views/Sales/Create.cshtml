@@ -58,10 +58,6 @@
             ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default, .ui-button, html .ui-button.ui-state-disabled:hover, html .ui-button.ui-state-disabled:active {
                 font-weight: bold !important;
             }
-
-        /*     #ui-datepicker-div {
-            top: 778.137px !important;
-        }*/
     </style>
 </head>
 <body>
@@ -70,14 +66,14 @@
             <h5 style="color:#fff;margin-right: 40px;">ItsReview App</h5>
         </div>
         <div class="container" style="padding-top:30px;">
-            <div class="row col-md-12" style="margin-left:-30px!important">
-                <div class="col-md-4">
+            <div class="row" style="margin-left:-19px!important">
+                <div class="col-md-3">
                     <div class="form-group">
                         <label for="clientName">Client Name</label>
                         <input type="text" class="form-control" placeholder="Enter Name" id="clientname">
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-2">
                     <div class="form-group">
                         <label for="phoneNumber">Phone Number</label>
                         <span class="error" style="color:red;float:right;">Required</span>
@@ -85,7 +81,21 @@
 
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="bussinessType">Bussiness Type</label>
+                        <input type="text" class="form-control" placeholder="Enter Type" id="bussinessType" name="bussinessType" readonly/>
+
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        <input type="text" class="form-control" placeholder="Enter City" id="leadCity" name="city" readonly/>
+
+                    </div>
+                </div>
+                <div class="col-md-3">
                     <div class="form-group">
                         <label for="country">Select Country</label>
                         <select name="dropdowncountry" id="country" class="form-control dropdowncountry"></select>
@@ -102,29 +112,29 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="form-group">
-                    <label for="remarks">Remarks</label>
-                    <textarea rows="5" cols="3" id="remarkid" class="form-control" onfocusout="CheckRequiredField(this)"></textarea>
+                @*<div class="form-group">
+                        <label for="remarks">Remarks</label>
+                        <textarea rows="5" cols="3" id="remarkid" class="form-control" onfocusout="CheckRequiredField(this)"></textarea>
 
-                </div>
-                <div class="form-group">
-                    <label for="date">FollowUp Date</label>
-                    <div class='input-group date followupDate'>
-                        <input type='text' class="form-control" id="followupdate" />
-                        <span class="input-group-addon">
-                            <span class="glyphicon glyphicon-calendar"></span>
-                        </span>
                     </div>
-                </div>
+                    <div class="form-group">
+                        <label for="date">FollowUp Date</label>
+                        <div class='input-group date followupDate'>
+                            <input type='text' class="form-control" id="followupdate" />
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                    </div>*@
 
-                <div class="form-group">
-                    <input type="checkbox" class="form-check-input" id="followupcheck" checked>
-                    <label class="form-check-label" for="followupcheck">Save to FollowUp List</label>
-                </div>
+                @*<div class="form-group">
+                        <input type="checkbox" class="form-check-input" id="followupcheck" checked>
+                        <label class="form-check-label" for="followupcheck">Save to FollowUp List</label>
+                    </div>*@
                 <button type="submit" onclick="location.href='@Url.Action("Index", "Sales")'" class="btn btn-primary" id="btnBack">Back</button>
                 <button type="submit" class="btn btn-primary" id="btnsave">Save</button>
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#LeadModal">Create Lead</button>
-                <button type="button" class="btn btn-primary" data-toggle="modal" onclick="BindLead();" data-target="#LeadModalId">Lead Data</button>
+                @*<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#LeadModal">Create Lead</button>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" onclick="BindLead();" data-target="#LeadModalId">Lead Data</button>*@
                 @*<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#LeadModalId">Lead</button>*@
             </div>
 
@@ -172,7 +182,7 @@
                             <div class="container" style="margin-top: 30px; max-width:585px;">
                                 <div class="form-group">
                                     <table id="LeadModalDataId" class="table table-bordered table-responsive">
-                                
+
                                         <thead>
                                             <tr>
                                                 <th>CompanyName</th>
@@ -208,10 +218,17 @@
     var getid = 0;
     var categoryList = new Array();
     $(document).ready(function () {
-        /*BindLead();*/
+        var lead = window.location.search.split("&")[1]
         var url=window.location.search.split("=")[1]
         if (url != undefined && url != "") {
-            GetDataById(url);
+            if (lead != undefined && lead != "") {
+                var leadid = window.location.search.split("&")[0].split("=")[1]
+                GetLeadDataById(leadid);
+            }
+            else {
+                GetDataById(url);
+            }
+
         }
         else {
             $(".error").css("display", "block");
@@ -437,12 +454,12 @@
         var followup = $("#followupdate").val();
         var country = $("#country").val();
         var followupcheck = $('#followupcheck').is(':checked');
-        if (followupcheck == true) {
-            if (followup.length == 0) {
-                alert("please select follow up date");
-                return;
-            }
-        }
+        //if (followupcheck == true) {
+        //    if (followup.length == 0) {
+        //        alert("please select follow up date");
+        //        return;
+        //    }
+        //}
         if (phoneNumber.length == 0) {
             return;
         }
@@ -467,13 +484,16 @@
             Review.CategoryViewModel = row.find(".dropdownCategory").val();
             Review.Id = row.find(".hiddensalesdetailid").val();
             Review.Address = row.find(".cls-Address").val();
-            if (row.find(".companyname").val() != "") {
+            //if (row.find(".companyname").val() != "") {
+            //    Reviews.push(Review);
+            //}
+            if (Review.CompanyName.length == 0 || Review.CityName.length == 0 || Review.ListingUrl.length == 0 || Review.CurrentReview.length == 0 || Review.ReviewsPerDay.length == 0 || Review.RatePerReview.length == 0 || Review.CategoryViewModel.length == 0 || Review.Address.length == 0 || Review.ReviewDate == null) {
+                exit = true;
+                alert("Please fill required fields");
+                return
+            }
+            else {
                 Reviews.push(Review);
-
-                if (Review.CompanyName.length == 0 || Review.CityName.length == 0 || Review.ListingUrl.length == 0 || Review.CurrentReview.length == 0 || Review.ReviewsPerDay.length == 0 || Review.RatePerReview.length == 0 || Review.CategoryViewModel.length == 0 || Review.Address.length == 0 || Review.ReviewDate == null) {
-                    exit = true;
-                    return
-                }
             }
 
 
@@ -528,20 +548,20 @@
             }
         });
 
-        var dateToday = new Date();
-        $('.followupDate').datepicker({
-            /*startDate: dateToday,*/
-            startDate: dateToday,
-            autoclose: true,
-            format: "yyyy/mm/dd",
-            orientation: 'bottom',
-            icons: {
-                time: "fa fa-clock-o",
-                date: "fa fa-calendar",
-                up: "fa fa-arrow-up",
-                down: "fa fa-arrow-down"
-            }
-        });
+        //var dateToday = new Date();
+        //$('.followupDate').datepicker({
+        //    /*startDate: dateToday,*/
+        //    startDate: dateToday,
+        //    autoclose: true,
+        //    format: "yyyy/mm/dd",
+        //    orientation: 'bottom',
+        //    icons: {
+        //        time: "fa fa-clock-o",
+        //        date: "fa fa-calendar",
+        //        up: "fa fa-arrow-up",
+        //        down: "fa fa-arrow-down"
+        //    }
+        //});
     }
     function formatDate(date) {
         var d = new Date(date),
@@ -610,7 +630,7 @@
             writeobject.City = City,
             writeobject.PhoneNumber = phonenumber;
 
-        
+
         $.ajax({
             url: "@Url.Action("LeadSave", "Sales")",
             contentType: 'application/json',
@@ -695,7 +715,7 @@
         categoryList = new Array();
         $("#tblSales tbody").html('');
         SetDefaultCategory();
-        for (i = 0; i < 2; i++) {
+        for (i = 0; i < 1; i++) {
             tblBind("1", "", "", "", "", "", "", "", "1", null, "", "", "0", "", categoryList, "0", "","");
         }
     }
@@ -766,5 +786,36 @@
     function EditRequiredField(rowcount, name) {
         $("#tblSales").find("tr#" + rowcount).find("input[value='" + name + "']").parent().closest("div").find(".error").css("display", "none");
     }
+    function GetLeadDataById(id) {
+        $.ajax({
+            url: "@Url.Action("GetLeadDataById", "Sales")",
+            contentType: 'application/json',
+            data: { id: id },
+            type: "GET",
+            success: function (data) {
+                if (data != null) {
+                    $("#clientname").val(data.ClientName);
+                    $("#phonenumber").val(data.PhoneNumber);
+                    if (data.PhoneNumber != null || data.PhoneNumber != "") {
+                        $("#phonenumber").parent().closest("div").find(".error").css("display", "none");
+                    }
+                    $("#bussinessType").val(data.BussinessType);
+                    $("#leadCity").val(data.City);
+                    //$("#Remarks").val(remarks);
+                    
+                    SetDefaultCategory();
+                    for (i = 0; i < 1; i++) {
+                        tblBind("1", "", "", "", "", "", "", "", "1", null, "", "", "0", "", categoryList, "0", "", "");
+                    }
+                    BindCountry(5);
+                }
+
+            },
+            error: function () {
+                alert('failure');
+            }
+        });
+    }
+
 
 </script>

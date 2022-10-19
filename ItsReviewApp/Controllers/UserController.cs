@@ -13,6 +13,7 @@ using System.Web.Mvc;
 
 namespace ItsReviewApp.Controllers
 {
+  
     public class UserController : Controller
     {
 
@@ -31,6 +32,7 @@ namespace ItsReviewApp.Controllers
             return View();
         }
 
+        [UserRoleProvider]
         public ActionResult Create()
         {
             var parameters = new DynamicParameters();
@@ -54,6 +56,7 @@ namespace ItsReviewApp.Controllers
             return Json(EmailList, JsonRequestBehavior.AllowGet);
         }
 
+        [UserRoleProvider]
         public ActionResult Review()
         {
             if (Session["RegisterId"] == null)
