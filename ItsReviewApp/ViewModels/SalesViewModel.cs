@@ -42,7 +42,13 @@ namespace ItsReviewApp.ViewModels
 
         public string RegisterId { get; set; }
 
+        public string City { get; set; }
+        public string BussinessType { get; set; }
+
         public int salescount { get; set; }
+        public bool Active { get; set; }
+
+        public string Type { get; set; }
         //public string City { get; set; }
         //public string Keywords { get; set; }
         //public string FoodName { get; set; }
@@ -82,6 +88,10 @@ namespace ItsReviewApp.ViewModels
         public Int32 TrackOrder { get; set; }
         public Int32 CompanyCount { get; set; }
         public int CompanyTotalCount { get; set; }
+
+        public DateTime CreatedDate { get; set; }
+
+        public DateTime ModifiedDate { get; set; }
     } 
 
     public class SalesCategoryViewModel

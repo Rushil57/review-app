@@ -66,6 +66,9 @@
             <h5 style="color:#fff;margin-right: 40px;">ItsReview App</h5>
         </div>
         <div class="container" style="padding-top:30px;">
+            <input type="hidden" class="form-control" value="" id="Remarks" />
+            <input type="hidden" class="form-control" value="" id="FollowUpDate" />
+            <input type="hidden" class="form-control" value="" id="FollowUpCheck" />
             <div class="row" style="margin-left:-19px!important">
                 <div class="col-md-3">
                     <div class="form-group">
@@ -113,29 +116,26 @@
                     </table>
                 </div>
                 @*<div class="form-group">
-                        <label for="remarks">Remarks</label>
-                        <textarea rows="5" cols="3" id="remarkid" class="form-control" onfocusout="CheckRequiredField(this)"></textarea>
+                <label for="remarks">Remarks</label>
+                <textarea rows="5" cols="3" id="remarkid" class="form-control" onfocusout="CheckRequiredField(this)"></textarea>
 
-                    </div>
-                    <div class="form-group">
-                        <label for="date">FollowUp Date</label>
-                        <div class='input-group date followupDate'>
-                            <input type='text' class="form-control" id="followupdate" />
-                            <span class="input-group-addon">
-                                <span class="glyphicon glyphicon-calendar"></span>
-                            </span>
-                        </div>
-                    </div>*@
+            </div>
+            <div class="form-group">
+                <label for="date">FollowUp Date</label>
+                <div class='input-group date followupDate'>
+                    <input type='text' class="form-control" id="followupdate" />
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+            </div>*@
 
                 @*<div class="form-group">
-                        <input type="checkbox" class="form-check-input" id="followupcheck" checked>
-                        <label class="form-check-label" for="followupcheck">Save to FollowUp List</label>
-                    </div>*@
+                <input type="checkbox" class="form-check-input" id="followupcheck" checked>
+                <label class="form-check-label" for="followupcheck">Save to FollowUp List</label>
+            </div>*@
                 <button type="submit" onclick="location.href='@Url.Action("Index", "Sales")'" class="btn btn-primary" id="btnBack">Back</button>
                 <button type="submit" class="btn btn-primary" id="btnsave">Save</button>
-                @*<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#LeadModal">Create Lead</button>
-                    <button type="button" class="btn btn-primary" data-toggle="modal" onclick="BindLead();" data-target="#LeadModalId">Lead Data</button>*@
-                @*<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#LeadModalId">Lead</button>*@
             </div>
 
             <!-- Create Lead -->
@@ -218,16 +218,17 @@
     var getid = 0;
     var categoryList = new Array();
     $(document).ready(function () {
-        var lead = window.location.search.split("&")[1]
+        /*var lead = window.location.search.split("&")[1]*/
         var url=window.location.search.split("=")[1]
         if (url != undefined && url != "") {
-            if (lead != undefined && lead != "") {
-                var leadid = window.location.search.split("&")[0].split("=")[1]
-                GetLeadDataById(leadid);
-            }
-            else {
-                GetDataById(url);
-            }
+            //if (lead != undefined && lead != "") {
+            //    var leadid = window.location.search.split("&")[0].split("=")[1]
+            //    GetLeadDataById(leadid);
+            //}
+            //else {
+            //    GetDataById(url);
+            //}
+            GetDataById(url);
 
         }
         else {
@@ -309,13 +310,16 @@
                     if (sales.PhoneNumber != null || sales.PhoneNumber != "") {
                         $("#phonenumber").parent().closest("div").find(".error").css("display", "none");
                     }
-                    $('#remarkid').val(sales.Remarks);
+                    $('#Remarks').val(sales.Remarks);
+                    $('#FollowUpCheck').val(sales.FollowUpCheck);
+                    $('#bussinessType').val(sales.BussinessType);
+                    $('#leadCity').val(sales.City);
 
                      BindCountry(sales.CountryName);
                       if (sales.FollowUpDate != null) {
                           var followUpDate = new Date(parseInt(sales.FollowUpDate.substr(6)));
-                          var followDate = formatDate(followUpDate)
-                          $('#followupdate').val(followDate);
+                          var followDate = moment(followUpDate).format('YYYY-MM-DD HH:mm:ss');
+                          $('#FollowUpDate').val(followDate);
                       }
                       $("#tblSales tbody").html('');
                     $.each(data.detailslist, function (index, item) {
@@ -450,16 +454,12 @@
         var getvalue = getid;
         var clientname = $("#clientname").val();
         var phoneNumber = $("#phonenumber").val();
-        var Remarks = $("#remarkid").val();
-        var followup = $("#followupdate").val();
+        var Remarks = $("#Remarks").val();
+        var followup = $("#FollowUpDate").val();
         var country = $("#country").val();
-        var followupcheck = $('#followupcheck').is(':checked');
-        //if (followupcheck == true) {
-        //    if (followup.length == 0) {
-        //        alert("please select follow up date");
-        //        return;
-        //    }
-        //}
+        var bussinesstype = $("#bussinessType").val();
+        var city = $("#leadCity").val();
+        var followupcheck = $('#FollowUpCheck').val();
         if (phoneNumber.length == 0) {
             return;
         }
@@ -511,6 +511,10 @@
         writeobject.SalesDetailsViewModel = Reviews;
         writeobject.Remarks = Remarks;
         writeobject.FollowUpCheck = followupcheck;
+        writeobject.Active = true;
+        writeobject.BussinessType = bussinesstype;
+        writeobject.City = city;
+
         $.ajax({
             url: "@Url.Action("Create", "Sales")",
             contentType: 'application/json',

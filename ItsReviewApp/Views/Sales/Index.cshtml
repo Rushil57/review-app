@@ -12,13 +12,14 @@
     </style>
 </head>
 <div class="container" style="width:95%">
-    <a class="btn btn-primary" id="CreateNewLead" type="button">Create Lead</a>
+    @*<a class="btn btn-primary" id="CreateNewLead" type="button">Create Lead</a>*@
     <div id="tabs" style="margin-top:10px;">
         <ul>
-            <li><a href="#tabs-2" id="tab2">Create Lead</a></li>
-            <li><a href="#tabs-3" id="tab3">New Lead List</a></li>
-            <li><a href="#tabs-4" id="tab4">Customer List</a></li>
+            <li><a href="#tabs-3" id="tab3">Customer List</a></li>
+            <li><a href="#tabs-7" id="tab7">New Lead</a></li>
             <li><a href="#tabs-5" id="tab5">Follow Up List</a></li>
+            <li><a href="#tabs-4" id="tab4">GBP List</a></li>
+            <li><a href="#tabs-2" id="tab2">Create Lead</a></li>
             <li><a href="#tabs-6">Excel Upload</a></li>
         </ul>
         <div id="tabs-2">
@@ -30,7 +31,7 @@
                 </div>
                 <div class="form-group">
                     <label for="phoneNumber">Phone Number</label>
-                    <input type="number" class="form-control" placeholder="Please Enter Phone Number" id="PhoneNumber"  maxlength="10" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" />
+                    <input type="number" class="form-control" placeholder="Please Enter Phone Number" id="PhoneNumber"  maxlength="10" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" onfocusout='PhoneNumberValidation(this)' />
                 </div>
                 <div class="form-group">
                     <label for="bussinessType">Bussiness Type</label>
@@ -39,6 +40,10 @@
                 <div class="form-group">
                     <label for="city">City</label>
                     <input type="text" class="form-control" placeholder="Please Enter City" id="City">
+                </div>
+                <div class="form-group">
+                    <label for="remarks">Remarks</label>
+                    <textarea rows="5" cols="3" id="Remarks" class="form-control" placeholder="Please Enter Remarks"></textarea>
                 </div>
                 <div class="form-group">
                     <label for="date">FollowUp Date</label>
@@ -50,22 +55,22 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="remarks">Remarks</label>
-                    <textarea rows="5" cols="3" id="Remarks" class="form-control" placeholder="Please Enter Remarks"></textarea>
+                    <input type="checkbox" class="form-check-input" id="followupcheck" checked>
+                    <label class="form-check-label" for="followupcheck">Save to FollowUp List</label>
                 </div>
                 <button type="submit" class="btn btn-primary" id="btnsaveLead">Save</button>
                 <a class="btn btn-primary" id="CreateLeaddataId" style="color: white;">Open</a>
             </div>
         </div>
         <div id="tabs-3">
-            <table id="Leadlist" class="table table-bordered table-responsive" style="width: 100%;">
+            <table id="SalesList" class="table table-bordered table-responsive" style="width: 100%;">
                 <thead>
                     <tr>
                         <th style="Width:20%;">ClientName</th>
                         <th style="Width:15%;">Phone Number</th>
-                        <th style="Width:16%;">Bussiness Type</th>
+                        @*<th style="Width:16%;">Bussiness Type</th>*@
                         <th style="Width:30%;">Remarks</th>
-                        <th style="Width:14%;">City</th>
+                        @*<th style="Width:14%;">City</th>*@
                         <th style="Width:5%;">Action</th>
                         @*<th></th>*@
                     </tr>
@@ -87,7 +92,7 @@
             </table>
         </div>
         <div id="tabs-5">
-            <table id="followup" class="table table-bordered table-responsive" style="width: 100%">
+            <table id="salesFollwUpList" class="table table-bordered table-responsive" style="width: 100%">
                 <thead>
                     <tr>
                         <th style="Width:20%;">Client Name</th>
@@ -111,6 +116,21 @@
                 <input type="button" id="excelupload" value="Upload" class="btn btn-primary btn-md btn-sm" />
             </div>
         </div>
+        <div id="tabs-7">
+            <table id="NewLead" class="table table-bordered table-responsive" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th style="Width:20%;">ClientName</th>
+                        <th style="Width:15%;">Phone Number</th>
+                        <th style="Width:16%;">Bussiness Type</th>
+                        @*<th style="Width:30%;">Remarks</th>*@
+                        <th style="Width:14%;">City</th>
+                        <th style="Width:5%;">Action</th>
+                        @*<th></th>*@
+                    </tr>
+                </thead>
+            </table>
+        </div>
     </div>
 </div>
 
@@ -129,6 +149,7 @@
             $("#selectedTab").val(selected_tab);
         });
         datetime();
+        BindLead();
     });
     $("#tabs").on('click', '#tab2', function () {
         ResetLeadData();
@@ -141,6 +162,9 @@
     })
     $("#tabs").on('click', '#tab3', function () {
         BindLead();
+    })
+    $("#tabs").on('click', '#tab7', function () {
+        BindEmptyFollowUp();
     })
 
      $('#excelupload').click(function () {
@@ -192,19 +216,30 @@
         var City = $("#City").val();
         var Remarks = $("#Remarks").val();
         var followup = $("#followupdate").val();
+        var followupcheck = $('#followupcheck').is(':checked');
+        if (followupcheck == true) {
+            if (followup.length == 0) {
+                alert("please select follow up date");
+                return;
+            }
+        }
 
         var writeobject = new Object();
-        writeobject.id = Id,
+        writeobject.Id = Id,
             writeobject.ClientName = clientname,
             writeobject.City = City,
             writeobject.PhoneNumber = phonenumber,
             writeobject.BussinessType = BussinessType,
             writeobject.Remarks = Remarks,
-            writeobject.FollowUpDate = followup;
+            writeobject.FollowUpDate = followup,
+            writeobject.FollowUpCheck = followupcheck,
+        writeobject.Active = true;
+
 
 
         $.ajax({
-            url: "@Url.Action("LeadSave", "Sales")",
+            @*url: "@Url.Action("LeadSave", "Sales")",*@
+            url: "@Url.Action("Create", "Sales")",
             contentType: 'application/json',
             data: JSON.stringify(writeobject),
             type: "POST",
@@ -220,30 +255,6 @@
 
     })
 
-    //function EditLeadData(row) {
-    //    var Lead = $(row)[0];
-    //    var LeadId = $(Lead).attr("data-id");
-    //    var clientName = $(Lead).attr("data-ClientName");
-    //    var phoneNumber = $(Lead).attr("data-PhoneNumber");
-    //    var bussinessType = $(Lead).attr("data-BussinessType");
-    //    var remarks = $(Lead).attr("data-Remarks");
-    //    var city = $(Lead).attr("data-City");
-    //    var followup = $(Lead).attr("data-FollowUpDate");
-    //    if (followup != null) {
-    //        var followUpDate = new Date(parseInt(followup.substr(6)));
-    //        var followDate = formatDate(followUpDate)
-    //        $('#followupdate').val(followDate);
-    //    }
-
-    //    $("#LeadId").val(LeadId);
-    //    $("#ClientName").val(clientName);
-    //    $("#PhoneNumber").val(phoneNumber);
-    //    $("#BussinessType").val(bussinessType);
-    //    $("#City").val(city);
-    //    $("#Remarks").val(remarks);
-    //    $('[href="#tabs-2"]').click();
-    //}
-
     function ResetLeadData() {
         $("#LeadId").val(0);
         $("#ClientName").val('');
@@ -252,6 +263,7 @@
         $("#City").val('');
         $("#Remarks").val('');
         $("#followupdate").val('');
+        $("#followupcheck").prop("checked", true);
     }
 
     function DeleteLeadData(id) {
@@ -328,7 +340,7 @@
 
 
     function BindLead() {
-        $('#Leadlist').DataTable({
+        $('#SalesList').DataTable({
             destroy: true,
             "processing": true,
             "serverSide": true,
@@ -336,7 +348,7 @@
             "pageLength": 50,
             "orderMulti": false,
             "ajax": {
-                "url": "GetLeadList/Sales",
+                "url": "GetSalesList/Sales",
                 "type": "POST",
                 "datatype": "json"
             },
@@ -351,18 +363,18 @@
                     "autoWidth": true,
                     "searchable": true
                 },
-                {
-                    "data": "BussinessType",
-                    "autoWidth": true,
-                    "searchable": true
-                },
+                //{
+                //    "data": "BussinessType",
+                //    "autoWidth": true,
+                //    "searchable": true
+                //},
                 {
                     "data": "Remarks",
                     "autoWidth": true,
                     "searchable": true,
                     "render": function (data, type, row) {
                         if (data != null) {
-                            var Remarks = data.length > 35 ? data.substring(0, 35) + "..." : data;
+                            var Remarks = data.length > 50 ? data.substring(0, 50) + "..." : data;
                             return "<span title='" + data + "'>" + Remarks + "</span>";
                         }
                         else {
@@ -371,13 +383,13 @@
                     }
 
                 },
+                //{
+                //    "data": "City",
+                //    "autoWidth": true,
+                //    "searchable": true
+                //},
                 {
-                    "data": "City",
-                    "autoWidth": true,
-                    "searchable": true
-                },
-                {
-                    "data": "id",
+                    "data": "Id",
                     "autoWidth": true,
                     "render": function (data, type, row) {
                         return '<a class="btn btn-primary" style="color: white;" onclick="Openleaddata(' + data +')">Open</a>';
@@ -407,7 +419,7 @@
             dataType: "json",
             contentType: 'application/json; charset=utf-8',
             success: function (data) {
-                $('#followup').dataTable({
+                $('#salesFollwUpList').dataTable({
                     destroy: true,
                     data: data,
                     "columns": [
@@ -433,7 +445,7 @@
                             }
                         },
                         {
-                            "data": "id",
+                            "data": "Id",
                             "autoWidth": true,
                             "render": function (data, type, row) {
                                 return '<a class="btn btn-primary" style="color: white;" onclick="Openleaddata(' + data + ')">Open</a>';
@@ -449,27 +461,29 @@
     $("#CreateNewLead").on("click", function () {
         $('[href="#tabs-2"]').click();
     });
-    function Openleaddata(id){
-         $.ajax({
+
+     function Openleaddata(id) {
+        $.ajax({
             url: "@Url.Action("GetLeadDataById", "Sales")",
             contentType: 'application/json',
             data: { id: id },
             type: "GET",
-             success: function (data) {
-                 if (data != null) {
+            success: function (data) {
+                if (data != null) {
                     $("#ClientName").val(data.ClientName);
                     $("#PhoneNumber").val(data.PhoneNumber);
                     $("#BussinessType").val(data.BussinessType);
-                     $("#City").val(data.City);
-                     if (data.FollowUpDate != null) {
-                         var followUpDate = new Date(parseInt(data.FollowUpDate.substr(6)));
-                         var followDate = moment(followUpDate).format('YYYY-MM-DD HH:mm:ss');
-                         $('#followupdate').val(followDate);
-                     }
-                     $("#Remarks").val(data.Remarks);
-                     $("#LeadId").val(data.id);
-                     $("#CreateLeaddataId").attr("href", "/Sales/Create/Id?=" + data.id + "&m=l");
-                     $('[href="#tabs-2"]').click();
+                    $("#City").val(data.City);
+                    if (data.FollowUpDate != null) {
+                        var followUpDate = new Date(parseInt(data.FollowUpDate.substr(6)));
+                        var followDate = moment(followUpDate).format('YYYY-MM-DD HH:mm:ss');
+                        $('#followupdate').val(followDate);
+                    }
+                    $("#Remarks").val(data.Remarks);
+                    $("#LeadId").val(data.Id);
+                    /*$("#CreateLeaddataId").attr("href", "/Sales/Create/Id?=" + data.Id + "&m=l");*/
+                    $("#CreateLeaddataId").attr("href", "/Sales/Create/Id?=" + data.Id);
+                    $('[href="#tabs-2"]').click();
                 }
 
             },
@@ -478,4 +492,75 @@
             }
         });
     }
+    function BindEmptyFollowUp() {
+        $.ajax({
+                url: "@Url.Action("GetNewLeadData", "Sales")",
+                type: "GET",
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    $('#NewLead').dataTable({
+                        destroy: true,
+                        data: data,
+                        "columns": [
+                            { "data": "ClientName"},
+                            { "data": "PhoneNumber"},
+                            { "data": "BussinessType"},
+                            //{
+                            //    "data": "Remarks",
+                            //    "render": function (data, type, row) {
+                            //        if (data != null) {
+                            //            var Remarks = data.length > 50 ? data.substring(0, 50) + "..." : data;
+                            //            return "<span title='" + data + "'>" + Remarks + "</span>";
+                            //        }
+                            //        else {
+                            //            return "<span></span>";
+                            //        }
+                            //    }
+                            //},
+                            { "data": "City"},
+                            {
+                                "data": "Id",
+                                "autoWidth": true,
+                                "render": function (data, type, row) {
+                                    return '<a class="btn btn-primary" style="color: white;" onclick="Openleaddata(' + data + ')">Open</a>';
+                                }
+                            }
+                        ]
+                    });
+                }
+            })
+    }
+    function PhoneNumberValidation(number) {
+        var phoneNumber = number.value;
+        var id = 0;
+        id = $("#LeadId").val()
+
+        if (phoneNumber == null || phoneNumber == "") {
+            $("#phonenumber").closest("div").find(".error").css("display", "block");
+            return;
+        }
+            $.ajax({
+                url: "@Url.Action("GetPhoneNumber", "Sales")",
+                contentType: 'application/json',
+                data: { "phoneNumber": phoneNumber, "id": id },
+                type: "GET",
+                success: function (data) {
+                    if (data.toUpperCase() == "TRUE") {
+                        number.value = "";
+                        alert('Phone Number already exists');
+                        $("#phonenumber").closest("div").find(".error").show();
+                    }
+                    else {
+                        $("#phonenumber").closest("div").find(".error").css("display", "none")
+                    }
+
+                },
+                error: function (data) {
+                    alert('failure');
+                }
+            });
+    }
+
+
+
 </script>

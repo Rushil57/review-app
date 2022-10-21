@@ -44,6 +44,7 @@
                 <li><a href="#tabs-5" id="tab5">Email List</a></li>
                 <li><a href="#tabs-6" id="tab6">User Track List</a></li>
                 <li><a href="#tabs-7" id="tab7">Writer</a></li>
+                @*<li><a href="#tabs-8" id="tab8">Sales</a></li>*@
             </ul>
             <div id="tabs-1">
                 <div class="row">
@@ -185,6 +186,28 @@
                     </table>
                 </div>
             </div>
+            @*<div id="tabs-8">
+                <div>
+                    <div class="row col-md-12 form-group">
+                        <div class="col-md-3">
+                            <select class="form-control select2 cls-Sales-dropdown" onchange="GetCompanyLeadList()" id="dropdownSalesList" name="dropdownSalesList"></select>
+                        </div>
+                    </div>
+                    <table id="tblSalesList" class="table table-bordered table-responsive">
+                        <thead>
+                            <tr>
+                                <th>Created Date</th>
+                                <th>Modified Date</th>
+                                <th>Client Name</th>
+                                <th>PhoneNumber</th>
+                                <th>CompanyName</th>
+                                <th>CityName</th>
+                                <th>ReviewsPerDay</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>*@
         </div>
     </div>
 </div>
@@ -199,6 +222,7 @@
            /* tags: true*/
         });
         BindUserList();
+        //BindSalesList();
         BindWriterUserWorkReport();
         BindCompanyList();
         var selected_tab = 0;
@@ -388,7 +412,6 @@
     }
 
     function BindCompanyList() {
-
         $.ajax({
             url: "@Url.Action("GetCompanyList", "Admin")",
             type: "GET",
@@ -421,10 +444,12 @@
     $("#tabs").on('click', '#tab7', function () {
         BindWriterUserTrackingReport();
     })
+    //$("#tabs").on('click', '#tab8', function () {
+    //    GetCompanyLeadList();
+    //})
 
     function BindUserEmail() {
-
-        var register = $("#dropdownUserEmailId").val();
+        var register = $("#dropdownSalesList").val();
           $.ajax({
             url: "@Url.Action("GetUserEmailList", "Admin")",
             type: "GET",
@@ -639,7 +664,7 @@
             alert("Please select date");
             return;
         }
-         
+
          $('#tblWriterUserWorkReport').DataTable({
              destroy: true,
              "processing": true,
@@ -700,4 +725,44 @@
             $("#lblReviewCount").text(0);
         }
     }
+
+    function BindSalesList() {
+        $.ajax({
+            url: "@Url.Action("GetSalesList", "Admin")",
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
+                $.each(data, function (index, item) {
+                    var opt = new Option(item.Name, item.Id);
+                    $(".cls-Sales-dropdown").append(opt);
+                });
+            }
+        })
+    }
+
+    function GetCompanyLeadList() {
+        var register = $("#dropdownSalesList").val();
+          $.ajax({
+            url: "@Url.Action("GetCompanyLeadList", "Admin")",
+            type: "GET",
+              data: { registerId: register},
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                $('#tblSalesList').dataTable({
+                    destroy: true,
+                    data: data,
+                    "columns": [
+                        { "data": "CreatedDate" },
+                        { "data": "ModifiedDate" },
+                        { "data": "ClientName"},
+                        { "data": "PhoneNumber" },
+                        { "data": "CompanyName" },
+                        { "data": "CityName" },
+                        { "data": "ReviewsPerDay" }
+                    ]
+                });
+            }
+        })
+    }
+
 </script>

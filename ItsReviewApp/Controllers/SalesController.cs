@@ -15,7 +15,7 @@ using System.Web.Mvc;
 
 namespace ItsReviewApp.Controllers
 {
-  //  [UserRoleProvider]
+    //  [UserRoleProvider]
     public class SalesController : Controller
     {
         string connectionString = ConfigurationManager.ConnectionStrings["DbEntities"].ToString();
@@ -41,7 +41,9 @@ namespace ItsReviewApp.Controllers
         }
 
 
+
         [UserRoleProvider]
+        [HttpGet]
         public ActionResult Create()
         {
             if (Session["RegisterId"] == null)
@@ -72,13 +74,14 @@ namespace ItsReviewApp.Controllers
             List<string> CompanyList = new List<string>();
             try
             {
-                var salesId = 0;
-                var registerId = 0;
-                if (Session["RegisterId"] != null)
+                if (salesViewModel.Type != "Excel")
                 {
-                    salesId = Convert.ToInt32(Session["RegisterId"]);
-                    registerId = Convert.ToInt32(Session["RegisterId"]);
+                    if (Session["RegisterId"] != null)
+                    {
+                        salesViewModel.RegisterId = Session["RegisterId"].ToString();
+                    }
                 }
+
                 var mode = 0;
                 if (salesViewModel.Id == 0)
                 {
@@ -89,15 +92,18 @@ namespace ItsReviewApp.Controllers
                     mode = 4;
                 }
                 var parameters = new DynamicParameters();
+                parameters.Add("@FollowUpDate", salesViewModel.FollowUpDate, DbType.DateTime, ParameterDirection.Input);
+                parameters.Add("@Remarks", salesViewModel.Remarks, DbType.String, ParameterDirection.Input);
                 parameters.Add("@Id", salesViewModel.Id, DbType.Int32, ParameterDirection.Input);
                 parameters.Add("@ClientName", salesViewModel.ClientName, DbType.String, ParameterDirection.Input);
                 parameters.Add("@PhoneNumber", salesViewModel.PhoneNumber, DbType.String, ParameterDirection.Input);
-                parameters.Add("@FollowUpDate", salesViewModel.FollowUpDate, DbType.DateTime, ParameterDirection.Input);
                 parameters.Add("@CountryName", salesViewModel.CountryName, DbType.String, ParameterDirection.Input);
-                parameters.Add("@Remarks", salesViewModel.Remarks, DbType.String, ParameterDirection.Input);
                 parameters.Add("@FollowUpCheck", salesViewModel.FollowUpCheck, DbType.Boolean, ParameterDirection.Input);
-                parameters.Add("@SalesId", salesId, DbType.Int32, ParameterDirection.Input);
-                parameters.Add("@RegisterId", registerId, DbType.Int32, ParameterDirection.Input);
+                //parameters.Add("@SalesId", salesId, DbType.Int32, ParameterDirection.Input);
+                parameters.Add("@RegisterId", salesViewModel.RegisterId, DbType.String, ParameterDirection.Input);
+                parameters.Add("@Active", salesViewModel.Active, DbType.Boolean, ParameterDirection.Input);
+                parameters.Add("@BussinessType", salesViewModel.BussinessType, DbType.String, ParameterDirection.Input);
+                parameters.Add("@City", salesViewModel.City, DbType.String, ParameterDirection.Input);
                 parameters.Add("@Mode", mode, DbType.Int32, ParameterDirection.Input);
                 using (IDbConnection connection = new SqlConnection(connectionString))
                 {
@@ -115,7 +121,7 @@ namespace ItsReviewApp.Controllers
                 }
                 if (salesViewModel.SalesDetailsViewModel != null)
                 {
-                    SaveSalesDetail(salesViewModel.SalesDetailsViewModel, salesViewModel.SalesId,ref CompanyList);
+                    SaveSalesDetail(salesViewModel.SalesDetailsViewModel, salesViewModel.SalesId, ref CompanyList);
                 }
             }
             catch (Exception ex)
@@ -239,14 +245,14 @@ namespace ItsReviewApp.Controllers
             {
                 new HttpStatusCodeResult(HttpStatusCode.OK);
             }
-            List<LeadViewModel> followupList = new List<LeadViewModel>();
+            List<SalesViewModel> followupList = new List<SalesViewModel>();
             try
             {
                 con.Open();
                 var parameters = new DynamicParameters();
                 parameters.Add("@RegisterId", registerId, DbType.String, ParameterDirection.Input);
-                parameters.Add("@Mode", 7, DbType.Int32, ParameterDirection.Input);
-                followupList = con.Query<LeadViewModel>("sp_tblLead", parameters, commandType: CommandType.StoredProcedure).ToList();
+                parameters.Add("@Mode", 9, DbType.Int32, ParameterDirection.Input);
+                followupList = con.Query<SalesViewModel>("sp_Sales", parameters, commandType: CommandType.StoredProcedure).ToList();
             }
             catch (Exception)
             {
@@ -473,7 +479,6 @@ namespace ItsReviewApp.Controllers
             }
             if (Request.Files.Count > 0)
             {
-                //string id = Request.Files.(x => x.Key == "id").FirstOrDefault().Value;
                 var files = Request.Files;
                 foreach (string str in files)
                 {
@@ -532,26 +537,21 @@ namespace ItsReviewApp.Controllers
                         DataTable tmp = result.Tables[0];
                         for (int i = 0; i < tmp.Rows.Count; i++)
                         {
-                            LeadViewModel leadViewModel = new LeadViewModel();
-                            leadViewModel.City = tmp.Rows[i][0].ToString().Trim();
-                            leadViewModel.PhoneNumber = tmp.Rows[i][1].ToString().Trim();
-                            leadViewModel.ClientName = tmp.Rows[i][2].ToString().Trim();
-                            leadViewModel.BussinessType = tmp.Rows[i][3].ToString().Trim();
-                            leadViewModel.Remarks = tmp.Rows[i][4].ToString().Trim();
-                            leadViewModel.RegisterId = RegisterId;
-                            leadViewModel.Type = "Excel";
-                            LeadSave(leadViewModel);
+                            SalesViewModel salesViewModel = new SalesViewModel();
+                            salesViewModel.ClientName = tmp.Rows[i][0].ToString().Trim();
+                            salesViewModel.PhoneNumber = tmp.Rows[i][1].ToString().Trim();
+                            salesViewModel.City = tmp.Rows[i][2].ToString().Trim();
+                            salesViewModel.BussinessType = tmp.Rows[i][3].ToString().Trim();
+                            salesViewModel.RegisterId = RegisterId;
+                            salesViewModel.Type = "Excel";
+                            salesViewModel.Active = false;
+                            Create(salesViewModel);
                         }
                         return Json("Upload Successfully");
                     }
 
                 }
-                //return View();
             }
-            //else
-            //{
-            //    return Json("Please Upload Your file");
-            //}
             return View();
         }
 
@@ -614,7 +614,7 @@ namespace ItsReviewApp.Controllers
         }
 
         [HttpPost]
-        public JsonResult GetLeadList()
+        public JsonResult GetSalesList()
         {
             var registerId = 0;
             if (Session["RegisterId"] != null)
@@ -640,11 +640,11 @@ namespace ItsReviewApp.Controllers
             parameters.Add("@search", search, DbType.String, ParameterDirection.Input);
             parameters.Add("@PageSize", pageSize, DbType.String, ParameterDirection.Input);
             parameters.Add("@RegisterId", registerId, DbType.String, ParameterDirection.Input);
-            parameters.Add("@Mode", 2, DbType.Int32, ParameterDirection.Input);
-            var leadList = con.Query<LeadViewModel>("sp_tblLead", parameters, commandType: CommandType.StoredProcedure).ToList();
+            parameters.Add("@Mode", 8, DbType.Int32, ParameterDirection.Input);
+            var leadList = con.Query<SalesViewModel>("sp_Sales", parameters, commandType: CommandType.StoredProcedure).ToList();
             if (leadList.Count > 0)
             {
-                recordsTotal = leadList[0].leadcount;
+                recordsTotal = leadList[0].salescount;
             }
             return Json(new { draw = draw, recordsFiltered = recordsTotal, recordsTotal = recordsTotal, data = leadList }, JsonRequestBehavior.AllowGet);
         }
@@ -668,7 +668,8 @@ namespace ItsReviewApp.Controllers
             var parameters = new DynamicParameters();
             parameters.Add("@Id", id, DbType.Int32, ParameterDirection.Input);
             parameters.Add("@Mode", 6, DbType.Int32, ParameterDirection.Input);
-            var leadDate = con.Query<LeadViewModel>("sp_tblLead", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
+            //var leadDate = con.Query<LeadViewModel>("sp_tblLead", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
+            var leadDate = con.Query<SalesViewModel>("sp_tblLead", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
             return Json(leadDate, JsonRequestBehavior.AllowGet);
         }
 
@@ -711,6 +712,33 @@ namespace ItsReviewApp.Controllers
             }
             return Json(new { draw = draw, recordsFiltered = recordsTotal, recordsTotal = recordsTotal, data = salesList }, JsonRequestBehavior.AllowGet);
         }
+
+
+        public JsonResult GetNewLeadData()
+        {
+            var registerId = 0;
+            if (Session["RegisterId"] != null)
+            {
+                registerId = Convert.ToInt32(Session["RegisterId"]);
+            }
+            else
+            {
+                new HttpStatusCodeResult(HttpStatusCode.OK);
+            }
+
+            con.Open();
+            var parameters = new DynamicParameters();
+            parameters.Add("@RegisterId", registerId, DbType.String, ParameterDirection.Input);
+            parameters.Add("@Mode", 7, DbType.Int32, ParameterDirection.Input);
+            var newleadList = con.Query<SalesViewModel>("sp_Sales", parameters, commandType: CommandType.StoredProcedure).ToList();
+            con.Close();
+            return Json(newleadList, JsonRequestBehavior.AllowGet);
+
+        }
+
+
+      
+
 
     }
 }

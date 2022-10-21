@@ -259,6 +259,29 @@ namespace ItsReviewApp.Controllers
             return Json(new { draw = draw, recordsFiltered = recordsTotal, recordsTotal = recordsTotal, data = userTrackListList }, JsonRequestBehavior.AllowGet);
         }
 
-        
+        [HttpGet]
+        public ActionResult GetSalesList()
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@Mode", 6, DbType.Int32, ParameterDirection.Input);
+            con.Open();
+            var SalesList = con.Query<RegisterViewModel>("sp_UserCompanyReport", parameters, commandType: CommandType.StoredProcedure);
+            con.Close();
+            return Json(SalesList, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult GetCompanyLeadList(string registerId)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@RegisterId", registerId, DbType.String, ParameterDirection.Input);
+            parameters.Add("@Mode", 7, DbType.Int32, ParameterDirection.Input);
+            con.Open();
+            var userList = con.Query<SalesViewModel>("sp_UserCompanyReport", parameters, commandType: CommandType.StoredProcedure);
+            con.Close();
+            return Json(userList, JsonRequestBehavior.AllowGet);
+        }
+
+
     }
 }

@@ -133,10 +133,21 @@ namespace ItsReviewApp.Controllers
                                 objUserTrackingViewModel.UserId = userlist.Id;
                                 objUserTrackingViewModel.TrackOrder = companylist.TrackOrder;
                                 SaveTrackingData(ref objUserTrackingViewModel);
-                                //emailCount = 0;
-                                //recursion = true;
-                                userlist.RegisterId = Convert.ToString(registerId);
-                                emailresult = new { user = userlist, reviews = review, company = companylist, userTrack = objUserTrackingViewModel };
+                                parameters = new DynamicParameters();
+                                parameters.Add("@CompanyId", companylist.Id, DbType.Int32, ParameterDirection.Input);
+                                parameters.Add("@@WriterId", review.Id, DbType.Int32, ParameterDirection.Input);
+                                parameters.Add("@Mode", 12, DbType.Int32, ParameterDirection.Input);
+                                var Companyvalidation = con.Query<bool>("sp_User", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
+                                if(Companyvalidation)
+                                {
+                                    emailresult = new { user = "concurrencyissue", reviews = "", company = "", userTrack = "" };
+                                }
+                                else
+                                {
+                                    userlist.RegisterId = Convert.ToString(registerId);
+                                    emailresult = new { user = userlist, reviews = review, company = companylist, userTrack = objUserTrackingViewModel };
+                                }
+                                
                                 //emailflag = 1;
                             }
                             else

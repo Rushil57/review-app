@@ -172,6 +172,11 @@
                     $("label[for='suggestedemail']").text("Email limit exceed");
                     ResetData('emaillimitexceed');
                 }
+                else if (data.user == "concurrencyissue") {
+                    /*$("label[for='suggestedemail']").text("Concurrecy Issue");
+                    ResetData('concurrencyissue');*/
+                    BindEmailId();
+                }
                 else {
                     $("label[for='suggestedemail']").text(data.user.EmailId);
                     $("#hdnreview").val(data.reviews.ReviewName);
