@@ -49,6 +49,9 @@ namespace ItsReviewApp.ViewModels
         public bool Active { get; set; }
 
         public string Type { get; set; }
+
+        public DateTime? CreationDate { get; set; }
+        public DateTime? ModifiedDate { get; set; }
         //public string City { get; set; }
         //public string Keywords { get; set; }
         //public string FoodName { get; set; }
@@ -89,9 +92,9 @@ namespace ItsReviewApp.ViewModels
         public Int32 CompanyCount { get; set; }
         public int CompanyTotalCount { get; set; }
 
-        public DateTime CreatedDate { get; set; }
+        //public DateTime CreatedDate { get; set; }
 
-        public DateTime ModifiedDate { get; set; }
+        //public DateTime ModifiedDate { get; set; }
     } 
 
     public class SalesCategoryViewModel
