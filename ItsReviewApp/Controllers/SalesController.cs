@@ -20,7 +20,7 @@ namespace ItsReviewApp.Controllers
     {
         string connectionString = ConfigurationManager.ConnectionStrings["DbEntities"].ToString();
         SqlConnection con;
-
+        List<string> PhoneNumberList = new List<string>();
 
         public SalesController()
         {
@@ -108,15 +108,19 @@ namespace ItsReviewApp.Controllers
                 using (IDbConnection connection = new SqlConnection(connectionString))
                 {
                     var reviewSave = connection.ExecuteScalar("sp_Sales", parameters, commandType: CommandType.StoredProcedure);
-                    if (reviewSave != null)
+                    if (reviewSave != null && reviewSave.ToString() != "1")
                     {
                         salesViewModel.SalesId = reviewSave.ToString();
                     }
-                    else
+                    if (reviewSave == null)
                     {
                         salesViewModel.SalesId = salesViewModel.Id.ToString();
                     }
-
+                    if (reviewSave != null && reviewSave.ToString() == "1" )
+                    {
+                        PhoneNumberList.Add(salesViewModel.PhoneNumber);
+                        return Json(PhoneNumberList, JsonRequestBehavior.AllowGet);
+                    }
                     connection.Close();
                 }
                 if (salesViewModel.SalesDetailsViewModel != null)
@@ -547,7 +551,8 @@ namespace ItsReviewApp.Controllers
                             salesViewModel.Active = false;
                             Create(salesViewModel);
                         }
-                        return Json("Upload Successfully");
+                        //return Json("Upload Successfully");
+                        return Json(PhoneNumberList, JsonRequestBehavior.AllowGet);
                     }
 
                 }
@@ -735,10 +740,5 @@ namespace ItsReviewApp.Controllers
             return Json(newleadList, JsonRequestBehavior.AllowGet);
 
         }
-
-
-      
-
-
     }
 }

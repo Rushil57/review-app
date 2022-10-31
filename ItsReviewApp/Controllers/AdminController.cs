@@ -282,6 +282,57 @@ namespace ItsReviewApp.Controllers
             return Json(userList, JsonRequestBehavior.AllowGet);
         }
 
+        [HttpGet]
+        public JsonResult EditUserEmail(int Id)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@Id", Id, DbType.Int32, ParameterDirection.Input);
+            parameters.Add("@Mode", 9, DbType.Int32, ParameterDirection.Input);
+            con.Open();
+            var DeleteEmail = con.Query<UserViewModel>("sp_UserReport", parameters, commandType: CommandType.StoredProcedure);
+            con.Close();
+            return Json(DeleteEmail, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetCategory()
+        {
+            List<CategoryViewModel> CategoryList = new List<CategoryViewModel>();
+
+            con.Open();
+            var parameters = new DynamicParameters();
+            parameters.Add("@Mode", 4, DbType.Int32, ParameterDirection.Input);
+            CategoryList = con.Query<CategoryViewModel>("sp_Salesdetails", parameters, commandType: CommandType.StoredProcedure).ToList();
+            List<SelectListItem> selectListItems = new List<SelectListItem>();
+            foreach (var emp in CategoryList)
+            {
+                var item = new SelectListItem { Text = emp.CategoryName, Value = emp.Id.ToString() };
+                selectListItems.Add(item);
+            }
+            ViewBag.Category = selectListItems;
+            return Json(selectListItems, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult UpdateUserCategoryData(UserViewModel userViewModel)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@UserId", userViewModel.Id, DbType.Int32, ParameterDirection.Input);
+            parameters.Add("@Mode", 2, DbType.Int32, ParameterDirection.Input);
+            con.Open();
+            var DeleteEmail = con.Query<UserViewModel>("sp_UserCategory", parameters, commandType: CommandType.StoredProcedure);
+            foreach (var category in userViewModel.UserCategoryViewModel)
+            {
+                var parameter = new DynamicParameters();
+                parameter.Add("@UserId", userViewModel.Id, DbType.Int32, ParameterDirection.Input);
+                parameter.Add("@CategoryId", category, DbType.Int32, ParameterDirection.Input);
+                parameter.Add("@Mode", 1, DbType.Int32, ParameterDirection.Input);
+                using (IDbConnection connection = new SqlConnection(connectionString))
+                {
+                    var categorysave = connection.ExecuteScalar("sp_UserCategory", parameter, commandType: CommandType.StoredProcedure);
+                    con.Close();
+                }
+            }
+            return RedirectToAction("UserReport", "Admin");
+        }
 
     }
 }

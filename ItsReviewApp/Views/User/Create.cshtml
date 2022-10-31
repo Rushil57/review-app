@@ -106,7 +106,7 @@
         <table id="datatableid" class="table table-bordered table-responsive" style="width: 100%">
             <thead>
                 <tr>
-                    <th>RegisterId</th>
+                    <th>Register Name</th>
                     <th>First Name</th>
                     @*<th>Last Name</th>*@
                     <th>Email Id</th>
@@ -207,31 +207,42 @@
         }
 
     }
-
     function BindUsers() {
-
-        $.ajax({
-            url: "GetList/User",
-            type: "GET",
-            dataType: "json",
-            contentType: 'application/json; charset=utf-8',
-            success: function (data) {
-                $('#datatableid').dataTable().fnDestroy();
-                $('#datatableid').dataTable({
-                   /* destroy: true,*/
-                    data: data,
-                    "columns": [
-                        { "data": "RegisterId" },
-                        { "data": "FirstName" },
-                        /*{ "data": "LastName" },*/
-                        { "data": "EmailId" },
-                        { "data": "CategoryName" }
-
-                    ]
-                });
-
-            }
-        })
+        $('#datatableid').DataTable({
+            destroy: true,
+            "processing": true,
+            "serverSide": true,
+            "filter": true,
+            "pageLength": 50,
+            "orderMulti": false,
+            "ajax": {
+                "url": "GetList/User",
+                "type": "POST",
+                "datatype": "json"
+            },
+            "columns": [
+                {
+                    "data": "Name",
+                    "autoWidth": true,
+                    "searchable": true
+                },
+                {
+                    "data": "FirstName",
+                    "autoWidth": true,
+                    "searchable": true
+                },
+                {
+                    "data": "EmailId",
+                    "autoWidth": true,
+                    "searchable": true
+                },
+                {
+                    "data": "CategoryName",
+                    "autoWidth": true,
+                    "searchable": true
+                }
+            ],
+        });
     }
 
     function MultiSelectChckBox() {

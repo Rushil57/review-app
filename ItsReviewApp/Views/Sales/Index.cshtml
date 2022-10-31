@@ -113,7 +113,7 @@
             <div class="form-group">
                 <label for="ExcelUpload">Upload File</label>
                 <input type="file" id="files" name="files" /><br />
-                <input type="button" id="excelupload" value="Upload" class="btn btn-primary btn-md btn-sm" />
+                <input type="button" id="excelupload" value="Upload" class="btn btn-primary btn-md btn-sm"/>
             </div>
         </div>
         <div id="tabs-7">
@@ -190,9 +190,19 @@
            contentType: false,
              data: fileData,
             success: function (result) {
-                $("#files").val('');
-                $(".clientname").val('');
-                alert(result);
+                //$("#files").val('');
+                //$(".clientname").val('');
+                //alert(result);
+                if (result.length != 0) {
+                    alert("Phone Number Already Exits : \n" + result.toString().replaceAll(",", "\n"));
+                     $("#files").val('');
+                     $(".clientname").val('');
+                }
+                else {
+                    $("#files").val('');
+                    $(".clientname").val('');
+                    alert('Upload Successfully');
+                }
             },
             error: function (result) {
                 alert('failure');
@@ -244,8 +254,16 @@
             data: JSON.stringify(writeobject),
             type: "POST",
             success: function (result) {
-                alert('success');
-                ResetLeadData();
+                //alert('success');
+                //ResetLeadData();
+                if (result.length != 0) {
+                    alert("Phone Number Already Exits : \n" + result.toString().replaceAll(",", "\n"));
+                    ResetLeadData();
+                }
+                else {
+                    ResetLeadData();
+                    alert('Success');
+                }
 
             },
             error: function (result) {

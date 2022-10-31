@@ -13,7 +13,7 @@ using System.Web.Mvc;
 
 namespace ItsReviewApp.Controllers
 {
-  
+
     public class UserController : Controller
     {
 
@@ -85,28 +85,29 @@ namespace ItsReviewApp.Controllers
 
         }
 
-        [HttpGet]
+        [HttpPost]
         public JsonResult GetList()
         {
             List<UserViewModel> RoleList = new List<UserViewModel>();
-            try
+            var draw = Request.Form.GetValues("draw").FirstOrDefault();
+            var search = Request.Form.GetValues("search[value]").FirstOrDefault();
+            var start = Request.Form.GetValues("start").FirstOrDefault();
+            var length = Request.Form.GetValues("length").FirstOrDefault();
+            int pageSize = length != null ? Convert.ToInt32(length) : 0;
+            int skip = start != null ? Convert.ToInt32(start) : 0;
+            int recordsTotal = 0;
+            con.Open();
+            var parameters = new DynamicParameters();
+            parameters.Add("@skip", skip, DbType.String, ParameterDirection.Input);
+            parameters.Add("@search", search, DbType.String, ParameterDirection.Input);
+            parameters.Add("@PageSize", pageSize, DbType.String, ParameterDirection.Input);
+            parameters.Add("@Mode", 3, DbType.Int32, ParameterDirection.Input);
+            RoleList = con.Query<UserViewModel>("sp_User", parameters, commandType: CommandType.StoredProcedure).ToList();
+            if (RoleList.Count > 0)
             {
-                con.Open();
-                var parameters = new DynamicParameters();
-                parameters.Add("@Mode", 3, DbType.Int32, ParameterDirection.Input);
-                RoleList = con.Query<UserViewModel>("sp_User", parameters, commandType: CommandType.StoredProcedure).ToList();
-
+                recordsTotal = RoleList[0].TotalEmail;
             }
-            catch (Exception)
-            {
-                con.Close();
-                throw;
-            }
-            finally
-            {
-                con.Close();
-            }
-            return Json(RoleList, JsonRequestBehavior.AllowGet);
+            return Json(new { draw = draw, recordsFiltered = recordsTotal, recordsTotal = recordsTotal, data = RoleList }, JsonRequestBehavior.AllowGet);
         }
 
         public JsonResult GetPaltform()
@@ -362,7 +363,7 @@ namespace ItsReviewApp.Controllers
                             UserTrackingViewModel userTrackingViewModel = new UserTrackingViewModel();
                             List<UserTrackingViewModel> userTrackingViewModelList = new List<UserTrackingViewModel>();
                             userTrackingViewModel.EmailId = tmp.Rows[i][0].ToString();
-                            if(userTrackingViewModel.EmailId != null)
+                            if (userTrackingViewModel.EmailId != null)
                             {
                                 var parameters = new DynamicParameters();
                                 parameters.Add("@EmailId", userTrackingViewModel.EmailId, DbType.String, ParameterDirection.Input);
@@ -374,7 +375,7 @@ namespace ItsReviewApp.Controllers
                                     {
                                         UserId = userViewModel.Id;
                                         UserRegisterId = userViewModel.RegisterId;
-                                    }  
+                                    }
                                 }
                             }
                             userTrackingViewModel.UserId = UserId;
@@ -427,7 +428,7 @@ namespace ItsReviewApp.Controllers
         {
             var trackdata = (dynamic)null;
             var parameters = new DynamicParameters();
-           // int registerId = 0;
+            // int registerId = 0;
             if (Session["RegisterId"] != null)
             {
                 //registerId = Convert.ToInt32(Session["RegisterId"]);
@@ -491,17 +492,17 @@ namespace ItsReviewApp.Controllers
             parameters.Add("@Mode", 1, DbType.Int32, ParameterDirection.Input);
             using (IDbConnection connection = new SqlConnection(connectionString))
             {
-               var trackdata = connection.ExecuteScalar("sp_TrackingData", parameters, commandType: CommandType.StoredProcedure);
-               
+                var trackdata = connection.ExecuteScalar("sp_TrackingData", parameters, commandType: CommandType.StoredProcedure);
+
             }
-                return Json(0, JsonRequestBehavior.AllowGet);
+            return Json(0, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
         public ActionResult GetTrackUserData()
         {
             con.Open();
-            var registerId= Session["RegisterId"].ToString();
+            var registerId = Session["RegisterId"].ToString();
             var parameters = new DynamicParameters();
             parameters.Add("@RegisterId", registerId, DbType.String, ParameterDirection.Input);
             parameters.Add("@Mode", 2, DbType.Int32, ParameterDirection.Input);
