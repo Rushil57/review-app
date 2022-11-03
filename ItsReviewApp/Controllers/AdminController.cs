@@ -334,5 +334,27 @@ namespace ItsReviewApp.Controllers
             return RedirectToAction("UserReport", "Admin");
         }
 
+        [HttpGet]
+        public JsonResult GetRegisterList()
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@Mode", 10, DbType.Int32, ParameterDirection.Input);
+            con.Open();
+            var RegisterList = con.Query<RegisterViewModel>("sp_UserReport", parameters, commandType: CommandType.StoredProcedure);
+            con.Close();
+            return Json(RegisterList, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public JsonResult EditRegisterDetails(int Id)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@Id", Id, DbType.Int32, ParameterDirection.Input);
+            parameters.Add("@Mode", 11, DbType.Int32, ParameterDirection.Input);
+            con.Open();
+            var GetRegisterList = con.Query<RegisterViewModel>("sp_UserReport", parameters, commandType: CommandType.StoredProcedure);
+            con.Close();
+            return Json(GetRegisterList, JsonRequestBehavior.AllowGet);
+        }
     }
 }

@@ -123,7 +123,7 @@ namespace ItsReviewApp.Controllers
                             parameters.Add("@Mode", 6, DbType.Int32, ParameterDirection.Input);
                             parameters.Add("@CompanyId", companylist.Id, DbType.Int32, ParameterDirection.Input);
                             review = con.Query<WriterViewModel>("sp_User", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
-                            if (review != null)
+                            if (review != null && review.Id>0)
                             {
                                 UserTrackingViewModel objUserTrackingViewModel = new UserTrackingViewModel();
                                 objUserTrackingViewModel.CompanyId = companylist.Id.ToString();
@@ -152,7 +152,14 @@ namespace ItsReviewApp.Controllers
                             }
                             else
                             {
-                                emailresult = new { user = "", reviews = "reviewnotfound", company = "" };
+                                if(review != null && review.Id == 0)
+                                {
+                                    emailresult = new { user = "", reviews = "companylimited", company = "" };
+                                }
+                                else
+                                {
+                                    emailresult = new { user = "", reviews = "reviewnotfound", company = "" };
+                                }
                             }
                         }
                         else
@@ -217,7 +224,17 @@ namespace ItsReviewApp.Controllers
         [HttpPost]
         public ActionResult Create(RegisterViewModel userViewModel)
         {
+            var mode = 0;
+            if (userViewModel.Id == 0)
+            {
+                mode = 1;
+            }
+            else
+            {
+                mode = 4;
+            }
             var parameters = new DynamicParameters();
+            parameters.Add("@Id", userViewModel.Id, DbType.Int32, ParameterDirection.Input);
             parameters.Add("@Name", userViewModel.Name, DbType.String, ParameterDirection.Input);
             parameters.Add("@Address", userViewModel.Address, DbType.String, ParameterDirection.Input);
             parameters.Add("@PhoneNumber", userViewModel.PhoneNumber, DbType.String, ParameterDirection.Input);
@@ -225,13 +242,14 @@ namespace ItsReviewApp.Controllers
             parameters.Add("@EmailId", userViewModel.EmailId, DbType.String, ParameterDirection.Input);
             parameters.Add("@Password", userViewModel.Password, DbType.String, ParameterDirection.Input);
             parameters.Add("@Role", userViewModel.Role, DbType.String, ParameterDirection.Input);
-            parameters.Add("@Mode", 1, DbType.Int32, ParameterDirection.Input);
+            parameters.Add("@Mode", mode, DbType.Int32, ParameterDirection.Input);
             using (IDbConnection connection = new SqlConnection(connectionString))
             {
                 var register = connection.ExecuteScalar("sp_Register", parameters, commandType: CommandType.StoredProcedure);
                 connection.Close();
             }
             return RedirectToAction("Create", "Register");
+
         }
 
     }

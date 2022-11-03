@@ -172,6 +172,10 @@
                     $("label[for='suggestedemail']").text("Email limit exceed");
                     ResetData('emaillimitexceed');
                 }
+                else if (data.reviews == "companylimited") {
+                    $("label[for='suggestedemail']").text("company limited");
+                    ResetData('companylimited');
+                }
                 else if (data.user == "concurrencyissue") {
                     /*$("label[for='suggestedemail']").text("Concurrecy Issue");
                     ResetData('concurrencyissue');*/

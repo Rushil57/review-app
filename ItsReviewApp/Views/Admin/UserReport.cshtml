@@ -68,6 +68,7 @@
                 <li><a href="#tabs-6" id="tab6">User Track List</a></li>
                 <li><a href="#tabs-7" id="tab7">Writer</a></li>
                 <li><a href="#tabs-8" id="tab8">Sales</a></li>
+                <li><a href="#tabs-9" id="tab9">Register List</a></li>
             </ul>
             <div id="tabs-1">
                 <div class="row">
@@ -227,6 +228,18 @@
                     </table>
                 </div>
             </div>
+            <div id="tabs-9">
+                <table id="tblRegisterList" class="table table-bordered table-responsive">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>EmailId</th>
+                            <th>Password</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -257,6 +270,42 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" onclick="ResetEmailData()" data-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" onclick="UpdateUserData()" data-dismiss="modal">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="RegisterUpdateModal" tabindex="-1" role="dialog" aria-labelledby="RegisterModalLabel" aria-hidden="true" style="margin-top: 80px;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="RegisterModalLabel">Edit Register</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input type="hidden" class="form-control" id="Registerid">
+                    </div>
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input name='name' class='form-control' id="RegisterName" />
+                    </div>
+                    <div class="form-group">
+                        <label for="emailId">EmailId</label>
+                        <input name='emailId' class='form-control' id="RegisteremailId" />
+                    </div>
+                    <div class="form-group">
+                        <label for="password">password</label>
+                        <input name='password' class='form-control' id="Registerpassword" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="ResetRegisterData()" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="UpdateRegisterData()" data-dismiss="modal">Save changes</button>
                 </div>
             </div>
         </div>
@@ -496,9 +545,9 @@
     $("#tabs").on('click', '#tab7', function () {
         BindWriterUserTrackingReport();
     })
-    //$("#tabs").on('click', '#tab8', function () {
-    //    GetCompanyLeadList();
-    //})
+    $("#tabs").on('click', '#tab9', function () {
+        GetRegisterList();
+    })
 
     function BindUserEmail() {
         var register = $("#dropdownUserEmailId").val();
@@ -912,6 +961,87 @@
                 alert('failure');
             }
          });
+    }
+
+    function GetRegisterList() {
+         $.ajax({
+            url: "@Url.Action("GetRegisterList", "Admin")",
+            type: "GET",
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                $('#tblRegisterList').dataTable({
+                    destroy: true,
+                    data: data,
+                    "columns": [
+                        {"data": "Name"},
+                        {"data": "EmailId",},
+                        { "data": "Password" },
+                        {
+                            data: "Id",
+                            mRender: function (data, type, full) {
+                                return '<button type="button" class="btn btn-primary" onclick="GetRegisterDetails(' + data +')" data-toggle="modal" data-target="#RegisterUpdateModal">EDIT</button>'
+                            }
+                        },
+                    ]
+                });
+            }
+        })
+    }
+
+    function GetRegisterDetails(id) {
+         $.ajax({
+                url: "@Url.Action("EditRegisterDetails", "Admin")",
+                contentType: 'application/json',
+                data:{Id:id},
+                type: "GET",
+              success: function (result) {
+                  if (result != null)
+                  {
+                      $("#Registerid").val(result[0].Id);
+                      $("#RegisterName").val(result[0].Name);
+                      $("#RegisteremailId").val(result[0].EmailId);
+                      $("#Registerpassword").val(result[0].Password);
+                  }
+              },
+              error: function () {
+                  alert('failure');
+             }
+          });
+    }
+
+    function UpdateRegisterData() {
+        var id = $("#Registerid").val();
+        var name = $("#RegisterName").val();
+        var emailid = $("#RegisteremailId").val();
+        var password = $("#Registerpassword").val();
+
+        var writeobject = new Object();
+        writeobject.Id = id,
+            writeobject.Name = name,
+            writeobject.EmailId = emailid,
+            writeobject.Password = password;
+
+         $.ajax({
+              url: "@Url.Action("Create", "Register")",
+            contentType: 'application/json',
+            data: JSON.stringify(writeobject),
+            type: "POST",
+            success: function (result) {
+                alert('success');
+                GetRegisterList();
+                ResetRegisterData();
+            },
+             error: function (result) {
+                alert('failure');
+            }
+         });
+    }
+
+    function ResetRegisterData() {
+        $("#Registerid").val(0);
+        $("#RegisterName").val('');
+        $("#RegisteremailId").val('');
+        $("#Registerpassword").val('');
     }
 
 </script>
