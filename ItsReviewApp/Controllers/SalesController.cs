@@ -631,7 +631,7 @@ namespace ItsReviewApp.Controllers
                 new HttpStatusCodeResult(HttpStatusCode.OK);
             }
             var draw = Request.Form.GetValues("draw").FirstOrDefault();
-            var search = Request.Form.GetValues("search[value]").FirstOrDefault();
+            var search = Request.Form.GetValues("search[value]").FirstOrDefault().Trim();
             var start = Request.Form.GetValues("start").FirstOrDefault();
             var length = Request.Form.GetValues("length").FirstOrDefault();
 
@@ -692,14 +692,9 @@ namespace ItsReviewApp.Controllers
                 new HttpStatusCodeResult(HttpStatusCode.OK);
             }
             var draw = Request.Form.GetValues("draw").FirstOrDefault();
-            var search = Request.Form.GetValues("search[value]").FirstOrDefault();
+            var search = Request.Form.GetValues("search[value]").FirstOrDefault().Trim();
             var start = Request.Form.GetValues("start").FirstOrDefault();
             var length = Request.Form.GetValues("length").FirstOrDefault();
-            //Find Order Column
-            var sortColumn = Request.Form.GetValues("columns[" + Request.Form.GetValues("order[0][column]").FirstOrDefault() + "][name]").FirstOrDefault();
-            var sortColumnDir = Request.Form.GetValues("order[0][dir]").FirstOrDefault();
-
-
             int pageSize = length != null ? Convert.ToInt32(length) : 0;
             int skip = start != null ? Convert.ToInt32(start) : 0;
             int recordsTotal = 0;

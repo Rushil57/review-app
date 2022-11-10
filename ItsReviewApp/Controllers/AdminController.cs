@@ -80,6 +80,7 @@ namespace ItsReviewApp.Controllers
                     if (expected != null)
                     {
                         item.UseReview = expected.UseReview;
+                        item.TodayCount = expected.TodayCount;
                     }
                 }
             }
@@ -355,6 +356,34 @@ namespace ItsReviewApp.Controllers
             var GetRegisterList = con.Query<RegisterViewModel>("sp_UserReport", parameters, commandType: CommandType.StoredProcedure);
             con.Close();
             return Json(GetRegisterList, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public JsonResult GetSkipList(DateTime FromDate, DateTime ToDate)
+        {
+            var draw = Request.Form.GetValues("draw").FirstOrDefault();
+            var search = Request.Form.GetValues("search[value]").FirstOrDefault().Trim();
+            var start = Request.Form.GetValues("start").FirstOrDefault();
+            var length = Request.Form.GetValues("length").FirstOrDefault();
+
+
+            int pageSize = length != null ? Convert.ToInt32(length) : 0;
+            int skip = start != null ? Convert.ToInt32(start) : 0;
+            int recordsTotal = 0;
+            con.Open();
+            var parameters = new DynamicParameters();
+            parameters.Add("@skip", skip, DbType.String, ParameterDirection.Input);
+            parameters.Add("@search", search, DbType.String, ParameterDirection.Input);
+            parameters.Add("@PageSize", pageSize, DbType.String, ParameterDirection.Input);
+            parameters.Add("@FromDate", FromDate, DbType.DateTime, ParameterDirection.Input);
+            parameters.Add("@ToDate", ToDate, DbType.DateTime, ParameterDirection.Input);
+            parameters.Add("@Mode", 8, DbType.Int32, ParameterDirection.Input);
+            var userSkipListList = con.Query<UserTrackingViewModel>("sp_UserCompanyReport", parameters, commandType: CommandType.StoredProcedure).ToList();
+            if (userSkipListList.Count > 0)
+            {
+                recordsTotal = userSkipListList[0].usercount;
+            }
+            return Json(new { draw = draw, recordsFiltered = recordsTotal, recordsTotal = recordsTotal, data = userSkipListList }, JsonRequestBehavior.AllowGet);
         }
     }
 }

@@ -88,89 +88,95 @@ namespace ItsReviewApp.Controllers
                 parameters.Add("@trackOrderId", userTrackingViewModel.TrackOrder, DbType.Int32, ParameterDirection.Input);
                 parameters.Add("@Mode", 7, DbType.Int32, ParameterDirection.Input);
                 companylist = con.Query<SalesDetailsViewModel>("sp_User", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
-
-                parameters = new DynamicParameters();
-                parameters.Add("@trackOrderId", userTrackingViewModel.TrackOrder, DbType.Int32, ParameterDirection.Input);
-                parameters.Add("@CompanyId", companylist.Id, DbType.Int32, ParameterDirection.Input);
-                parameters.Add("@Mode", 10, DbType.Int32, ParameterDirection.Input);
-                //var status = await con.Query<SalesDetailsViewModel>("sp_User", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
-                var statusList = await con.QueryAsync<SalesDetailsViewModel>("sp_User", parameters, commandType: CommandType.StoredProcedure);
-                var status= statusList.FirstOrDefault();
-                if (status.ReviewsPerDay == "Work Completed")
+                if (companylist != null && companylist.Id > 0)
                 {
-                    emailresult = new { company = "WorkCompleted" };
-                    return Json(emailresult, JsonRequestBehavior.AllowGet);
-                }
-                else
-                {
-                    companylist.Id = status.Id;
-                    companylist.TrackOrder = status.TrackOrder;
-                    companylist.CompanyName = status.CompanyName;
-                    companylist.ListingUrl = status.ListingUrl;
-                    companylist.CityName = status.CityName;
-                    if (companylist != null)
+                    parameters = new DynamicParameters();
+                    parameters.Add("@trackOrderId", userTrackingViewModel.TrackOrder, DbType.Int32, ParameterDirection.Input);
+                    parameters.Add("@CompanyId", companylist.Id, DbType.Int32, ParameterDirection.Input);
+                    parameters.Add("@Mode", 10, DbType.Int32, ParameterDirection.Input);
+                    //var status = await con.Query<SalesDetailsViewModel>("sp_User", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
+                    var statusList = await con.QueryAsync<SalesDetailsViewModel>("sp_User", parameters, commandType: CommandType.StoredProcedure);
+                    var status= statusList.FirstOrDefault();
+                    if (status.ReviewsPerDay == "Work Completed")
                     {
-                        parameters = new DynamicParameters();
-                        parameters.Add("@CompanyId", companylist.Id, DbType.Int32, ParameterDirection.Input);
-                        parameters.Add("@RegisterId", registerId, DbType.Int32, ParameterDirection.Input);
-                        parameters.Add("@id", userTrackingViewModel.UserId, DbType.Int32, ParameterDirection.Input);
-                        parameters.Add("@Mode", 5, DbType.Int32, ParameterDirection.Input);
-                        var userlist1 = await con.QueryAsync<UserViewModel>("sp_User", parameters, commandType: CommandType.StoredProcedure);
-                        userlist = userlist1.FirstOrDefault();
-                        if (userlist != null && userlist.Error==false)
+                        emailresult = new { company = "WorkCompleted" };
+                        return Json(emailresult, JsonRequestBehavior.AllowGet);
+                    }
+                    else
+                    {
+                        companylist.Id = status.Id;
+                        companylist.TrackOrder = status.TrackOrder;
+                        companylist.CompanyName = status.CompanyName;
+                        companylist.ListingUrl = status.ListingUrl;
+                        companylist.CityName = status.CityName;
+                        if (companylist != null)
                         {
                             parameters = new DynamicParameters();
-                            parameters.Add("@Mode", 6, DbType.Int32, ParameterDirection.Input);
                             parameters.Add("@CompanyId", companylist.Id, DbType.Int32, ParameterDirection.Input);
-                            review = con.Query<WriterViewModel>("sp_User", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
-                            if (review != null && review.Id>0)
+                            parameters.Add("@RegisterId", registerId, DbType.Int32, ParameterDirection.Input);
+                            parameters.Add("@id", userTrackingViewModel.UserId, DbType.Int32, ParameterDirection.Input);
+                            parameters.Add("@Mode", 5, DbType.Int32, ParameterDirection.Input);
+                            var userlist1 = await con.QueryAsync<UserViewModel>("sp_User", parameters, commandType: CommandType.StoredProcedure);
+                            userlist = userlist1.FirstOrDefault();
+                            if (userlist != null && userlist.Error==false)
                             {
-                                UserTrackingViewModel objUserTrackingViewModel = new UserTrackingViewModel();
-                                objUserTrackingViewModel.CompanyId = companylist.Id.ToString();
-                                objUserTrackingViewModel.WriterId = review.Id.ToString();
-                                objUserTrackingViewModel.EmailId = userlist.EmailId;
-                                objUserTrackingViewModel.RegisterId = registerId.ToString();
-                                objUserTrackingViewModel.UserId = userlist.Id;
-                                objUserTrackingViewModel.TrackOrder = companylist.TrackOrder;
-                                SaveTrackingData(ref objUserTrackingViewModel);
                                 parameters = new DynamicParameters();
+                                parameters.Add("@Mode", 6, DbType.Int32, ParameterDirection.Input);
                                 parameters.Add("@CompanyId", companylist.Id, DbType.Int32, ParameterDirection.Input);
-                                parameters.Add("@@WriterId", review.Id, DbType.Int32, ParameterDirection.Input);
-                                parameters.Add("@Mode", 12, DbType.Int32, ParameterDirection.Input);
-                                var Companyvalidation = con.Query<bool>("sp_User", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
-                                if(Companyvalidation)
+                                review = con.Query<WriterViewModel>("sp_User", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
+                                if (review != null && review.Id>0)
                                 {
-                                    emailresult = new { user = "concurrencyissue", reviews = "", company = "", userTrack = "" };
+                                    UserTrackingViewModel objUserTrackingViewModel = new UserTrackingViewModel();
+                                    objUserTrackingViewModel.CompanyId = companylist.Id.ToString();
+                                    objUserTrackingViewModel.WriterId = review.Id.ToString();
+                                    objUserTrackingViewModel.EmailId = userlist.EmailId;
+                                    objUserTrackingViewModel.RegisterId = registerId.ToString();
+                                    objUserTrackingViewModel.UserId = userlist.Id;
+                                    objUserTrackingViewModel.TrackOrder = companylist.TrackOrder;
+                                    SaveTrackingData(ref objUserTrackingViewModel);
+                                    parameters = new DynamicParameters();
+                                    parameters.Add("@CompanyId", companylist.Id, DbType.Int32, ParameterDirection.Input);
+                                    parameters.Add("@@WriterId", review.Id, DbType.Int32, ParameterDirection.Input);
+                                    parameters.Add("@Mode", 12, DbType.Int32, ParameterDirection.Input);
+                                    var Companyvalidation = con.Query<bool>("sp_User", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
+                                    if(Companyvalidation)
+                                    {
+                                        emailresult = new { user = "concurrencyissue", reviews = "", company = "", userTrack = "" };
+                                    }
+                                    else
+                                    {
+                                        userlist.RegisterId = Convert.ToString(registerId);
+                                        emailresult = new { user = userlist, reviews = review, company = companylist, userTrack = objUserTrackingViewModel };
+                                    }
+
+                                    //emailflag = 1;
                                 }
                                 else
                                 {
-                                    userlist.RegisterId = Convert.ToString(registerId);
-                                    emailresult = new { user = userlist, reviews = review, company = companylist, userTrack = objUserTrackingViewModel };
+                                    if(review != null && review.Id == 0)
+                                    {
+                                        emailresult = new { user = "", reviews = "companylimited", company = "" };
+                                    }
+                                    else
+                                    {
+                                        emailresult = new { user = "", reviews = "reviewnotfound", company = "" };
+                                    }
                                 }
-                                
-                                //emailflag = 1;
                             }
                             else
                             {
-                                if(review != null && review.Id == 0)
-                                {
-                                    emailresult = new { user = "", reviews = "companylimited", company = "" };
-                                }
-                                else
-                                {
-                                    emailresult = new { user = "", reviews = "reviewnotfound", company = "" };
-                                }
+                                emailresult = new { user = "emailnotfound", reviews = "", company = "" };
                             }
                         }
                         else
                         {
-                            emailresult = new { user = "emailnotfound", reviews = "", company = "" };
+                            emailresult = new { user = "nocontent", reviews = "", company = "" };
                         }
                     }
-                    else
-                    {
-                        emailresult = new { user = "nocontent", reviews = "", company = "" };
-                    }
+                }
+                else
+                {
+                    emailresult = new { user = "", reviews = "companylimited", company = "" };
                 }
             }
             catch (Exception ex)
