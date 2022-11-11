@@ -125,6 +125,7 @@
                         <th style="Width:16%;">Bussiness Type</th>
                         @*<th style="Width:30%;">Remarks</th>*@
                         <th style="Width:14%;">City</th>
+                        <th>Listing Url</th>
                         <th style="Width:5%;">Action</th>
                         @*<th></th>*@
                     </tr>
@@ -523,19 +524,20 @@
                             { "data": "ClientName"},
                             { "data": "PhoneNumber"},
                             { "data": "BussinessType"},
-                            //{
-                            //    "data": "Remarks",
-                            //    "render": function (data, type, row) {
-                            //        if (data != null) {
-                            //            var Remarks = data.length > 50 ? data.substring(0, 50) + "..." : data;
-                            //            return "<span title='" + data + "'>" + Remarks + "</span>";
-                            //        }
-                            //        else {
-                            //            return "<span></span>";
-                            //        }
-                            //    }
-                            //},
-                            { "data": "City"},
+                            { "data": "City" },
+                            {
+                                "data": "LeadListingUrl",
+                                "render": function (data, type, row) {
+                                    if (data != null) {
+                                        var listingurl = (data.length > 30) ? data.substring(0, 30) + '...' : data;
+                                        return '<a href=' + data + ' target="_blank">' + listingurl + '</a>'
+                                    }
+                                    else {
+                                        return '<a></a>'
+                                    }
+                                    
+                                }
+                            },
                             {
                                 "data": "Id",
                                 "autoWidth": true,

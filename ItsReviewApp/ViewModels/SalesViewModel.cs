@@ -49,6 +49,7 @@ namespace ItsReviewApp.ViewModels
         public bool Active { get; set; }
 
         public string Type { get; set; }
+        public string LeadListingUrl { get; set; }
 
         public DateTime? CreationDate { get; set; }
         public DateTime? ModifiedDate { get; set; }

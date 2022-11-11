@@ -104,6 +104,7 @@ namespace ItsReviewApp.Controllers
                 parameters.Add("@Active", salesViewModel.Active, DbType.Boolean, ParameterDirection.Input);
                 parameters.Add("@BussinessType", salesViewModel.BussinessType, DbType.String, ParameterDirection.Input);
                 parameters.Add("@City", salesViewModel.City, DbType.String, ParameterDirection.Input);
+                parameters.Add("@LeadListingUrl", salesViewModel.LeadListingUrl, DbType.String, ParameterDirection.Input);
                 parameters.Add("@Mode", mode, DbType.Int32, ParameterDirection.Input);
                 using (IDbConnection connection = new SqlConnection(connectionString))
                 {
@@ -546,6 +547,7 @@ namespace ItsReviewApp.Controllers
                             salesViewModel.PhoneNumber = tmp.Rows[i][1].ToString().Trim();
                             salesViewModel.City = tmp.Rows[i][2].ToString().Trim();
                             salesViewModel.BussinessType = tmp.Rows[i][3].ToString().Trim();
+                            salesViewModel.LeadListingUrl = tmp.Rows[i][4].ToString().Trim();
                             salesViewModel.RegisterId = RegisterId;
                             salesViewModel.Type = "Excel";
                             salesViewModel.Active = false;
