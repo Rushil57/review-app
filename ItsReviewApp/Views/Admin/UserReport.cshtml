@@ -1095,8 +1095,9 @@
                     "autoWidth": true,
                     "searchable": true,
                     "render": function (data, type, row) {
-                        const dateValue = new Date(parseInt(data.substr(6)));
-                        return moment(dateValue).format('DD/MM/YYYY HH:mm');
+                        var date = new Date(parseInt(data.substr(6)));
+                        var datetime = date.toLocaleTimeString();
+                        return date.toISOString().split('T')[0] + " " + date.toISOString().split('T')[1].split('.')[0];
                     }
                 },
                 {
