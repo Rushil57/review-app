@@ -563,6 +563,9 @@
     $("#tabs").on('click', '#tab7', function () {
         BindWriterUserTrackingReport();
     })
+    $("#tabs").on('click', '#tab8', function () {
+        GetCompanyLeadList();
+    })
     $("#tabs").on('click', '#tab9', function () {
         GetRegisterList();
     })
@@ -879,6 +882,8 @@
             type: "GET",
             dataType: "json",
             success: function (data) {
+                var opt = new Option("All", '0');
+                $(".cls-Sales-dropdown").append(opt);
                 $.each(data, function (index, item) {
                     var opt = new Option(item.Name, item.Id);
                     $(".cls-Sales-dropdown").append(opt);
