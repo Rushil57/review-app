@@ -29,11 +29,11 @@
         padding-left: 3px;
     }
 </style>
-<div class="container-fluid">
-    <div class="header">
+@*<div class="">*@
+    @*<div class="header">
         <h5 style="color:#fff;margin-right: 40px;">ItsReview App</h5>
-    </div>
-    <div class="" style="margin: 30px 20px;">
+    </div>*@
+    @*<div class="" style="margin: 30px 20px;">*@
         <div class="row form-group">
             <div class="col-md-2">
                 <label for="date">From Date:</label>
@@ -56,7 +56,7 @@
         </div>
         <div class="row form-group">
             <button onclick="GetUserReport()" style="margin-left:15px;" class="btn btn-primary">Report Generate</button>
-            <a href="/Register/Create" style="float: right; margin-right: 20px;" class="forgot-pass fw-bold btn btn-primary">Sign Up</a>
+            <a href="/Register/Create" style=" position: absolute; right: 3%;" class="forgot-pass fw-bold btn btn-primary">Sign Up</a>
         </div>
         <div id="tabs">
             <ul>
@@ -256,7 +256,7 @@
                 </table>
             </div>
         </div>
-    </div>
+    @*</div>*@
 
 
     <div class="modal fade" id="EmailUpdateModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="margin-top: 80px;">
@@ -325,7 +325,7 @@
             </div>
         </div>
     </div>
-</div>
+@*</div>*@
 
 
 <script type="text/javascript">
@@ -1131,5 +1131,4 @@
             ]
         });
     }
-
 </script>

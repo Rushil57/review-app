@@ -11,9 +11,10 @@
         }
     </style>
 </head>
-<div class="container" style="width:95%">
-    @*<a class="btn btn-primary" id="CreateNewLead" type="button">Create Lead</a>*@
-    <div id="tabs" style="margin-top:10px;">
+@*<div class="container" style="width:95%">*@
+    @*<button type="submit" class="btn btn-primary" id="Logout" style="position: absolute; right: 4%; top: 20px;" onclick="LogOut()">Log Out</button>
+        <a class="btn btn-primary" id="CreateNewLead" href="#" onclick="LogOut()" style="position: absolute; right: 4%; top: 20px;">Logout</a>*@
+    <div id="tabs">
         <ul>
             <li><a href="#tabs-3" id="tab3">Customer List</a></li>
             <li><a href="#tabs-7" id="tab7">New Lead</a></li>
@@ -23,15 +24,18 @@
             <li><a href="#tabs-6">Excel Upload</a></li>
         </ul>
         <div id="tabs-2">
-            <div style="padding-top:30px;">
+            <div>
                 <input type="hidden" class="form-control" value="0" id="LeadId" />
+                <div class="form-group">
+                    <a class="btn btn-primary" style="color: #fff;" id="companyURL">Company URL</a>
+                </div>
                 <div class="form-group">
                     <label for="clientName">Client Name</label>
                     <input type="text" class="form-control" placeholder="Please Enter Client Name" id="ClientName">
                 </div>
                 <div class="form-group">
                     <label for="phoneNumber">Phone Number</label>
-                    <input type="number" class="form-control" placeholder="Please Enter Phone Number" id="PhoneNumber"  maxlength="10" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" onfocusout='PhoneNumberValidation(this)' />
+                    <input type="number" class="form-control" placeholder="Please Enter Phone Number" id="PhoneNumber" maxlength="10" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" onfocusout='PhoneNumberValidation(this)' />
                 </div>
                 <div class="form-group">
                     <label for="bussinessType">Bussiness Type</label>
@@ -66,13 +70,12 @@
             <table id="SalesList" class="table table-bordered table-responsive" style="width: 100%;">
                 <thead>
                     <tr>
-                        <th style="Width:20%;">ClientName</th>
-                        <th style="Width:15%;">Phone Number</th>
-                        @*<th style="Width:16%;">Bussiness Type</th>*@
-                        <th style="Width:30%;">Remarks</th>
-                        @*<th style="Width:14%;">City</th>*@
-                        <th style="Width:5%;">Action</th>
-                        @*<th></th>*@
+                        <th style="width:23%">Company Name</th>
+                        <th style="width:10%">City</th>
+                        <th style="width:11%">PhoneNumber</th>
+                        <th style="width:23%">Client Name</th>
+                        <th style="width:23%">Remarks</th>
+                        <th style="width:10%">Action</th>
                     </tr>
                 </thead>
             </table>
@@ -113,7 +116,7 @@
             <div class="form-group">
                 <label for="ExcelUpload">Upload File</label>
                 <input type="file" id="files" name="files" /><br />
-                <input type="button" id="excelupload" value="Upload" class="btn btn-primary btn-md btn-sm"/>
+                <input type="button" id="excelupload" value="Upload" class="btn btn-primary btn-md btn-sm" />
             </div>
         </div>
         <div id="tabs-7">
@@ -133,7 +136,7 @@
             </table>
         </div>
     </div>
-</div>
+@*</div>*@
 
 
 <script type="text/javascript">
@@ -373,7 +376,21 @@
             },
             "columns": [
                 {
-                    "data": "ClientName",
+                    "data": "CompanyName",
+                    "autoWidth": true,
+                    "searchable": true,
+                    "render": function (data, type, row) {
+                        if (data != null) {
+                            var CompanyName = data.length > 30 ? data.substring(0, 30) + "..." : data;
+                            return "<span title='" + data + "'>" + CompanyName + "</span>";
+                        }
+                        else {
+                            return "<span></span>";
+                        }
+                    }
+                },
+                {
+                    "data": "CityName",
                     "autoWidth": true,
                     "searchable": true
                 },
@@ -381,6 +398,20 @@
                     "data": "PhoneNumber",
                     "autoWidth": true,
                     "searchable": true
+                },
+                {
+                    "data": "ClientName",
+                    "autoWidth": true,
+                    "searchable": true,
+                    "render": function (data, type, row) {
+                        if (data != null) {
+                            var ClientName = data.length > 30 ? data.substring(0, 30) + "..." : data;
+                            return "<span title='" + data + "'>" + ClientName + "</span>";
+                        }
+                        else {
+                            return "<span></span>";
+                        }
+                    }
                 },
                 //{
                 //    "data": "BussinessType",
@@ -393,7 +424,7 @@
                     "searchable": true,
                     "render": function (data, type, row) {
                         if (data != null) {
-                            var Remarks = data.length > 50 ? data.substring(0, 50) + "..." : data;
+                            var Remarks = data.length > 30 ? data.substring(0, 30) + "..." : data;
                             return "<span title='" + data + "'>" + Remarks + "</span>";
                         }
                         else {
@@ -411,7 +442,8 @@
                     "data": "Id",
                     "autoWidth": true,
                     "render": function (data, type, row) {
-                        return '<a class="btn btn-primary" style="color: white;" onclick="Openleaddata(' + data +')">Open</a>';
+                        return '<a class="btn btn-primary" style="color: white;" data-id=' + data + ' data-url=' + row.ListingUrl + ' onclick="Openleaddata(this)">Open</a>';
+                        /*return '<a class="btn btn-primary" style="color: white;" onclick="Openleaddata("' + data + '","' + row.ListingUrl +'")">Open</a>';*/
                     }
                 },
                 //{
@@ -467,7 +499,7 @@
                             "data": "Id",
                             "autoWidth": true,
                             "render": function (data, type, row) {
-                                return '<a class="btn btn-primary" style="color: white;" onclick="Openleaddata(' + data + ')">Open</a>';
+                                return '<a class="btn btn-primary" style="color: white;" data-id=' + data + ' data-url=' + row.LeadListingUrl +' onclick="Openleaddata(this)">Open</a>';
                             }
                         }
                     ]
@@ -481,7 +513,8 @@
         $('[href="#tabs-2"]').click();
     });
 
-     function Openleaddata(id) {
+    function Openleaddata(row) {
+        var id = $(row).attr("data-id");
         $.ajax({
             url: "@Url.Action("GetLeadDataById", "Sales")",
             contentType: 'application/json',
@@ -489,6 +522,15 @@
             type: "GET",
             success: function (data) {
                 if (data != null) {
+                    var url = $(row).attr("data-url");
+                    if (url != "null") {
+                        $("#companyURL").attr("Target", "_blank");
+                        $("#companyURL").attr("href", url);
+                    }
+                    else {
+                        $("#companyURL").attr("Target", "");
+                        $("#companyURL").attr("href", "#");
+                    }
                     $("#ClientName").val(data.ClientName);
                     $("#PhoneNumber").val(data.PhoneNumber);
                     $("#BussinessType").val(data.BussinessType);
@@ -535,14 +577,15 @@
                                     else {
                                         return '<a></a>'
                                     }
-                                    
+
                                 }
                             },
                             {
                                 "data": "Id",
                                 "autoWidth": true,
                                 "render": function (data, type, row) {
-                                    return '<a class="btn btn-primary" style="color: white;" onclick="Openleaddata(' + data + ')">Open</a>';
+                                    return '<a class="btn btn-primary" style="color: white;" data-id=' + data + ' data-url=' + row.LeadListingUrl + ' onclick="Openleaddata(this)">Open</a>';
+                                    /*return '<a class="btn btn-primary" style="color: white;" onclick="Openleaddata("' + data + '","' + row.LeadListingUrl +'")">Open</a>';*/
                                 }
                             }
                         ]
@@ -580,7 +623,19 @@
                 }
             });
     }
+     function LogOut() {
+      
+        $.ajax({
+            url: "@Url.Action("Logout", "User")",
+            type: "GET",
+            dataType: "json",
+            success: function (data) {
 
+            }
+        })
+         var url = '@Url.Action("Login", "Login")';
+                  window.location.href = url;
+    }
 
 
 </script>
