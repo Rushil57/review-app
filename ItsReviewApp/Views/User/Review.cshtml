@@ -181,6 +181,14 @@
                     ResetData('concurrencyissue');
                     //BindEmailId();
                 }
+                else if (data.reviews == "emailperdaylimitexceed") {
+                    $("label[for='suggestedemail']").text("Email Per Day Limit Exceed.");
+                    ResetData('emailperdaylimitexceed');
+                }
+                else if (data.reviews == "useremailnotfoundforcompany") {
+                    $("label[for='suggestedemail']").text("User email not found for company.");
+                    ResetData('useremailnotfoundforcompany');
+                }
                 else {
                     $("label[for='suggestedemail']").text(data.user.EmailId);
                     $("#hdnreview").val(data.reviews.ReviewName);

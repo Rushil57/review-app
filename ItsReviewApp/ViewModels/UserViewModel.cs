@@ -22,6 +22,7 @@ namespace ItsReviewApp.ViewModels
         public bool Error { get; set; }
 
         public int TotalEmail { get; set; }
+        public string Status { get; set; }
     }
 
     public class UserDetailsViewModel

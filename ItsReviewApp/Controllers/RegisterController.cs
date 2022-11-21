@@ -73,17 +73,6 @@ namespace ItsReviewApp.Controllers
                 parameters.Add("@Mode", 8, DbType.Int32, ParameterDirection.Input);
                 userTrackingViewModel = con.Query<UserTrackingViewModel>("sp_User", parameters, commandType: CommandType.StoredProcedure).FirstOrDefault();
 
-                //if (OrderTrackingId > 0)
-                //{
-                //    userTrackingViewModel.TrackOrder = OrderTrackingId;
-                //    OrderTrackingId = 0;
-                //}
-
-                //if (userId > -1)
-                //{
-                //    userTrackingViewModel.UserId = userId.ToString();
-                //    userId = -1;
-                //}
                 parameters = new DynamicParameters();
                 parameters.Add("@trackOrderId", userTrackingViewModel.TrackOrder, DbType.Int32, ParameterDirection.Input);
                 parameters.Add("@Mode", 7, DbType.Int32, ParameterDirection.Input);
@@ -172,7 +161,18 @@ namespace ItsReviewApp.Controllers
                             }
                             else
                             {
-                                emailresult = new { user = "emailnotfound", reviews = "", company = "" };
+                                if(userlist!=null && userlist.Status== "emailnotfound")
+                                {
+                                    emailresult = new { user = "", reviews = "useremailnotfoundforcompany", company = "" };
+                                }
+                                if (userlist != null && userlist.Status == "perdayemaillimitexceed")
+                                {
+                                    emailresult = new { user = "", reviews = "emailperdaylimitexceed", company = "" };
+                                }
+                                else
+                                {
+                                    emailresult = new { user = "emailnotfound", reviews = "", company = "" };
+                                }
                             }
                         }
                         else
