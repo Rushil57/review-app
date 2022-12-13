@@ -55,9 +55,9 @@ namespace ItsReviewApp.Controllers
             List<SelectListItem> Niche = new List<SelectListItem>() {
             new SelectListItem {Text = "Select Niche", Value = "0"},
             new SelectListItem {Text = "Packers Movers", Value = "1"},
-            new SelectListItem {Text = "Niche 1", Value = "2"},
-            new SelectListItem {Text = "Niche 2", Value = "3"},
-            new SelectListItem {Text = "Niche 3", Value = "4"},
+            new SelectListItem {Text = "Restaurant", Value = "2"},
+            new SelectListItem {Text = "spa", Value = "3"},
+            new SelectListItem {Text = "bakery", Value = "4"},
             new SelectListItem {Text = "Niche 4", Value = "5"},
             new SelectListItem {Text = "Niche 5", Value = "6"},};
             ViewBag.Niche = Niche;
@@ -301,9 +301,9 @@ namespace ItsReviewApp.Controllers
             List<SelectListItem> Niche = new List<SelectListItem>() {
             new SelectListItem {Text = "Select Niche", Value = "0"},
             new SelectListItem {Text = "Packers Movers", Value = "1"},
-            new SelectListItem {Text = "Niche 1", Value = "2"},
-            new SelectListItem {Text = "Niche 2", Value = "3"},
-            new SelectListItem {Text = "Niche 3", Value = "4"},
+            new SelectListItem {Text = "Restaurant", Value = "2"},
+            new SelectListItem {Text = "spa", Value = "3"},
+            new SelectListItem {Text = "bakery", Value = "4"},
             new SelectListItem {Text = "Niche 4", Value = "5"},
             new SelectListItem {Text = "Niche 5", Value = "6"},};
             return Json(Niche, JsonRequestBehavior.AllowGet);
@@ -340,7 +340,8 @@ namespace ItsReviewApp.Controllers
             new SelectListItem {Text = "Select Paltform", Value = "0"},
             new SelectListItem {Text = "Google", Value = "1"},
             new SelectListItem {Text = "TripAdvisor", Value = "2"},
-            new SelectListItem {Text = "FaceBook", Value = "3"},};
+            new SelectListItem {Text = "FaceBook", Value = "3"},
+            new SelectListItem { Text = "zomato", Value = "4" },};
             return Json(palform, JsonRequestBehavior.AllowGet);
         }
 

@@ -42,7 +42,8 @@ namespace ItsReviewApp.Controllers
             new SelectListItem {Text = "Select Paltform", Value = "0"},
             new SelectListItem {Text = "Google", Value = "1"},
             new SelectListItem {Text = "TripAdvisor", Value = "2"},
-            new SelectListItem {Text = "FaceBook", Value = "3"},};
+            new SelectListItem {Text = "FaceBook", Value = "3"},
+            new SelectListItem { Text = "zomato", Value = "4" },};
             return Json(palform, JsonRequestBehavior.AllowGet);
         }
 

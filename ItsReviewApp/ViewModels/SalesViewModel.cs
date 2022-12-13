@@ -53,7 +53,7 @@ namespace ItsReviewApp.ViewModels
 
         public DateTime? CreationDate { get; set; }
         public DateTime? ModifiedDate { get; set; }
-        //public string City { get; set; }
+        public string SalesName { get; set; }
         //public string Keywords { get; set; }
         //public string FoodName { get; set; }
         //public string TreatmentName { get; set; }
