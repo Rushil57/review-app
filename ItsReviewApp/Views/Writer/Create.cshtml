@@ -311,6 +311,10 @@
         var companyId = $("#drpCompanyId").val();
         var fileUpload = $("#files").get(0);
         var files = fileUpload.files;
+        if (files.length == 0) {
+            alert("Please Upload a file");
+            return
+        }
         var fileData = new FormData();
         fileData.append('companyId', companyId);
         for (var i = 0; i < files.length; i++) {

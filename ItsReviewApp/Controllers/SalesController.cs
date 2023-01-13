@@ -738,5 +738,72 @@ namespace ItsReviewApp.Controllers
             return Json(newleadList, JsonRequestBehavior.AllowGet);
 
         }
+
+        public JsonResult DeleteLeadData(int id)
+        {
+            con.Open();
+            var parameters = new DynamicParameters();
+            parameters.Add("@id", id, DbType.String, ParameterDirection.Input);
+            parameters.Add("@Mode", 11, DbType.Int32, ParameterDirection.Input);
+            var DeleteLead = con.ExecuteScalar("sp_Sales", parameters, commandType: CommandType.StoredProcedure);
+            con.Close();
+            return Json(DeleteLead, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult DeleteFollowUp(int id)
+        {
+            con.Open();
+            var parameters = new DynamicParameters();
+            parameters.Add("@id", id, DbType.String, ParameterDirection.Input);
+            parameters.Add("@Mode", 12, DbType.Int32, ParameterDirection.Input);
+            var DeleteFollowUp = con.ExecuteScalar("sp_Sales", parameters, commandType: CommandType.StoredProcedure);
+            con.Close();
+            return Json(DeleteFollowUp, JsonRequestBehavior.AllowGet);
+        }
+
+
+        public JsonResult DeleteGbp(int id)
+        {
+            con.Open();
+            var parameters = new DynamicParameters();
+            parameters.Add("@id", id, DbType.String, ParameterDirection.Input);
+            parameters.Add("@Mode", 13, DbType.Int32, ParameterDirection.Input);
+            var DeleteGbp = con.ExecuteScalar("sp_Sales", parameters, commandType: CommandType.StoredProcedure);
+            con.Close();
+            return Json(DeleteGbp, JsonRequestBehavior.AllowGet);
+        }
+
+
+        public JsonResult DeleteCustomer(int id)
+        {
+            con.Open();
+            var parameters = new DynamicParameters();
+            parameters.Add("@id", id, DbType.String, ParameterDirection.Input);
+            parameters.Add("@Mode", 14, DbType.Int32, ParameterDirection.Input);
+            var DeleteGbp = con.ExecuteScalar("sp_Sales", parameters, commandType: CommandType.StoredProcedure);
+            con.Close();
+            return Json(DeleteGbp, JsonRequestBehavior.AllowGet);
+        }
+
+        public void DeleteMutipleCustomer(List<int> CustomerIds)
+        {
+            foreach (var Id in CustomerIds)
+            {
+                try
+                {
+                    con.Open();
+                    var parameters = new DynamicParameters();
+                    parameters.Add("@id", Id, DbType.String, ParameterDirection.Input);
+                    parameters.Add("@Mode", 14, DbType.Int32, ParameterDirection.Input);
+                    var DeleteCustomer = con.ExecuteScalar("sp_Sales", parameters, commandType: CommandType.StoredProcedure);
+                    con.Close();
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+
+            }
+        }
     }
 }

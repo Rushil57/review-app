@@ -109,7 +109,7 @@ namespace ItsReviewApp.Controllers
                             var userlist1 = await con.QueryAsync<UserViewModel>("sp_User", parameters, commandType: CommandType.StoredProcedure);
                             userlist = userlist1.FirstOrDefault();
                             if (userlist != null && userlist.Error==false)
-                            {
+                            {   
                                 parameters = new DynamicParameters();
                                 parameters.Add("@Mode", 6, DbType.Int32, ParameterDirection.Input);
                                 parameters.Add("@CompanyId", companylist.Id, DbType.Int32, ParameterDirection.Input);

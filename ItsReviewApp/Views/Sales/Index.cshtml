@@ -12,130 +12,137 @@
     </style>
 </head>
 @*<div class="container" style="width:95%">*@
-    @*<button type="submit" class="btn btn-primary" id="Logout" style="position: absolute; right: 4%; top: 20px;" onclick="LogOut()">Log Out</button>
-        <a class="btn btn-primary" id="CreateNewLead" href="#" onclick="LogOut()" style="position: absolute; right: 4%; top: 20px;">Logout</a>*@
-    <div id="tabs">
-        <ul>
-            <li><a href="#tabs-3" id="tab3">Customer List</a></li>
-            <li><a href="#tabs-7" id="tab7">New Lead</a></li>
-            <li><a href="#tabs-5" id="tab5">Follow Up List</a></li>
-            <li><a href="#tabs-4" id="tab4">GBP List</a></li>
-            <li><a href="#tabs-2" id="tab2">Create Lead</a></li>
-            <li><a href="#tabs-6">Excel Upload</a></li>
-        </ul>
-        <div id="tabs-2">
-            <div>
-                <input type="hidden" class="form-control" value="0" id="LeadId" />
-                <div class="form-group">
-                    <a class="btn btn-primary" style="color: #fff;" id="companyURL">Company URL</a>
-                </div>
-                <div class="form-group">
-                    <label for="clientName">Client Name</label>
-                    <input type="text" class="form-control" placeholder="Please Enter Client Name" id="ClientName">
-                </div>
-                <div class="form-group">
-                    <label for="phoneNumber">Phone Number</label>
-                    <input type="number" class="form-control" placeholder="Please Enter Phone Number" id="PhoneNumber" maxlength="10" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" onfocusout='PhoneNumberValidation(this)' />
-                </div>
-                <div class="form-group">
-                    <label for="bussinessType">Bussiness Type</label>
-                    <input type="text" class="form-control" placeholder="Please Enter Bussiness Type" id="BussinessType">
-                </div>
-                <div class="form-group">
-                    <label for="city">City</label>
-                    <input type="text" class="form-control" placeholder="Please Enter City" id="City">
-                </div>
-                <div class="form-group">
-                    <label for="remarks">Remarks</label>
-                    <textarea rows="5" cols="3" id="Remarks" class="form-control" placeholder="Please Enter Remarks"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="date">FollowUp Date</label>
-                    <div class='input-group date followupDate'>
-                        <input type='text' class="form-control" id="followupdate" placeholder="Please Select Date" />
-                        <span class="input-group-addon">
-                            <span class="glyphicon glyphicon-calendar"></span>
-                        </span>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <input type="checkbox" class="form-check-input" id="followupcheck" checked>
-                    <label class="form-check-label" for="followupcheck">Save to FollowUp List</label>
-                </div>
-                <button type="submit" class="btn btn-primary" id="btnsaveLead">Save</button>
-                <a class="btn btn-primary" id="CreateLeaddataId" style="color: white;">Open</a>
-            </div>
-        </div>
-        <div id="tabs-3">
-            <table id="SalesList" class="table table-bordered table-responsive" style="width: 100%;">
-                <thead>
-                    <tr>
-                        <th style="width:23%">Company Name</th>
-                        <th style="width:10%">City</th>
-                        <th style="width:11%">PhoneNumber</th>
-                        <th style="width:23%">Client Name</th>
-                        <th style="width:23%">Remarks</th>
-                        <th style="width:10%">Action</th>
-                    </tr>
-                </thead>
-            </table>
-        </div>
-        <div id="tabs-4">
-            <table id="SalesActiveList" class="table table-bordered table-responsive" style="width: 100%">
-                <thead>
-                    <tr>
-                        <th style="Width:20%;">Phone Number</th>
-                        <th style="Width:40%;">Company Name</th>
-                        <th style="Width:15%;">City Name</th>
-                        <th style="Width:15%;">Listing Url</th>
-                        <th style="Width:5%;">Rev/Day</th>
-                        <th style="Width:5%;">Action</th>
-                    </tr>
-                </thead>
-            </table>
-        </div>
-        <div id="tabs-5">
-            <table id="salesFollwUpList" class="table table-bordered table-responsive" style="width: 100%">
-                <thead>
-                    <tr>
-                        <th style="Width:20%;">Client Name</th>
-                        <th style="Width: 18%;">Phone Number</th>
-                        <th style="Width:17%;">FollowUp Date</th>
-                        <th style="Width:40%;">Remarks</th>
-                        <th style="Width:5%;">Action</th>
-                    </tr>
-                </thead>
-            </table>
-        </div>
-        <div id="tabs-6">
+@*<button type="submit" class="btn btn-primary" id="Logout" style="position: absolute; right: 4%; top: 20px;" onclick="LogOut()">Log Out</button>
+    <a class="btn btn-primary" id="CreateNewLead" href="#" onclick="LogOut()" style="position: absolute; right: 4%; top: 20px;">Logout</a>*@
+<div id="tabs">
+    <ul>
+        <li><a href="#tabs-3" id="tab3">Customer List</a></li>
+        <li><a href="#tabs-7" id="tab7">New Lead</a></li>
+        <li><a href="#tabs-5" id="tab5">Follow Up List</a></li>
+        <li><a href="#tabs-4" id="tab4">GBP List</a></li>
+        <li><a href="#tabs-2" id="tab2">Create Lead</a></li>
+        <li><a href="#tabs-6">Excel Upload</a></li>
+    </ul>
+    <div id="tabs-2">
+        <div>
+            <input type="hidden" class="form-control" value="0" id="LeadId" />
             <div class="form-group">
-                <label for="Name">Select Client Name</label>
-                @Html.DropDownList("Name", (IEnumerable<SelectListItem>)ViewBag.Client, "-- Select Client --", new { @class = "form-control clientname" })
+                <a class="btn btn-primary" style="color: #fff;" id="companyURL">Company URL</a>
             </div>
-
             <div class="form-group">
-                <label for="ExcelUpload">Upload File</label>
-                <input type="file" id="files" name="files" /><br />
-                <input type="button" id="excelupload" value="Upload" class="btn btn-primary btn-md btn-sm" />
+                <label for="clientName">Client Name</label>
+                <input type="text" class="form-control" placeholder="Please Enter Client Name" id="ClientName">
             </div>
-        </div>
-        <div id="tabs-7">
-            <table id="NewLead" class="table table-bordered table-responsive" style="width: 100%;">
-                <thead>
-                    <tr>
-                        <th style="Width:20%;">ClientName</th>
-                        <th style="Width:15%;">Phone Number</th>
-                        <th style="Width:16%;">Bussiness Type</th>
-                        @*<th style="Width:30%;">Remarks</th>*@
-                        <th style="Width:14%;">City</th>
-                        <th>Listing Url</th>
-                        <th style="Width:5%;">Action</th>
-                        @*<th></th>*@
-                    </tr>
-                </thead>
-            </table>
+            <div class="form-group">
+                <label for="phoneNumber">Phone Number</label>
+                <input type="number" class="form-control" placeholder="Please Enter Phone Number" id="PhoneNumber" maxlength="10" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" onfocusout='PhoneNumberValidation(this)' />
+            </div>
+            <div class="form-group">
+                <label for="bussinessType">Bussiness Type</label>
+                <input type="text" class="form-control" placeholder="Please Enter Bussiness Type" id="BussinessType">
+            </div>
+            <div class="form-group">
+                <label for="city">City</label>
+                <input type="text" class="form-control" placeholder="Please Enter City" id="City">
+            </div>
+            <div class="form-group">
+                <label for="remarks">Remarks</label>
+                <textarea rows="5" cols="3" id="Remarks" class="form-control" placeholder="Please Enter Remarks"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="date">FollowUp Date</label>
+                <div class='input-group date followupDate'>
+                    <input type='text' class="form-control" id="followupdate" placeholder="Please Select Date" />
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="checkbox" class="form-check-input" id="followupcheck" checked>
+                <label class="form-check-label" for="followupcheck">Save to FollowUp List</label>
+            </div>
+            <button type="submit" class="btn btn-primary" id="btnsaveLead">Save</button>
+            <a class="btn btn-primary" id="CreateLeaddataId" style="color: white;">Open</a>
         </div>
     </div>
+    <div id="tabs-3">
+        <button type="button" class="btn btn-danger" onclick="DeleteMultipleCustomer()">Delete</button>
+        <table id="SalesList" class="table table-bordered table-responsive" style="width: 100%;">
+            <thead>
+                <tr>
+                    <th>
+                        <input type="checkbox" id="MultipleChecked" onchange="MultipleCheckboxIschecked()">
+                    </th>
+                    <th style="width:23%">Company Name</th>
+                    <th style="width:10%">City</th>
+                    <th style="width:11%">PhoneNumber</th>
+                    <th style="width:23%">Client Name</th>
+                    <th style="width:23%">Remarks</th>
+                    <th style="width:5%">Action</th>
+                    @*<th style="width:5%">Action</th>*@
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div id="tabs-4">
+        <table id="SalesActiveList" class="table table-bordered table-responsive" style="width: 100%">
+            <thead>
+                <tr>
+                    <th style="Width:20%;">Phone Number</th>
+                    <th style="Width:40%;">Company Name</th>
+                    <th style="Width:15%;">City Name</th>
+                    <th style="Width:15%;">Listing Url</th>
+                    <th style="Width:5%;">Rev/Day</th>
+                    <th style="Width:2%;">Action</th>
+                    <th style="Width:5%;">Action</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div id="tabs-5">
+        <table id="salesFollwUpList" class="table table-bordered table-responsive" style="width: 100%">
+            <thead>
+                <tr>
+                    <th style="Width:20%;">Client Name</th>
+                    <th style="Width: 18%;">Phone Number</th>
+                    <th style="Width:17%;">FollowUp Date</th>
+                    <th style="Width:40%;">Remarks</th>
+                    <th style="Width:2%;">Action</th>
+                    <th style="Width:5%;">Action</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div id="tabs-6">
+        <div class="form-group">
+            <label for="Name">Select Client Name</label>
+            @Html.DropDownList("Name", (IEnumerable<SelectListItem>)ViewBag.Client, "-- Select Client --", new { @class = "form-control clientname" })
+        </div>
+
+        <div class="form-group">
+            <label for="ExcelUpload">Upload File</label>
+            <input type="file" id="files" name="files" /><br />
+            <input type="button" id="excelupload" value="Upload" class="btn btn-primary btn-md btn-sm" />
+        </div>
+    </div>
+    <div id="tabs-7">
+        <table id="NewLead" class="table table-bordered table-responsive" style="width: 100%;">
+            <thead>
+                <tr>
+                    <th style="Width:20%;">ClientName</th>
+                    <th style="Width:15%;">Phone Number</th>
+                    <th style="Width:16%;">Bussiness Type</th>
+                    @*<th style="Width:30%;">Remarks</th>*@
+                    <th style="Width:14%;">City</th>
+                    <th>Listing Url</th>
+                    <th style="Width:5%;">Action</th>
+                    <th></th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
 @*</div>*@
 
 
@@ -356,13 +363,20 @@
                         return '<a class="btn btn-primary" style="color: white;" href="Create/Id?=' + data + '";>Edit</a>';
                     }
                 },
+                {
+                    "data": "SalesdetailId",
+                    "autoWidth": true,
+                    "render": function (data, type, row) {
+                        return '<a class="btn btn-danger" style="color: white;" onclick="DeleteGbpList('+ data +')">Delete</a>';
+                    }
+                }
             ],
         });
     }
 
-
+  
     function BindLead() {
-        $('#SalesList').DataTable({
+       $('#SalesList').DataTable({
             destroy: true,
             "processing": true,
             "serverSide": true,
@@ -375,6 +389,17 @@
                 "datatype": "json"
             },
             "columns": [
+                {
+                    "searchable": false,
+                    "orderable": false,
+                    "data": "Id",
+                    "render": function (data, type, row) {
+                        if (data != null) {
+                            $('#MultipleChecked').prop('checked', false);
+                            return "<input type='checkbox' id='" + data + "' class='CheckBoxButton'>";
+                        }
+                    }
+                },
                 {
                     "data": "CompanyName",
                     "autoWidth": true,
@@ -453,11 +478,12 @@
                 //     }
                 //},
                 //{
-                //    "data": "id",
+                //    "data": "Id",
                 //    mRender: function (data, type, full) {
-               //        return '<button type="button" class="btn btn-danger" onclick="DeleteLeadData(' + data + ')">Delete</button>'
-                    // }
-                  //}
+                //        return '<button type="button" class="btn btn-danger" onclick="DeleteCustomerData(' + data + ')">Delete</button>'
+                //}
+                //}
+
             ],
         });
     }
@@ -500,6 +526,13 @@
                             "autoWidth": true,
                             "render": function (data, type, row) {
                                 return '<a class="btn btn-primary" style="color: white;" data-id=' + data + ' data-url=' + row.LeadListingUrl +' onclick="Openleaddata(this)">Open</a>';
+                            }
+                        },
+                        {
+                            "data": "Id",
+                            "autoWidth": true,
+                            "render": function (data, type, row) {
+                                return '<a class="btn btn-danger" style="color: white;" onclick="DeleteFollowUpList(' + data + ')">Delete</a>';
                             }
                         }
                     ]
@@ -587,6 +620,13 @@
                                     return '<a class="btn btn-primary" style="color: white;" data-id=' + data + ' data-url=' + row.LeadListingUrl + ' onclick="Openleaddata(this)">Open</a>';
                                     /*return '<a class="btn btn-primary" style="color: white;" onclick="Openleaddata("' + data + '","' + row.LeadListingUrl +'")">Open</a>';*/
                                 }
+                            },
+                            {
+                                "data": "Id",
+                                "autoWidth": true,
+                                "render": function (data, type, row) {
+                                    return '<a class="btn btn-danger" style="color: white;" onclick="DeleteLead(' + data + ')">Delete</a>';
+                                }
                             }
                         ]
                     });
@@ -624,7 +664,7 @@
             });
     }
      function LogOut() {
-      
+
         $.ajax({
             url: "@Url.Action("Logout", "User")",
             type: "GET",
@@ -637,5 +677,121 @@
                   window.location.href = url;
     }
 
+    function DeleteLead(id) {
+       /*if (confirm('Are you sure want to delete lead?')) {*/
+            $.ajax({
+                url: "@Url.Action("DeleteLeadData", "Sales")",
+                contentType: 'application/json',
+                data: { id: id},
+                type: "GET",
+                success: function (result) {
+                    /* alert('Delete Successully!');*/
+                    /*alert(result)*/
+                    BindEmptyFollowUp();
+                },
+                error: function () {
+                    alert('failure');
+                }
+            });
+        //}
+        //else {
+        //    return;
+        //}
+    }
 
+    function DeleteFollowUpList(id) {
+        /*if (confirm('Are you sure want to delete follow up?')) {*/
+            $.ajax({
+                url: "@Url.Action("DeleteFollowUp", "Sales")",
+                contentType: 'application/json',
+                data: { id: id},
+                type: "GET",
+                success: function (result) {
+                    /* alert('Delete Successully!');*/
+                   /* alert(result)*/
+                    BindFollwUp();
+                },
+                error: function () {
+                    alert('failure');
+                }
+            });
+        //}
+    }
+
+    function DeleteGbpList(id) {
+         if (confirm('Are you sure want to delete list?')) {
+            $.ajax({
+                url: "@Url.Action("DeleteGbp", "Sales")",
+                contentType: 'application/json',
+                data: { id: id},
+                type: "GET",
+                success: function (result) {
+                    alert(result)
+                    BindSalesActiveList();
+                },
+                error: function () {
+                    alert('failure');
+                }
+            });
+        }
+    }
+
+    function DeleteCustomerData(id) {
+         /*if (confirm('Are you sure want to delete Customer list?')) {*/
+            $.ajax({
+                url: "@Url.Action("DeleteCustomer", "Sales")",
+                contentType: 'application/json',
+                data: { id: id},
+                type: "GET",
+                success: function (result) {
+                    /*alert(result)*/
+                    BindLead();
+                },
+                error: function () {
+                    alert('failure');
+                }
+            });
+        /*}*/
+    }
+
+    function DeleteMultipleCustomer() {
+        var CheckBoxchecked = {};
+        CheckBoxchecked.CheckedId = [];
+        $("input:checkbox.CheckBoxButton").each(function () {
+            var $this = $(this);
+            if ($this.is(":checked")) {
+                CheckBoxchecked.CheckedId.push($this.attr("Id"));
+            }
+            
+        });
+        console.log(CheckBoxchecked.CheckedId);
+        if (CheckBoxchecked.CheckedId == 0) {
+            alert("Please check any customer")
+            return
+        }
+        $.ajax({
+          url: "@Url.Action("DeleteMutipleCustomer", "Sales")",
+          contentType: 'application/json',
+            data: JSON.stringify(CheckBoxchecked.CheckedId),
+            type: "POST",
+            success: function (result) {
+                $('#MultipleChecked').prop('checked', false);
+                BindLead();
+          },
+          error: function () {
+              alert('failure');
+          }
+        });
+    }
+
+    function MultipleCheckboxIschecked()
+    {
+        var deletecheck = $('#MultipleChecked').is(':checked');
+        if (deletecheck == true) {
+            $('.CheckBoxButton').prop('checked', true);
+        }
+        else {
+            $('.CheckBoxButton').prop('checked', false);
+        }
+    }
 </script>
