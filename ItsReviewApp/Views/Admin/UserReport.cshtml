@@ -30,301 +30,329 @@
     }
 </style>
 @*<div class="">*@
-    @*<div class="header">
+@*<div class="header">
         <h5 style="color:#fff;margin-right: 40px;">ItsReview App</h5>
     </div>*@
-    @*<div class="" style="margin: 30px 20px;">*@
-        <div class="row form-group">
-            <div class="col-md-2">
-                <label for="date">From Date:</label>
-                <div class='input-group date fromtodate'>
-                    <input type='text' class="form-control" id="txtFromDate" />
-                    <span class="input-group-addon">
-                        <span class="glyphicon glyphicon-calendar"></span>
-                    </span>
-                </div>
-            </div>
-            <div class="col-md-2">
-                <label for="date">To Date:</label>
-                <div class='input-group date fromtodate'>
-                    <input type='text' class="form-control" id="txtToDate" />
-                    <span class="input-group-addon">
-                        <span class="glyphicon glyphicon-calendar"></span>
-                    </span>
-                </div>
+@*<div class="" style="margin: 30px 20px;">*@
+<div class="row form-group">
+    <div class="col-md-2">
+        <label for="date">From Date:</label>
+        <div class='input-group date fromtodate'>
+            <input type='text' class="form-control" id="txtFromDate" />
+            <span class="input-group-addon">
+                <span class="glyphicon glyphicon-calendar"></span>
+            </span>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <label for="date">To Date:</label>
+        <div class='input-group date fromtodate'>
+            <input type='text' class="form-control" id="txtToDate" />
+            <span class="input-group-addon">
+                <span class="glyphicon glyphicon-calendar"></span>
+            </span>
+        </div>
+    </div>
+</div>
+<div class="row form-group">
+    <button onclick="GetUserReport()" style="margin-left:15px;" class="btn btn-primary">Report Generate</button>
+    <a href="/Register/Create" style=" position: absolute; right: 3%;" class="forgot-pass fw-bold btn btn-primary">Sign Up</a>
+</div>
+<div id="tabs">
+    <ul>
+        <li><a href="#tabs-1" id="tab1">User</a></li>
+        <li><a href="#tabs-2" id="tab2">ReviewPerDay</a></li>
+        <li><a href="#tabs-3" id="tab3">UserWork</a></li>
+        <li><a href="#tabs-4" id="tab4">Company</a></li>
+        <li><a href="#tabs-5" id="tab5">EmailList</a></li>
+        <li><a href="#tabs-6" id="tab6">UserTrackList</a></li>
+        <li><a href="#tabs-7" id="tab7">Writer</a></li>
+        <li><a href="#tabs-8" id="tab8">Sales</a></li>
+        <li><a href="#tabs-9" id="tab9">RegisterList</a></li>
+        <li><a href="#tabs-10" id="tab10">Skip</a></li>
+        <li><a href="#tabs-11" id="tab11">GbpInActive</a></li>
+    </ul>
+    <div id="tabs-1">
+        <div class="row">
+            <div>
+                Review Count:
+                <label id="lblCount"></label>
             </div>
         </div>
-        <div class="row form-group">
-            <button onclick="GetUserReport()" style="margin-left:15px;" class="btn btn-primary">Report Generate</button>
-            <a href="/Register/Create" style=" position: absolute; right: 3%;" class="forgot-pass fw-bold btn btn-primary">Sign Up</a>
+        <div class="form-group">
+            <table id="tblUserReport" class="table table-bordered table-responsive">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email Id</th>
+                        <th>Review</th>
+                    </tr>
+                </thead>
+            </table>
         </div>
-        <div id="tabs">
-            <ul>
-                <li><a href="#tabs-1" id="tab1">User Report</a></li>
-                <li><a href="#tabs-2" id="tab2">ReviewPerDay Report</a></li>
-                <li><a href="#tabs-3" id="tab3">UserWork Report</a></li>
-                <li><a href="#tabs-4" id="tab4">Company Report</a></li>
-                <li><a href="#tabs-5" id="tab5">EmailList</a></li>
-                <li><a href="#tabs-6" id="tab6">UserTrackList</a></li>
-                <li><a href="#tabs-7" id="tab7">Writer</a></li>
-                <li><a href="#tabs-8" id="tab8">Sales</a></li>
-                <li><a href="#tabs-9" id="tab9">RegisterList</a></li>
-                <li><a href="#tabs-10" id="tab10">Skip</a></li>
-            </ul>
-            <div id="tabs-1">
-                <div class="row">
-                    <div>
-                        Review Count:
-                        <label id="lblCount"></label>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <table id="tblUserReport" class="table table-bordered table-responsive">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Email Id</th>
-                                <th>Review</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
+    </div>
+    <div id="tabs-2">
+        <div class="form-group">
+            <table id="tblReviewPerDayReport" class="table table-bordered table-responsive">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Expected Review</th>
+                        <th>Posted Review</th>
+                        <th>Current Review</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+    <div id="tabs-3">
+        <div class="row col-md-12 form-group">
+            <div class="col-md-3">
+                <select class="form-control select2 cls-User-dropdown" onchange="BindUserWorkReport()" id="dropdownUser" name="dropdownUser"></select>
             </div>
-            <div id="tabs-2">
-                <div class="form-group">
-                    <table id="tblReviewPerDayReport" class="table table-bordered table-responsive">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Expected Review</th>
-                                <th>Posted Review</th>
-                                <th>Current Review</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
-            </div>
-            <div id="tabs-3">
-                <div class="row col-md-12 form-group">
-                    <div class="col-md-3">
-                        <select class="form-control select2 cls-User-dropdown" onchange="BindUserWorkReport()" id="dropdownUser" name="dropdownUser"></select>
-                    </div>
-                </div>
-                <div>
-                    <table id="tblUserWorkReport" class="table table-bordered table-responsive">
-                        <thead>
-                            <tr>
-                                <th>Review Date</th>
-                                <th>User Name</th>
-                                <th>User Email</th>
-                                <th>Company Name</th>
-                                <th>Company Url</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
-            </div>
-            <div id="tabs-4">
+        </div>
+        <div>
+            <table id="tblUserWorkReport" class="table table-bordered table-responsive">
+                <thead>
+                    <tr>
+                        <th>Review Date</th>
+                        <th>User Name</th>
+                        <th>User Email</th>
+                        <th>Company Name</th>
+                        <th>Company Url</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+    <div id="tabs-4">
 
-                <div class="row col-md-12 form-group">
-                    <div class="col-md-4">
-                        <select class="form-control select2" onchange="BindCompanyReport()" id="dropdownCompanyId" name="dropdownCompanyId"></select>
-                    </div>
-                    <div class="col-md-2">
-                        <a id="companyUrlId" style="color: #fff;" class="btn btn-primary" target="_blank">Company Url</a>
-                    </div>
-                </div>
-                <div>
-                    <table id="tblCompanyReport" class="table table-bordered table-responsive">
-                        <thead>
-                            <tr>
-                                <th>Review Date</th>
-                                <th>User Name</th>
-                                <th>User Email</th>
-                                <th>Company Name</th>
-                                <th>Register Name</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
+        <div class="row col-md-12 form-group">
+            <div class="col-md-4">
+                <select class="form-control select2" onchange="BindCompanyReport()" id="dropdownCompanyId" name="dropdownCompanyId"></select>
             </div>
-            <div id="tabs-5">
-                <div class="row col-md-12 form-group">
-                    <div class="col-md-4">
-                        <select class="form-control select2 cls-User-dropdown" onchange="BindUserEmail()" id="dropdownUserEmailId" name="dropdownUserEmailName"></select>
-                    </div>
-                </div>
-                <div>
-                    <table id="tblUserEmail" class="table table-bordered table-responsive">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>EmailId</th>
-                                <th></th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
+            <div class="col-md-2">
+                <a id="companyUrlId" style="color: #fff;" class="btn btn-primary" target="_blank">Company Url</a>
             </div>
-            <div id="tabs-6">
-                <div>
-                    <table id="tblUserTracking" class="table table-bordered table-responsive">
-                        <thead>
-                            <tr>
-                                <th>Created Date</th>
-                                <th>Company Name</th>
-                                <th>ReviewName</th>
-                                <th>Company URL</th>
-                                <th>Register Name</th>
-                                <th>User Name</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
+        </div>
+        <div>
+            <table id="tblCompanyReport" class="table table-bordered table-responsive">
+                <thead>
+                    <tr>
+                        <th>Review Date</th>
+                        <th>User Name</th>
+                        <th>User Email</th>
+                        <th>Company Name</th>
+                        <th>Register Name</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+    <div id="tabs-5">
+        <div class="row col-md-12 form-group">
+            <div class="col-md-4">
+                <select class="form-control select2 cls-User-dropdown" onchange="BindUserEmail()" id="dropdownUserEmailId" name="dropdownUserEmailName"></select>
             </div>
-            <div id="tabs-7">
-                @*<div class="row">
+        </div>
+        <div>
+            <table id="tblUserEmail" class="table table-bordered table-responsive">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>EmailId</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+    <div id="tabs-6">
+        <div>
+            <table id="tblUserTracking" class="table table-bordered table-responsive">
+                <thead>
+                    <tr>
+                        <th>Created Date</th>
+                        <th>Company Name</th>
+                        <th>ReviewName</th>
+                        <th>Company URL</th>
+                        <th>Register Name</th>
+                        <th>User Name</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+    <div id="tabs-7">
+        @*<div class="row">
                 <label>Review Per Day Count:</label>
                 <label id="lblReviewPerDayCount"></label>
             </div>*@
-                <div class="row col-md-12 form-group">
-                    <div class="col-md-3">
-                        <select class="form-control select2" onchange="BindWriterUserTrackingReport()" id="dropdownWriterUser" name="dropdownWriterUser"></select>
-                    </div>
-                </div>
-                <div>
-                    <label>Review Count:</label>
-                    <label id="lblReviewCount"></label>
-                    <table id="tblWriterUserWorkReport" class="table table-bordered table-responsive">
-                        <thead>
-                            <tr>
-                                <th>Review Date</th>
-                                <th>Register Name</th>
-                                <th>Company Name</th>
-                                <th>Review Name</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
-            </div>
-            <div id="tabs-8">
-                <div>
-                    <div class="row col-md-12 form-group">
-                        <div class="col-md-3">
-                            <select class="form-control select2 cls-Sales-dropdown" onchange="GetCompanyLeadList()" id="dropdownSalesList" name="dropdownSalesList"></select>
-                        </div>
-                    </div>
-                    <table id="tblSalesList" class="table table-bordered table-responsive">
-                        <thead>
-                            <tr>
-                                <th>Modified Date</th>
-                                <th>Created Date</th>
-                                <th>Sales Name</th>
-                                <th>PhoneNumber</th>
-                                <th>CompanyName</th>
-                                <th>CityName</th>
-                                <th>ReviewsPerDay</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
-            </div>
-            <div id="tabs-9">
-                <table id="tblRegisterList" class="table table-bordered table-responsive">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>EmailId</th>
-                            <th>Password</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                </table>
-            </div>
-            <div id="tabs-10">
-                <table id="tblSkipList" class="table table-bordered table-responsive">
-                    <thead>
-                        <tr>
-                            <th>Created Date</th>
-                            <th>Company Name</th>
-                            <th>ReviewName</th>
-                            <th>Register Name</th>
-                            <th>User Name</th>
-                        </tr>
-                    </thead>
-                </table>
+        <div class="row col-md-12 form-group">
+            <div class="col-md-3">
+                <select class="form-control select2" onchange="BindWriterUserTrackingReport()" id="dropdownWriterUser" name="dropdownWriterUser"></select>
             </div>
         </div>
-    @*</div>*@
-
-
-    <div class="modal fade" id="EmailUpdateModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="margin-top: 80px;">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Edit Category</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-
-                <div class="modal-body">
-                    <div class="form-group">
-                        <input type="hidden" class="form-control" id="Userid">
-                    </div>
-                    <div class="form-group">
-                        <label for="emailId">EmailId</label>
-                        <input name='emailId' class='form-control' id="emailId" readonly />
-                    </div>
-                    <div class="form-group">
-                        <label for="category">category</label>
-                        <select data-placeholder="Select Category" class="form-control multipleselect dropdownCategory" id="dropdownCategory" name="dropdownCategory" multiple="multiple"></select>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="ResetEmailData()" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" onclick="UpdateUserData()" data-dismiss="modal">Save changes</button>
+        <div>
+            <label>Review Count:</label>
+            <label id="lblReviewCount"></label>
+            <table id="tblWriterUserWorkReport" class="table table-bordered table-responsive">
+                <thead>
+                    <tr>
+                        <th>Review Date</th>
+                        <th>Register Name</th>
+                        <th>Company Name</th>
+                        <th>Review Name</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+    <div id="tabs-8">
+        <div>
+            <div class="row col-md-12 form-group">
+                <div class="col-md-3">
+                    <select class="form-control select2 cls-Sales-dropdown" onchange="GetCompanyLeadList()" id="dropdownSalesList" name="dropdownSalesList"></select>
                 </div>
             </div>
+            <table id="tblSalesList" class="table table-bordered table-responsive">
+                <thead>
+                    <tr>
+                        <th>Modified Date</th>
+                        <th>Created Date</th>
+                        <th>Sales Name</th>
+                        <th>PhoneNumber</th>
+                        <th>CompanyName</th>
+                        <th>CityName</th>
+                        <th>ReviewsPerDay</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+    <div id="tabs-9">
+        <table id="tblRegisterList" class="table table-bordered table-responsive">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>EmailId</th>
+                    <th>Password</th>
+                    <th></th>
+                    @*<th></th>*@
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div id="tabs-10">
+        <table id="tblSkipList" class="table table-bordered table-responsive">
+            <thead>
+                <tr>
+                    <th>Created Date</th>
+                    <th>Company Name</th>
+                    <th>ReviewName</th>
+                    <th>Register Name</th>
+                    <th>User Name</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div id="tabs-11">
+        <div>
+            <div class="row col-md-12 form-group">
+                <div class="col-md-3">
+                    <select class="form-control select2 cls-Sales-dropdown" id="SalesList" name="dropdownSalesList" onchange="GetGbpList()"></select>
+                </div>
+            </div>
+            <button type="button" class="btn btn-danger" onclick="DeleteMultipleGbpData()" style="margin-left: 1.5%;">Delete</button>
+            <table id="tblGbpList" class="table table-bordered table-responsive">
+                <thead>
+                    <tr>
+                        <th>
+                            <input type="checkbox" id="MultipleChecked" onchange="MultipleCheckboxIschecked()">
+                        </th>
+                        <th>Phone Number</th>
+                        <th>Company Name</th>
+                        <th>City Name</th>
+                        <th>ReviewPerDay</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+            </table>
         </div>
     </div>
 
+</div>
+@*</div>*@
 
-    <div class="modal fade" id="RegisterUpdateModal" tabindex="-1" role="dialog" aria-labelledby="RegisterModalLabel" aria-hidden="true" style="margin-top: 80px;">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="RegisterModalLabel">Edit Register</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
 
-                <div class="modal-body">
-                    <div class="form-group">
-                        <input type="hidden" class="form-control" id="Registerid">
-                    </div>
-                    <div class="form-group">
-                        <label for="name">Name</label>
-                        <input name='name' class='form-control' id="RegisterName" />
-                    </div>
-                    <div class="form-group">
-                        <label for="emailId">EmailId</label>
-                        <input name='emailId' class='form-control' id="RegisteremailId" />
-                    </div>
-                    <div class="form-group">
-                        <label for="password">password</label>
-                        <input name='password' class='form-control' id="Registerpassword" />
-                    </div>
+<div class="modal fade" id="EmailUpdateModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="margin-top: 80px;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Edit Category</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="hidden" class="form-control" id="Userid">
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="ResetRegisterData()" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" onclick="UpdateRegisterData()" data-dismiss="modal">Save changes</button>
+                <div class="form-group">
+                    <label for="emailId">EmailId</label>
+                    <input name='emailId' class='form-control' id="emailId" readonly />
                 </div>
+                <div class="form-group">
+                    <label for="category">category</label>
+                    <select data-placeholder="Select Category" class="form-control multipleselect dropdownCategory" id="dropdownCategory" name="dropdownCategory" multiple="multiple"></select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="ResetEmailData()" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="UpdateUserData()" data-dismiss="modal">Save changes</button>
             </div>
         </div>
     </div>
+</div>
+
+
+<div class="modal fade" id="RegisterUpdateModal" tabindex="-1" role="dialog" aria-labelledby="RegisterModalLabel" aria-hidden="true" style="margin-top: 80px;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="RegisterModalLabel">Edit Register</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="form-group">
+                    <input type="hidden" class="form-control" id="Registerid">
+                </div>
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input name='name' class='form-control' id="RegisterName" />
+                </div>
+                <div class="form-group">
+                    <label for="emailId">EmailId</label>
+                    <input name='emailId' class='form-control' id="RegisteremailId" />
+                </div>
+                <div class="form-group">
+                    <label for="password">password</label>
+                    <input name='password' class='form-control' id="Registerpassword" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="ResetRegisterData()" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="UpdateRegisterData()" data-dismiss="modal">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
 @*</div>*@
 
 
@@ -571,6 +599,9 @@
     })
     $("#tabs").on('click', '#tab10', function () {
         BindSkipList();
+    })
+    $("#tabs").on('click', '#tab11', function () {
+        GetGbpList();
     })
 
     function BindUserEmail() {
@@ -1009,6 +1040,12 @@
                                 return '<button type="button" class="btn btn-primary" onclick="GetRegisterDetails(' + data +')" data-toggle="modal" data-target="#RegisterUpdateModal">EDIT</button>'
                             }
                         },
+                        //{
+                        //    data: "Id",
+                        //    mRender: function (data, type, full) {
+                        //        return '<button type="button" class="btn btn-danger" onclick="DeleteRegisterdata(' + data + ')" >Delete</button>'
+                        //    }
+                        //},
                     ]
                 });
             }
@@ -1136,4 +1173,153 @@
             ]
         });
     }
+
+    function DeleteRegisterdata(id) {
+        if (confirm('Are you sure want to delete?')) {
+            $.ajax({
+                url: "@Url.Action("DeleteRegisterData", "Admin")",
+                contentType: 'application/json',
+                data: { id: id},
+                type: "GET",
+                success: function (result) {
+                    alert("Deleted")
+                    GetRegisterList();
+                },
+                error: function () {
+                    alert('failure');
+                }
+            });
+        }
+    }
+
+    function GetGbpList() {
+        var register = $("#SalesList").val();
+         $.ajax({
+            url: "@Url.Action("GetGbpList", "Admin")",
+             type: "GET",
+             data: { registerId: register },
+            contentType: 'application/json; charset=utf-8',
+            success: function (data) {
+                $('#tblGbpList').dataTable({
+                    destroy: true,
+                    data: data,
+                    pageLength: 50,
+                    "columns": [
+                        {
+                            "searchable": false,
+                            "orderable": false,
+                            "data": "SalesdetailId",
+                            "render": function (data, type, row) {
+                                if (data != null) {
+                                    $('#MultipleChecked').prop('checked', false);
+                                    return "<input type='checkbox' id='" + data + "' class='CheckBoxButton'>";
+                                   // return "<div class='form-check'><input class='form-check-input' type='checkbox' id='flexCheckDefault' /></div>"
+                                }
+                            }
+                        },
+                        { "data": "PhoneNumber"},
+                        { "data": "CompanyName",},
+                        { "data": "CityName", },
+                        { "data": "ReviewsPerDay", },
+                        {
+                           "data": "SalesdetailId",
+                           "autoWidth": true,
+                           "render": function (data, type, row) {
+                                return '<a class="btn btn-danger" style="color: white;" onclick="DeleteGbp(' + data + ')">Delete</a>';
+                            }
+                        },
+                        {
+                            "data": "SalesdetailId",
+                            "autoWidth": true,
+                            "render": function (data, type, row) {
+                                return '<a class="btn btn-info" onclick="RestoreGbpList(' + data + ')">Restore</a>';
+                            }
+                        }
+                    ]
+                });
+            }
+        })
+    }
+
+    function DeleteGbp(id) {
+         if (confirm('Are you sure want to delete list?')) {
+            $.ajax({
+                url: "@Url.Action("DeleteGbp", "Admin")",
+                contentType: 'application/json',
+                data: { id: id},
+                type: "GET",
+                success: function (result) {
+                    alert(result)
+                    GetGbpList();
+                },
+                error: function () {
+                    alert('failure');
+                }
+            });
+         }
+    }
+
+    function RestoreGbpList(id) {
+        if (confirm('Are you sure want to Restore list?')) {
+            $.ajax({
+                url: "@Url.Action("RestoreGbp", "Admin")",
+                contentType: 'application/json',
+                data: { id: id},
+                type: "GET",
+                success: function (result) {
+                    alert("Restore Succesfully!")
+                    GetGbpList();
+                },
+                error: function () {
+                    alert('failure');
+                }
+            });
+        }
+    }
+
+     function DeleteMultipleGbpData() {
+        var CheckBoxchecked = {};
+        CheckBoxchecked.CheckedId = [];
+        $("input:checkbox.CheckBoxButton").each(function () {
+            var $this = $(this);
+            if ($this.is(":checked")) {
+                CheckBoxchecked.CheckedId.push($this.attr("Id"));
+            }
+
+        });
+        console.log(CheckBoxchecked.CheckedId);
+        if (CheckBoxchecked.CheckedId == 0) {
+            alert("Please check any company")
+            return
+        }
+        $.ajax({
+          url: "@Url.Action("DeleteMutipleGbpList", "Admin")",
+          contentType: 'application/json',
+            data: JSON.stringify(CheckBoxchecked.CheckedId),
+            type: "POST",
+            success: function (result) {
+                $('#MultipleChecked').prop('checked', false);
+                alert(result);
+                GetGbpList();
+          },
+          error: function () {
+              alert('failure');
+          }
+        });
+    }
+
+    function MultipleCheckboxIschecked() {
+        var deletecheck = $('#MultipleChecked').is(':checked');
+        if (deletecheck == true) {
+            $('.CheckBoxButton').prop('checked', true);
+        }
+        else {
+            $('.CheckBoxButton').prop('checked', false);
+        }
+    }
+
+    $(document).on('click', '.page-link', function () {
+        $('#MultipleChecked').prop('checked', false);
+        $('.CheckBoxButton').prop('checked', false);
+    })
 </script>

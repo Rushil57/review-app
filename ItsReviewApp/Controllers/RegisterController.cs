@@ -123,6 +123,7 @@ namespace ItsReviewApp.Controllers
                                     objUserTrackingViewModel.RegisterId = registerId.ToString();
                                     objUserTrackingViewModel.UserId = userlist.Id;
                                     objUserTrackingViewModel.TrackOrder = companylist.TrackOrder;
+                                    objUserTrackingViewModel.FirstName = userlist.FirstName;
                                     SaveTrackingData(ref objUserTrackingViewModel);
                                     if (objUserTrackingViewModel.Status == "FALSE")
                                     {
@@ -210,6 +211,7 @@ namespace ItsReviewApp.Controllers
             parameters.Add("@UserId", userTrackingViewModel.UserId, DbType.String, ParameterDirection.Input);
             parameters.Add("@Status", userTrackingViewModel.Status, DbType.String, ParameterDirection.Input);
             parameters.Add("@EmailId", userTrackingViewModel.EmailId, DbType.String, ParameterDirection.Input);
+            parameters.Add("@FirstName", userTrackingViewModel.FirstName, DbType.String, ParameterDirection.Input);
             parameters.Add("@RegisterId", userTrackingViewModel.RegisterId, DbType.Int32, ParameterDirection.Input);
             parameters.Add("@Mode", 1, DbType.Int32, ParameterDirection.Input);
             using (IDbConnection connection = new SqlConnection(connectionString))

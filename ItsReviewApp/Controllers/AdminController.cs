@@ -385,5 +385,73 @@ namespace ItsReviewApp.Controllers
             }
             return Json(new { draw = draw, recordsFiltered = recordsTotal, recordsTotal = recordsTotal, data = userSkipListList }, JsonRequestBehavior.AllowGet);
         }
+
+        public void DeleteRegisterData(int id)
+        {
+            con.Open();
+            var parameters = new DynamicParameters();
+            parameters.Add("@id", id, DbType.String, ParameterDirection.Input);
+            parameters.Add("@Mode", 12, DbType.Int32, ParameterDirection.Input);
+            var DeleteCustomer = con.ExecuteScalar("sp_UserReport", parameters, commandType: CommandType.StoredProcedure);
+            con.Close();
+           // return Json(id,JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult GetGbpList(string registerId)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@RegisterId", registerId, DbType.String, ParameterDirection.Input);
+            parameters.Add("@Mode", 9, DbType.Int32, ParameterDirection.Input);
+            con.Open();
+            var GbpList = con.Query<SalesViewModel>("sp_UserCompanyReport", parameters, commandType: CommandType.StoredProcedure);
+            con.Close();
+            return Json(GbpList, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult DeleteGbp(int id)
+        {
+            con.Open();
+            var parameters = new DynamicParameters();
+            parameters.Add("@id", id, DbType.String, ParameterDirection.Input);
+            parameters.Add("@Mode", 10, DbType.Int32, ParameterDirection.Input);
+            var DeleteGbp = con.ExecuteScalar("sp_UserCompanyReport", parameters, commandType: CommandType.StoredProcedure);
+            con.Close();
+            return Json(DeleteGbp, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult RestoreGbp(int id)
+        {
+            con.Open();
+            var parameters = new DynamicParameters();
+            parameters.Add("@id", id, DbType.String, ParameterDirection.Input);
+            parameters.Add("@Mode", 11, DbType.Int32, ParameterDirection.Input);
+            var RestoreGbp = con.Query<SalesViewModel>("sp_UserCompanyReport", parameters, commandType: CommandType.StoredProcedure);
+            con.Close();
+            return Json(RestoreGbp, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult DeleteMutipleGbpList(List<int> CompanyIds)
+        {
+            var DeleteGbp = string.Empty;
+            foreach (int CompanyId in CompanyIds)
+            {
+                try
+                {
+                    con.Open();
+                    var parameters = new DynamicParameters();
+                    parameters.Add("@id", CompanyId, DbType.String, ParameterDirection.Input);
+                    parameters.Add("@Mode", 10, DbType.Int32, ParameterDirection.Input);
+                    DeleteGbp = con.ExecuteScalar("sp_UserCompanyReport", parameters, commandType: CommandType.StoredProcedure).ToString();
+                    con.Close();
+                    
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+                
+            }
+            return Json(DeleteGbp, JsonRequestBehavior.AllowGet);
+        }
     }
 }

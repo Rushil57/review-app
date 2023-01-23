@@ -39,6 +39,7 @@
                 <input type="hidden" id="hdnWriterId" value="0" />
                 <input type="hidden" id="hdnUserId" value="0" />
                 <input type="hidden" id="hdnTrackOrder" value="0" />
+                <input type="hidden" id="hdnUserName" value="0" />
             </div>
             <div class="form-group">
                 <button type="submit" class="btn btn-primary" id="startProcessId" onclick="StartReviewProcess()">Start</button>
@@ -202,6 +203,7 @@
                     $("#cityId").text(data.company.CityName);
                     $("#companyUrl").val(data.company.UserListingUrl);
                     $("#hdnTrackOrder").val(data.company.TrackOrder);
+                    $("#hdnUserName").val(data.user.FirstName);
                     $("#lblTodayCount").text(data.userTrack.TodayCount);
                     $("#lblYesterdayCount").text(data.userTrack.YesterDayCount);
                     incTimer();
@@ -228,6 +230,7 @@
         writeobject.EmailId = label;
         writeobject.UserListingUrl = $("#companyUrl").val();
         writeobject.TrackOrder = $("#hdnTrackOrder").val();
+        writeobject.FirstName = $("#hdnUserName").val();
 
          $.ajax({
             url: "@Url.Action("SaveTrackingData", "User")",

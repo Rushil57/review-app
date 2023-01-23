@@ -442,6 +442,7 @@ namespace ItsReviewApp.Controllers
             parameters.Add("@Status", userTrackingViewModel.Status, DbType.String, ParameterDirection.Input);
             parameters.Add("@EmailId", userTrackingViewModel.EmailId, DbType.String, ParameterDirection.Input);
             parameters.Add("@RegisterId", userTrackingViewModel.RegisterId, DbType.Int32, ParameterDirection.Input);
+            parameters.Add("@FirstName", userTrackingViewModel.FirstName, DbType.String, ParameterDirection.Input);
             parameters.Add("@Mode", 4, DbType.Int32, ParameterDirection.Input);
             using (IDbConnection connection = new SqlConnection(connectionString))
             {
