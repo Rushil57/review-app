@@ -40,10 +40,15 @@ namespace ItsReviewApp.Controllers
         {
             List<SelectListItem> palform = new List<SelectListItem>() {
             new SelectListItem {Text = "Select Paltform", Value = "0"},
-            new SelectListItem {Text = "Google", Value = "1"},
+           new SelectListItem {Text = "Google", Value = "1"},
             new SelectListItem {Text = "TripAdvisor", Value = "2"},
             new SelectListItem {Text = "FaceBook", Value = "3"},
-            new SelectListItem { Text = "zomato", Value = "4" },};
+            new SelectListItem { Text = "zomato", Value = "4" },
+            new SelectListItem { Text = "JustDial", Value = "5" },
+            new SelectListItem { Text = "Sulekha", Value = "6" },
+            new SelectListItem { Text = "MouthShut", Value = "7" },
+            new SelectListItem { Text = "Yelp", Value = "8" },
+            new SelectListItem { Text = "TrustPilot", Value = "9" }};
             return Json(palform, JsonRequestBehavior.AllowGet);
         }
 

@@ -239,7 +239,7 @@
                     <th>EmailId</th>
                     <th>Password</th>
                     <th></th>
-                    @*<th></th>*@
+                    <th></th>
                 </tr>
             </thead>
         </table>
@@ -1040,12 +1040,12 @@
                                 return '<button type="button" class="btn btn-primary" onclick="GetRegisterDetails(' + data +')" data-toggle="modal" data-target="#RegisterUpdateModal">EDIT</button>'
                             }
                         },
-                        //{
-                        //    data: "Id",
-                        //    mRender: function (data, type, full) {
-                        //        return '<button type="button" class="btn btn-danger" onclick="DeleteRegisterdata(' + data + ')" >Delete</button>'
-                        //    }
-                        //},
+                        {
+                            data: "Id",
+                            mRender: function (data, type, full) {
+                                return '<button type="button" class="btn btn-danger" onclick="DeleteRegisterdata(' + data + ')" >Delete</button>'
+                            }
+                        },
                     ]
                 });
             }
@@ -1201,41 +1201,42 @@
             contentType: 'application/json; charset=utf-8',
             success: function (data) {
                 $('#tblGbpList').dataTable({
-                    destroy: true,
-                    data: data,
-                    pageLength: 50,
-                    "columns": [
-                        {
-                            "searchable": false,
-                            "orderable": false,
-                            "data": "SalesdetailId",
-                            "render": function (data, type, row) {
-                                if (data != null) {
-                                    $('#MultipleChecked').prop('checked', false);
-                                    return "<input type='checkbox' id='" + data + "' class='CheckBoxButton'>";
-                                   // return "<div class='form-check'><input class='form-check-input' type='checkbox' id='flexCheckDefault' /></div>"
+                        destroy: true,
+                        data: data,
+                        pageLength: 50,
+                        "columns": [
+                            {
+                                "searchable": false,
+                                "orderable": false,
+                                "data": "SalesdetailId",
+                                "className": "dt-body-center",
+                                "render": function (data, type, row) {
+                                    if (data != null) {
+                                        $('#MultipleChecked').prop('checked', false);
+                                        return "<input type='checkbox' id='" + data + "' class='CheckBoxButton'>";
+                                       // return "<div class='form-check'><input class='form-check-input' type='checkbox' id='flexCheckDefault' /></div>"
+                                    }
+                                }
+                            },
+                            { "data": "PhoneNumber"},
+                            { "data": "CompanyName",},
+                            { "data": "CityName", },
+                            { "data": "ReviewsPerDay", },
+                            {
+                               "data": "SalesdetailId",
+                               "autoWidth": true,
+                               "render": function (data, type, row) {
+                                    return '<a class="btn btn-danger" style="color: white;" onclick="DeleteGbp(' + data + ')">Delete</a>';
+                                }
+                            },
+                            {
+                                "data": "SalesdetailId",
+                                "autoWidth": true,
+                                "render": function (data, type, row) {
+                                    return '<a class="btn btn-info" onclick="RestoreGbpList(' + data + ')">Restore</a>';
                                 }
                             }
-                        },
-                        { "data": "PhoneNumber"},
-                        { "data": "CompanyName",},
-                        { "data": "CityName", },
-                        { "data": "ReviewsPerDay", },
-                        {
-                           "data": "SalesdetailId",
-                           "autoWidth": true,
-                           "render": function (data, type, row) {
-                                return '<a class="btn btn-danger" style="color: white;" onclick="DeleteGbp(' + data + ')">Delete</a>';
-                            }
-                        },
-                        {
-                            "data": "SalesdetailId",
-                            "autoWidth": true,
-                            "render": function (data, type, row) {
-                                return '<a class="btn btn-info" onclick="RestoreGbpList(' + data + ')">Restore</a>';
-                            }
-                        }
-                    ]
+                        ]
                 });
             }
         })

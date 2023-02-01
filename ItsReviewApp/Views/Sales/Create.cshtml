@@ -523,7 +523,7 @@
             success: function (result) {
                 $('#btnsave').prop("disabled", false);
                 if (result != 0) {
-                    alert("Company Already Exists : \n" + result.toString().replaceAll(",", "\n"));
+                    alert("Url Already Exists : \n" + result.toString().replaceAll(",", "\n"));
                     return
                 }
                 else {
